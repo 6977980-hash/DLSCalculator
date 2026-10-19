@@ -17,6 +17,14 @@ $dlscalc_r    = dlscalc_dls_run( $dlscalc_slug, $dlscalc_in );
 $dlscalc_n    = $dlscalc_in['n'];
 $dlscalc_g    = $dlscalc_in['g'];
 $dlscalc_gsel = in_array( $dlscalc_g, array( '245', '200' ), true ) ? $dlscalc_g : 'custom';
+// Format sets the minimum overs for a result (ODI 20, T20 5). Links without one go by the overs.
+$dlscalc_fmts = array(
+	'odi'    => array( '50', 'ODI (50 overs)' ),
+	't20'    => array( '20', 'T20 (20 overs)' ),
+	't10'    => array( '10', 'T10 (10 overs)' ),
+	'custom' => array( '', 'Other format' ),
+);
+$dlscalc_f    = isset( $dlscalc_fmts[ $dlscalc_in['f'] ] ) ? $dlscalc_in['f'] : ( array( '50' => 'odi', '20' => 't20', '10' => 't10' )[ $dlscalc_n ] ?? 'custom' );
 
 get_header();
 dlscalc_tool_page_open(
@@ -31,9 +39,9 @@ dlscalc_par_sheet_head();
 			<h2 id="g-match">Match</h2>
 			<div class="fields">
 				<label class="fld">Format
-					<select data-preset>
-						<?php foreach ( array( '50' => 'ODI (50 overs)', '20' => 'T20 (20 overs)', '10' => 'T10 (10 overs)', 'custom' => 'Custom overs' ) as $dlscalc_v => $dlscalc_t ) : ?>
-							<option value="<?php echo esc_attr( $dlscalc_v ); ?>"<?php selected( in_array( $dlscalc_n, array( '50', '20', '10' ), true ) ? $dlscalc_n : 'custom', $dlscalc_v ); ?>><?php echo esc_html( $dlscalc_t ); ?></option>
+					<select name="f" data-preset>
+						<?php foreach ( $dlscalc_fmts as $dlscalc_v => $dlscalc_t ) : ?>
+							<option value="<?php echo esc_attr( $dlscalc_v ); ?>" data-overs="<?php echo esc_attr( $dlscalc_t[0] ); ?>"<?php selected( $dlscalc_f, $dlscalc_v ); ?>><?php echo esc_html( $dlscalc_t[1] ); ?></option>
 						<?php endforeach; ?>
 					</select>
 				</label>
@@ -44,6 +52,7 @@ dlscalc_par_sheet_head();
 					<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
 				</label>
 			</div>
+			<p class="hint">Match shortened before it began? Keep the format and type the overs it started with, such as 40 for an ODI. The format sets the minimum overs for a result: 20 in an ODI, 5 in a T20.</p>
 			<div class="fields">
 				<label class="fld fld--wide">G50 (used when Team 2 has more resources)
 					<select data-gsel>
@@ -99,7 +108,7 @@ dlscalc_par_sheet_head();
 <section class="block">
 	<div class="block__head">
 		<div>
-			<h2>Par score table for the rest of the chase</h2>
+			<h2>Par score for the rest of the chase</h2>
 			<?php $dlscalc_on = 'Par after each completed over from here, for 0 to 9 wickets down. If play ends for good, Team 2 wins when it is above par.'; ?>
 			<p class="hint" data-out="tablenote" data-on="<?php echo esc_attr( $dlscalc_on ); ?>" data-off="No overs left in the chase, so there is no par table."><?php echo esc_html( empty( $dlscalc_r['err'] ) && $dlscalc_r['rows'] ? $dlscalc_on : 'No overs left in the chase, so there is no par table.' ); ?></p>
 		</div>

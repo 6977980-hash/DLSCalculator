@@ -144,14 +144,25 @@
 		return { R: r1(R), steps: steps, allot: allot, lastAt: last ? last.at : 0, ended: !!last && last.at >= allot };
 	}
 
-	/** Fewest overs (in balls) Team 2 must face for a result: 20 in a 50-over match, 5 in a 20-over match. */
-	function minBalls(N) {
+	/**
+	 * Fewest overs (in balls) Team 2 must face for a result, by format: 20 in an ODI and 5 in a T20,
+	 * even when the match started with fewer overs. F: "odi", "t20", "t10" or "custom" (no ICC
+	 * minimum); without one, a 50-over match counts as an ODI and a 20-over match as a T20.
+	 */
+	function minBalls(N, F) {
+		if (F === 'odi' || F === 't20') {
+			return F === 'odi' ? 120 : 30;
+		}
+		if (F === 't10' || F === 'custom') {
+			return 0;
+		}
 		return N === 300 ? 120 : (N === 120 ? 30 : 0);
 	}
 
 	/**
 	 * A whole match. o: { N: balls per side at start, S: Team 1 score, G: G50, t1: Team 1 stoppages,
-	 * M: Team 2 balls at start of its innings, t2: Team 2 stoppages, note: optional extra step }.
+	 * M: Team 2 balls at start of its innings, t2: Team 2 stoppages, note: optional extra step,
+	 * F: optional format for the minimum overs, see minBalls() }.
 	 */
 	function match(o) {
 		var a = innings(o.N, o.t1, 'Team 1');
@@ -175,12 +186,12 @@
 		}
 		steps = steps.concat(b.steps, ['Team 2 resources, R2 = ' + f1(b.R) + '%.', formula]);
 
-		var minB = minBalls(o.N), warn = '';
+		var minB = minBalls(o.N, o.F), warn = '';
 		if (minB && (b.ended ? b.lastAt : b.allot) < minB) {
 			warn = 'Team 2 ' + (b.ended ? 'faced' : 'can face') + ' fewer than ' + overs(minB) + ' overs, so under ICC rules there is no result unless the match was already decided.';
 		}
 		return {
-			N: o.N, S: o.S, G: o.G, M: o.M, R1: a.R, R2: b.R, raw: c2(raw), par: par, target: par + 1,
+			N: o.N, F: o.F || '', S: o.S, G: o.G, M: o.M, R1: a.R, R2: b.R, raw: c2(raw), par: par, target: par + 1,
 			allot: b.allot, lastAt: b.lastAt, ended: b.ended, steps: steps, warn: warn, rows: parRows(o.S, a.R, o.G, b)
 		};
 	}
@@ -216,7 +227,7 @@
 
 	/**
 	 * DLS Calculator page. p: { n: overs per side, r: Team 1 runs, g: G50, c: Team 2 overs at the start
-	 * of the chase, a: Team 1 stops, b: Team 2 stops }. Short names that WordPress does not use itself
+	 * of the chase, a: Team 1 stops, b: Team 2 stops, f: format "odi", "t20", "t10" or "custom" }. Short names that WordPress does not use itself
 	 * (it treats s, m and w as its own query variables).
 	 */
 	function calc(p) {
@@ -233,7 +244,8 @@
 		if (isNaN(M) || M < 1 || M > N) {
 			return { err: 'Overs for Team 2 at the start of the chase must be between 0.1 and ' + overs(N) + '.' };
 		}
-		return match({ N: N, S: S, G: G, t1: parseStops(p.a), M: M, t2: parseStops(p.b) });
+		var F = ['odi', 't20', 't10', 'custom'].indexOf(p.f) > -1 ? p.f : '';
+		return match({ N: N, S: S, G: G, t1: parseStops(p.a), M: M, t2: parseStops(p.b), F: F });
 	}
 
 	/** T20 page. p: { n: overs per side (5 to 20), r: Team 1 runs, l: overs lost before the chase, b: chase stops }. */
@@ -248,7 +260,7 @@
 		}
 		L = isNaN(L) ? 0 : Math.min(L, No - 5);
 		var r = match({
-			N: No * 6, S: S, G: 245, t1: [], M: (No - L) * 6, t2: parseStops(p.b),
+			N: No * 6, S: S, G: 245, t1: [], M: (No - L) * 6, t2: parseStops(p.b), F: 't20',
 			note: L ? 'Rain cut ' + L + (L === 1 ? ' over' : ' overs') + ' before the chase, so Team 2 starts with ' + (No - L) + ' overs.' : ''
 		});
 		if (r.err) {
@@ -289,7 +301,7 @@
 	 * par is the DLS par at that point: who is ahead if play stops now.
 	 */
 	function live(p) {
-		var base = calc({ n: p.n, r: p.r, g: p.g, c: p.c });
+		var base = calc({ n: p.n, r: p.r, g: p.g, c: p.c, f: p.f });
 		if (base.err) {
 			return base;
 		}
@@ -324,7 +336,7 @@
 				e.state = runs === base.par ? 'tied' : 'lost';
 				e.par = base.par;
 			} else {
-				now = match({ N: base.N, S: base.S, G: base.G, t1: [], M: base.M, t2: [{ at: at, w: w, lost: base.allot - at }] });
+				now = match({ N: base.N, S: base.S, G: base.G, t1: [], M: base.M, t2: [{ at: at, w: w, lost: base.allot - at }], F: base.F });
 				e.state = 'on';
 				e.par = now.par;
 				e.warn = now.warn;

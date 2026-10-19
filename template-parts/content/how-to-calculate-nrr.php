@@ -68,8 +68,8 @@ $dlscalc_nrr = dlscalc_page_url( 'net-run-rate-calculator' );
 
 <h2 id="special-cases">How is NRR calculated when a team is all out, in DLS matches and in no-results?</h2>
 <ul>
-	<li><strong>All out:</strong> the team that was bowled out is counted as having faced its full quota of overs. A side bowled out for 120 in 15 overs of a T20 counts as 120 runs in 20 overs.</li>
-	<li><strong>DLS matches that finish:</strong> when rain changes the target and the match is completed, Team 1 is credited with the target minus one run, off the overs Team 2 was given. Team 2 is credited with the runs and overs it actually made.</li>
+	<li><strong>All out:</strong> the team that was bowled out is counted as having faced the full quota of overs it was entitled to in that match. A side bowled out for 120 in 15 overs of a T20 counts as 120 runs in 20 overs. If rain had already cut the match to 17 overs a side, it counts as 120 runs in 17 overs.</li>
+	<li><strong>DLS matches that finish:</strong> when rain changes the target and the match is completed, Team 1 is credited with the target minus one run, off the overs Team 2 was given. Team 2 is credited with the runs and overs it actually made, or with all the overs it was given if it was bowled out.</li>
 	<li><strong>DLS matches that are abandoned:</strong> if the match ends early but DLS decides a result, Team 1 is credited with Team 2's par score off the overs Team 2 actually faced.</li>
 	<li><strong>No result:</strong> abandoned matches with no result are left out of NRR completely, both the runs and the overs.</li>
 </ul>

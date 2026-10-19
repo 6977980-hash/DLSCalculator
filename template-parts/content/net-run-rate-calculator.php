@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <ol>
 	<li>Write overs the cricket way: 19.4 means 19 overs and 4 balls. The calculator counts in balls, so you never have to convert to decimals.</li>
 	<li>If your team was bowled out, tick "We were all out". If you bowled the other side out, tick "They were all out". The full quota of overs is then counted for that innings, as the ICC playing conditions require.</li>
+	<li>If rain cut a match, type the overs each side was given in "Overs per side in this match". A side bowled out in that match is then counted as facing those overs, not the tournament's full overs.</li>
 	<li>If a match ended with no result, tick "No result". It stays in your list but is left out of the totals.</li>
 	<li>Share the result on WhatsApp or copy the link. The link carries every match, so it opens the same answer for anyone you send it to.</li>
 </ol>
@@ -52,7 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h2 id="dls-matches">How do rain and DLS matches count in net run rate?</h2>
 <p>Under clause 16.10.2 of the ICC playing conditions, only matches with a result count, so washouts are left out. When a match finishes after DLS has changed the target, Team 1 is credited with the target minus one run, off the overs Team 2 was given. If the match is abandoned but DLS decides a result, Team 1 is credited with Team 2's par score at that point, off the overs Team 2 faced.</p>
-<p>For example, Team 1 makes 180 in 20 overs, then rain cuts Team 2's innings to 15 overs and the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-target-calculator-t20' ) ); ?>">T20 DLS target</a> becomes 144. For net run rate, Team 1 is credited with 143 runs in 15 overs, not 180 in 20. Enter those numbers in the match row for Team 1's innings, and Team 2's actual runs and overs for the chase.</p>
+<p>For example, Team 1 makes 180 in 20 overs, then rain cuts Team 2's innings to 15 overs and the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-target-calculator-t20' ) ); ?>">T20 DLS target</a> becomes 144. For net run rate, Team 1 is credited with 143 runs in 15 overs, not 180 in 20. Enter those numbers in the match row for Team 1's innings, and Team 2's actual runs and overs for the chase. If Team 2 is bowled out for 120 in 12 overs, it counts as 120 in 15 overs, the overs it was given, not 20: type 15 in "Overs per side in this match" and tick the all-out box.</p>
 
 <h2 id="leagues">Can you use it for the IPL, PSL, T20 World Cup and local leagues?</h2>
 <p>Yes. Every major league and ICC event uses the same net run rate rule, and so do most club and school competitions. During the IPL or PSL, copy the "for" and "against" columns from the official points table into the qualification scenario and you can test any result before the match starts. For your own tournament, keep the table here: the page remembers it on your device, so you only need to add the latest match.</p>

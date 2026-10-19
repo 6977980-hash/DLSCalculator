@@ -72,7 +72,7 @@ function dlscalc_nrr_of( $rf, $bf, $ra, $ba ) {
 }
 
 /**
- * Overs as entered in a match row: "18.3" or "18.3a" (bowled out, so the full quota counts).
+ * Overs as entered in a match row: "18.3" or "18.3a" (bowled out, so the full quota for the match counts).
  *
  * @param mixed $runs  Runs as typed.
  * @param mixed $ov    Overs as typed.
@@ -117,17 +117,35 @@ function dlscalc_nrr_calc( $p ) {
 		if ( '' === implode( '', array_slice( $x, 0, 4 ) ) ) {
 			continue;
 		}
-		$a  = dlscalc_nrr_side( $x[0] ?? '', $x[1] ?? '', $quota );
-		$d  = dlscalc_nrr_side( $x[2] ?? '', $x[3] ?? '', $quota );
-		$nr = 'n' === ( $x[4] ?? '' );
+		$extra = array_slice( $x, 4 );
+		$nr    = in_array( 'n', $extra, true );
+		$mq    = $quota;
+		$mo    = array_values(
+			array_filter(
+				$extra,
+				function ( $t ) {
+					return 'n' !== $t && '' !== $t;
+				}
+			)
+		);
+		if ( $mo ) {
+			$mq = dlscalc_dls_balls( $mo[0] );
+			if ( is_nan( (float) $mq ) || $mq < 1 || $mq > $quota ) {
+				return array( 'err' => $name . ': overs per side in this match must be between 0.1 and ' . $q . '.' );
+			}
+		}
+		$cut = $mq < $quota;
+		$mov = dlscalc_dls_overs( $mq );
+		$a   = dlscalc_nrr_side( $x[0] ?? '', $x[1] ?? '', $mq );
+		$d   = dlscalc_nrr_side( $x[2] ?? '', $x[3] ?? '', $mq );
 		if ( is_nan( (float) $a['runs'] ) || is_nan( (float) $d['runs'] ) || $a['runs'] > 999 || $d['runs'] > 999 ) {
 			return array( 'err' => $name . ': enter runs scored and runs conceded.' );
 		}
 		if ( is_nan( (float) $a['at'] ) || is_nan( (float) $d['at'] ) ) {
 			return array( 'err' => $name . ': enter overs faced and overs bowled, like 19.4 for 19 overs and 4 balls.' );
 		}
-		if ( $a['at'] > $quota || $d['at'] > $quota || ( ! $a['allOut'] && 0 === $a['at'] ) || ( ! $d['allOut'] && 0 === $d['at'] ) ) {
-			return array( 'err' => $name . ': overs must be more than 0 and no more than ' . $q . ' per side.' );
+		if ( $a['at'] > $mq || $d['at'] > $mq || ( ! $a['allOut'] && 0 === $a['at'] ) || ( ! $d['allOut'] && 0 === $d['at'] ) ) {
+			return array( 'err' => $name . ': overs must be more than 0 and no more than ' . $mov . ' per side' . ( $cut ? ' in this match.' : '.' ) );
 		}
 		$rows[] = array(
 			'n'  => $i + 1,
@@ -136,6 +154,7 @@ function dlscalc_nrr_calc( $p ) {
 			'ra' => $d['runs'],
 			'ba' => $d['b'],
 			'nr' => $nr,
+			'mq' => $mq,
 		);
 		if ( $nr ) {
 			$steps[] = $name . ': no result, so it is left out of net run rate.';
@@ -146,8 +165,8 @@ function dlscalc_nrr_calc( $p ) {
 		$bf     += $a['b'];
 		$ra     += $d['runs'];
 		$ba     += $d['b'];
-		$steps[] = $name . ': scored ' . $a['runs'] . ( $a['allOut'] ? ', all out in ' . dlscalc_dls_overs( $a['at'] ) . ' overs, counted as ' . $q : ' in ' . dlscalc_dls_overs( $a['b'] ) ) .
-			' overs; conceded ' . $d['runs'] . ( $d['allOut'] ? ', bowling them out in ' . dlscalc_dls_overs( $d['at'] ) . ' overs, counted as ' . $q : ' in ' . dlscalc_dls_overs( $d['b'] ) ) . ' overs.';
+		$steps[] = $name . ( $cut ? ' (cut to ' . $mov . ' overs a side)' : '' ) . ': scored ' . $a['runs'] . ( $a['allOut'] ? ', all out in ' . dlscalc_dls_overs( $a['at'] ) . ' overs, counted as ' . $mov : ' in ' . dlscalc_dls_overs( $a['b'] ) ) .
+			' overs; conceded ' . $d['runs'] . ( $d['allOut'] ? ', bowling them out in ' . dlscalc_dls_overs( $d['at'] ) . ' overs, counted as ' . $mov : ' in ' . dlscalc_dls_overs( $d['b'] ) ) . ' overs.';
 	}
 	if ( ! $counted ) {
 		return array( 'err' => 'Enter at least one match with a result.' );

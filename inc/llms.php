@@ -68,7 +68,7 @@ function dlscalc_llms_txt() {
 		'> Free cricket calculators: Duckworth-Lewis-Stern (DLS) revised targets and par scores for rain-affected T20, ODI and local matches, a net run rate (NRR) calculator with qualification scenarios, and a run rate calculator. Every result shows its full working.',
 		'',
 		'- DLS results use the ICC Standard Edition resource table from the ICC playing conditions, ball by ball, with any number of interruptions in either innings. G50 is 245 for men\'s internationals and first-class cricket and 200 for women\'s, associate and U19 matches (ICC); a custom value can be entered.',
-		'- Net run rate follows ICC playing conditions (clause 16.10.2): a side that is all out counts its full quota of overs; no-results are left out.',
+		'- Net run rate follows ICC playing conditions (clause 16.10.2): a side that is all out counts the full quota of overs it was entitled to in that match (the reduced overs if rain cut it); no-results are left out.',
 		'- Written and checked by ' . $author['name'] . ', a cricketer and tournament organiser. The calculators run in the browser; no sign-up, no app.',
 		'- International matches and the major T20 leagues use the DLS Professional Edition (ICC software, formulas not published), so official targets there can differ by a few runs. For club, school and tournament cricket the Standard Edition is the official method.',
 		'',
@@ -76,10 +76,10 @@ function dlscalc_llms_txt() {
 		'',
 		'Each calculator reads its inputs from the address, so a link opens the worked result:',
 		'',
-		'- DLS calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`. Example: ' . dlscalc_page_url( 'dls-calculator' ) . '?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2 (Team 2 stopped at 12 overs, 1 wicket down, 10 overs lost; then at 22 overs, 3 down, 2 overs lost).',
+		'- DLS calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, optional `f` format (`odi`, `t20`, `t10`, `custom`) for the minimum overs. Example: ' . dlscalc_page_url( 'dls-calculator' ) . '?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2 (Team 2 stopped at 12 overs, 1 wicket down, 10 overs lost; then at 22 overs, 3 down, 2 overs lost).',
 		'- T20 DLS target: `n`, `r`, `l` overs lost before the chase, `b`. Example: ' . dlscalc_page_url( 'dls-target-calculator-t20' ) . '?n=20&r=180&l=5',
 		'- DLS par score table: `o` overs per side, `r` Team 1 runs. Example: ' . dlscalc_page_url( 'dls-par-score-table' ) . '?o=20&r=160',
-		'- Net run rate: `q` overs per side, `x` matches as `scored-overs-conceded-overs` joined with `_` (add `a` after overs for all out, `-n` for a no result). Example: ' . dlscalc_page_url( 'net-run-rate-calculator' ) . '?q=20&x=180-20-150-20_140-18.3-145-20',
+		'- Net run rate: `q` overs per side, `x` matches as `scored-overs-conceded-overs` joined with `_` (add `a` after overs for all out, `-15` for a match cut to 15 overs a side, `-n` for a no result). Example: ' . dlscalc_page_url( 'net-run-rate-calculator' ) . '?q=20&x=180-20-150-20_140-18.3-145-20',
 		'- Run rate: `u` `c` chasing or `f` batting first, `n` overs per side, `t` target, `r` runs, `o` overs bowled. Example: ' . dlscalc_page_url( 'run-rate-calculator' ) . '?u=c&n=20&t=181&r=95&o=11.2',
 	);
 

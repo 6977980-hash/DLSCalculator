@@ -67,7 +67,7 @@
 		return bf > 0 && ba > 0 ? rate(rf, bf) - rate(ra, ba) : null;
 	}
 
-	/** Overs as entered in a match row: "18.3" or "18.3a" (bowled out, so the full quota counts). */
+	/** Overs as entered in a match row: "18.3" or "18.3a" (bowled out, so the full quota for the match counts). */
 	function side(runs, ov, quota) {
 		var allOut = /a$/.test(String(ov == null ? '' : ov).trim());
 		var b = balls(allOut ? String(ov).trim().slice(0, -1) : ov);
@@ -77,7 +77,9 @@
 	/**
 	 * NRR across matches. p: { q: overs per side, x: matches "168-20-151-20_142-18.3a-145-20" }.
 	 * Each match is runs scored - overs faced - runs conceded - overs bowled, with "a" after the overs
-	 * when that side was bowled out, and "-n" on the end for a no result (left out of NRR).
+	 * when that side was bowled out. Optional fields after those four: the overs per side in this
+	 * match when rain cut it ("143-15-120-12a-15"; an all-out side counts these overs), and "n" for a
+	 * no result (left out of NRR).
 	 */
 	function calc(p) {
 		var Q = int(p.q);
@@ -91,17 +93,28 @@
 			if (x.slice(0, 4).join('') === '') {
 				continue;
 			}
-			var a = side(x[0], x[1], quota), d = side(x[2], x[3], quota), nr = x[4] === 'n';
+			var nr = x.slice(4).indexOf('n') >= 0, mq = quota;
+			var mo = x.slice(4).filter(function (t) {
+				return t !== 'n' && t !== '';
+			})[0];
+			if (mo !== undefined) {
+				mq = balls(mo);
+				if (isNaN(mq) || mq < 1 || mq > quota) {
+					return { err: name + ': overs per side in this match must be between 0.1 and ' + Q + '.' };
+				}
+			}
+			var cut = mq < quota, mov = overs(mq);
+			var a = side(x[0], x[1], mq), d = side(x[2], x[3], mq);
 			if (isNaN(a.runs) || isNaN(d.runs) || a.runs > 999 || d.runs > 999) {
 				return { err: name + ': enter runs scored and runs conceded.' };
 			}
 			if (isNaN(a.at) || isNaN(d.at)) {
 				return { err: name + ': enter overs faced and overs bowled, like 19.4 for 19 overs and 4 balls.' };
 			}
-			if (a.at > quota || d.at > quota || (!a.allOut && a.at === 0) || (!d.allOut && d.at === 0)) {
-				return { err: name + ': overs must be more than 0 and no more than ' + Q + ' per side.' };
+			if (a.at > mq || d.at > mq || (!a.allOut && a.at === 0) || (!d.allOut && d.at === 0)) {
+				return { err: name + ': overs must be more than 0 and no more than ' + mov + ' per side' + (cut ? ' in this match.' : '.') };
 			}
-			rows.push({ n: i + 1, rf: a.runs, bf: a.b, ra: d.runs, ba: d.b, nr: nr });
+			rows.push({ n: i + 1, rf: a.runs, bf: a.b, ra: d.runs, ba: d.b, nr: nr, mq: mq });
 			if (nr) {
 				steps.push(name + ': no result, so it is left out of net run rate.');
 				continue;
@@ -111,8 +124,8 @@
 			bf += a.b;
 			ra += d.runs;
 			ba += d.b;
-			steps.push(name + ': scored ' + a.runs + (a.allOut ? ', all out in ' + overs(a.at) + ' overs, counted as ' + Q : ' in ' + overs(a.b)) +
-				' overs; conceded ' + d.runs + (d.allOut ? ', bowling them out in ' + overs(d.at) + ' overs, counted as ' + Q : ' in ' + overs(d.b)) + ' overs.');
+			steps.push(name + (cut ? ' (cut to ' + mov + ' overs a side)' : '') + ': scored ' + a.runs + (a.allOut ? ', all out in ' + overs(a.at) + ' overs, counted as ' + mov : ' in ' + overs(a.b)) +
+				' overs; conceded ' + d.runs + (d.allOut ? ', bowling them out in ' + overs(d.at) + ' overs, counted as ' + mov : ' in ' + overs(d.b)) + ' overs.');
 		}
 		if (!counted) {
 			return { err: 'Enter at least one match with a result.' };

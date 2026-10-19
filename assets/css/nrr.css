@@ -17,6 +17,8 @@
 .mrow legend { padding: 0 6px; font-weight: 700; }
 .mrow__side { display: flex; gap: 12px; flex: 1 1 260px; }
 .mrow__side .fld { flex-basis: 100px; }
+.mrow__cut { flex: 1 1 100%; }
+.mrow__cut input { max-width: 120px; }
 .mrow__end { display: flex; flex-wrap: wrap; gap: 0 18px; align-items: center; flex: 1 1 100%; }
 .mrow__end .xbtn { margin-left: auto; }
 .data input { width: 100%; min-width: 64px; height: 40px; padding: 0 8px; border: 1px solid #8a8577; border-radius: 6px; background: var(--white); font-size: 16px; }

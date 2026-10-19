@@ -38,7 +38,7 @@ for (let i = 0; i < 400; i++) {
 		return out.join('_');
 	};
 	const M = 6 + rnd(N - 5);
-	cases.push({ fn: 'calc', p: { n: ov(N), r: String(80 + rnd(300)), g: ['245', '200', '222.5'][rnd(3)], c: ov(M), a: stops(N), b: stops(M) } });
+	cases.push({ fn: 'calc', p: { n: ov(N), r: String(80 + rnd(300)), g: ['245', '200', '222.5'][rnd(3)], c: ov(M), a: stops(N), b: stops(M), f: ['', 'odi', 't20', 't10', 'custom', 'zz'][rnd(6)] } });
 	cases.push({ fn: 't20', p: { n: String(5 + rnd(16)), r: String(60 + rnd(200)), l: String(rnd(16)), b: rnd(2) ? stops(60) : '' } });
 	cases.push({ fn: 'parTable', p: { o: String(5 + rnd(46)), r: String(60 + rnd(300)) } });
 }
@@ -61,6 +61,20 @@ for (let i = 0; i < 150; i++) {
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20-150-20_160-20-150-20' }, expect: { nrr: '+0.500' } });
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '168-20-151-20_142-18.3a-145-20' }, expect: { nrr: '+0.350', bf: 240 } });
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '120-15a-121-14.2_150-20-140-20-n' }, expect: { nrr: '-2.442', counted: 1 } });
+// Minimum overs go by format, not by the overs the match started with (audit F12): a 40-over ODI
+// still needs 20 overs for Team 2, a 15-over T20 still needs 5.
+const NO_RESULT = 'Team 2 can face fewer than 20 overs, so under ICC rules there is no result unless the match was already decided.';
+cases.push({ fn: 'calc', p: { n: '40', r: '220', g: '245', c: '40', b: '10-2-25', f: 'odi' }, expect: { allot: 90, warn: NO_RESULT } });
+cases.push({ fn: 'calc', p: { n: '40', r: '220', g: '245', c: '40', b: '10-2-25', f: 'custom' }, expect: { allot: 90, warn: '' } });
+cases.push({ fn: 'calc', p: { n: '40', r: '220', g: '245', c: '40', b: '10-2-15', f: 'odi' }, expect: { allot: 150, warn: '' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '220', g: '245', c: '50', b: '10-2-35' }, expect: { warn: NO_RESULT } });
+cases.push({ fn: 't20', p: { n: '15', r: '130', l: '0', b: '3-1-11' }, expect: { allot: 24, warn: 'Team 2 can face fewer than 5 overs, so under ICC rules there is no result unless the match was already decided.' } });
+cases.push({ fn: 'live', p: { n: '40', r: '220', g: '245', c: '30', f: 'odi', x: '5-30-1' }, expect: { target: 186, warn: '' } });
+
+// Rain-reduced match: an all-out side counts the overs it was entitled to in that match (audit F2).
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '143-15-120-12a-15' }, expect: { nrr: '+1.533', ba: 90 } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '143-15-120-12a' }, expect: { nrr: '+3.533', ba: 120 } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '110-9.4a-111-8.1-12_160-20-150-20-n_150-20-140-20' }, expect: { nrr: '-0.786', bf: 192, ba: 169, counted: 2 } });
 cases.push({ fn: 'nrr.runRate', p: { n: '20', t: '181', r: '92', o: '12.4' }, expect: { big: '12.14', crr: '7.26', need: 89, left: 44 } });
 cases.push({ fn: 'nrr.convert', p: { v: '12.5', j: '77' }, expect: { ov: '77 balls (12.83 overs in decimal)', bl: '12.5 overs' } });
 const T4 = 'Team A~4~3~6~640~78.2~600~80_Team B~4~2~4~610~80~590~79.3_Team C~4~2~4~580~80~575~80_Team D~4~1~2~560~80~625~79';
@@ -71,7 +85,8 @@ const oval = (max) => ov(1 + rnd(max)) + (rnd(6) ? '' : 'a');
 for (let i = 0; i < 200; i++) {
 	const q = [20, 50, 10, 8][rnd(4)], ms = [];
 	for (let k = 1 + rnd(6); k > 0; k--) {
-		ms.push([rnd(400), oval(q * 6), rnd(400), oval(q * 6)].join('-') + (rnd(97) < 12 ? '-n' : ''));
+		const mq = rnd(4) ? q * 6 : 6 + rnd(q * 6 - 5);
+		ms.push([rnd(400), oval(mq), rnd(400), oval(mq)].join('-') + (mq < q * 6 || !rnd(20) ? '-' + ov(mq) : '') + (rnd(97) < 12 ? '-n' : ''));
 	}
 	cases.push({ fn: 'nrr.calc', p: { q: String(q), x: ms.join('_') } });
 	const teams = [];
@@ -94,6 +109,9 @@ cases.push({ fn: 'parTable', p: { o: '20', r: '150', c: '25' } });
 cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '10-80-2_8-90-2' } });
 cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '10-170-2_12-180-2' } });
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-21-150-20' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-16-150-12a-15' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-15-150-12a-21' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-15-150-12a-x-n' } });
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '3', k: 'f', e: '180', q: '20' } });
 cases.push({ fn: 'nrr.runRate', p: { u: 'f', n: '20', r: '0', o: '0' } });
 

@@ -76,7 +76,7 @@ $dlscalc_img = DLSCALC_URI . '/assets/img/dls/';
 <h2 id="abandoned-match">How is a match decided if it cannot be finished?</h2>
 <p>If Team 2 has faced the minimum overs and play cannot restart, the match goes to the par score at the moment play ended. Team 2 wins with more runs than the par score, loses with fewer and ties on exactly the par. Enter the last stoppage with every remaining over lost to get it.</p>
 <p>Say Team 1 makes 260 in a 50-over match and the rain sets in for good with Team 2 at 30 overs, 5 down. The 20 overs left with 5 down were worth 38.6%, so R2 = 100 − 38.6 = 61.4%. The par score is 260 × 61.4 ÷ 100 = 159.64, rounded down to 159. On 160 or more Team 2 wins, on 159 the match is tied and on 158 or fewer Team 1 wins.</p>
-<p>The minimum is 20 overs for Team 2 in a 50-over match and 5 overs in a 20-over match. Below that there is no result, unless Team 2 has already passed the target or been bowled out. The calculator shows a warning when the chase falls below these limits.</p>
+<p>The minimum is 20 overs for Team 2 in an ODI and 5 overs in a T20, even when the match started shorter, such as a 40-over ODI. Pick the format, then type the overs the match started with. Below that there is no result, unless Team 2 has already passed the target or been bowled out. The calculator shows a warning when the chase falls below these limits.</p>
 
 <h2 id="g50">What is G50 and which value should you use?</h2>
 <p>G50 is the average score expected in a full 50-over first innings. It is only used when Team 2 has more resources than Team 1. The ICC sets 245 for men's internationals and first-class teams, and 200 for women's, associate and Under-19 matches, but competitions can choose their own value.</p>
