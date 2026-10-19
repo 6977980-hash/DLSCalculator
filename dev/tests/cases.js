@@ -93,6 +93,13 @@ cases.push({ fn: 'nrr.calc', p: { q: '20', x: '143-15-120-12a' }, expect: { nrr:
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '110-9.4a-111-8.1-12_160-20-150-20-n_150-20-140-20' }, expect: { nrr: '-0.786', bf: 192, ba: 169, counted: 2 } });
 cases.push({ fn: 'nrr.runRate', p: { n: '20', t: '181', r: '92', o: '12.4' }, expect: { big: '12.14', crr: '7.26', need: 89, left: 44 } });
 cases.push({ fn: 'nrr.convert', p: { v: '12.5', j: '77' }, expect: { ov: '77 balls (12.83 overs in decimal)', bl: '12.5 overs' } });
+// Stats calculators (audit F16): strike rate, batting average, bowling average, economy.
+cases.push({ fn: 'nrr.batting', p: { r: '182', b: '140', i: '5', o: '1', f: '18', x: '6', g: '150' }, expect: { big: '130.00', avg: '45.50', outs: 4 } });
+cases.push({ fn: 'nrr.batting', p: { r: '57', b: '38', i: '2', o: '2' }, expect: { sr: '150.00', avg: null, outs: 0 } });
+cases.push({ fn: 'nrr.batting', p: { r: '18426', b: '21367', i: '452', o: '41' }, expect: { sr: '86.24', avg: '44.83' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '38.4', r: '212', k: '9', d: '130' }, expect: { big: '23.56', econ: '5.48', sr: '25.8' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '4', r: '31', k: '0' }, expect: { label: 'Economy rate', big: '7.75', avg: null } });
+cases.push({ fn: 'nrr.bowling', p: { o: '1250.3', r: '5320', k: '211' }, expect: { avg: '25.21', econ: '4.25', sr: '35.6' } });
 const T4 = 'Team A~4~3~6~640~78.2~600~80_Team B~4~2~4~610~80~590~79.3_Team C~4~2~4~580~80~575~80_Team D~4~1~2~560~80~625~79';
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'f', e: '180', q: '20' }, expect: { kind: 'runs', margin: 63 } });
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'c', e: '150', q: '20' }, expect: { kind: 'overs', within: '12.1' } });
@@ -114,6 +121,9 @@ for (let i = 0; i < 200; i++) {
 	cases.push({ fn: 'nrr.solve', p: { t: teams.join('_'), y: String(y), v: String(v), o: String(o), k: rnd(2) ? 'f' : 'c', e: String(60 + rnd(300)), q: String(q), d: rnd(3) ? '' : String(rnd(3)) } });
 	const nn = [20, 50, 10][rnd(3)];
 	cases.push({ fn: 'nrr.runRate', p: { u: rnd(3) ? 'c' : 'f', n: String(nn), t: String(50 + rnd(350)), r: String(rnd(300)), o: ov(rnd(nn * 6 + 1)) } });
+	const bb = 1 + rnd(3000), bi = rnd(60);
+	cases.push({ fn: 'nrr.batting', p: { r: String(rnd(bb * 2)), b: String(bb), i: rnd(4) ? String(bi) : '', o: rnd(2) ? String(rnd(bi + 1)) : '', f: rnd(2) ? String(rnd(bb / 8)) : '', x: rnd(2) ? String(rnd(bb / 20)) : '', g: rnd(2) ? String(50 + rnd(200)) : '' } });
+	cases.push({ fn: 'nrr.bowling', p: { o: ov(1 + rnd(6000)), r: String(rnd(3000)), k: rnd(5) ? String(rnd(120)) : '', d: rnd(2) ? String(rnd(1000)) : '' } });
 }
 
 // Bad input must give the same error text in both.
@@ -130,5 +140,12 @@ cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-15-150-12a-21' } });
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-15-150-12a-x-n' } });
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '3', k: 'f', e: '180', q: '20' } });
 cases.push({ fn: 'nrr.runRate', p: { u: 'f', n: '20', r: '0', o: '0' } });
+cases.push({ fn: 'nrr.batting', p: { r: '50', b: '0' } });
+cases.push({ fn: 'nrr.batting', p: { r: '50', b: '40', i: '2', o: '3' } });
+cases.push({ fn: 'nrr.batting', p: { r: '20', b: '40', f: '4', x: '1' } });
+cases.push({ fn: 'nrr.batting', p: { r: '20', b: '40', g: '700' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '12.7', r: '50' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '1', r: '5', k: '7' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '10', r: '50', d: 'x' } });
 
 process.stdout.write(JSON.stringify(cases));

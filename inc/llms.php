@@ -65,7 +65,7 @@ function dlscalc_llms_txt() {
 	$out    = array(
 		'# DLSCalc (dlscalculator.com)',
 		'',
-		'> Free cricket calculators: Duckworth-Lewis-Stern (DLS) revised targets and par scores for rain-affected T20, ODI and local matches, a net run rate (NRR) calculator with qualification scenarios, and a run rate calculator. Every result shows its full working.',
+		'> Free cricket calculators: Duckworth-Lewis-Stern (DLS) revised targets and par scores for rain-affected T20, ODI and local matches, a net run rate (NRR) calculator with qualification scenarios, a run rate calculator, and strike rate, batting average, bowling average and economy rate calculators. Every result shows its full working.',
 		'',
 		'- DLS results use the ICC Standard Edition resource table from the ICC playing conditions, ball by ball, with any number of interruptions in either innings. G50 is 245 for men\'s internationals and first-class cricket and 200 for women\'s, associate and U19 matches (ICC); a custom value can be entered.',
 		'- Net run rate follows ICC playing conditions (clause 16.10.2): a side that is all out counts the full quota of overs it was entitled to in that match (the reduced overs if rain cut it); no-results are left out.',
@@ -81,6 +81,8 @@ function dlscalc_llms_txt() {
 		'- DLS par score table: `o` overs per side, `r` Team 1 runs. Example: ' . dlscalc_page_url( 'dls-par-score-table' ) . '?o=20&r=160',
 		'- Net run rate: `q` overs per side, `x` matches as `scored-overs-conceded-overs` joined with `_` (add `a` after overs for all out, `-15` for a match cut to 15 overs a side, `-n` for a no result). Example: ' . dlscalc_page_url( 'net-run-rate-calculator' ) . '?q=20&x=180-20-150-20_140-18.3-145-20',
 		'- Run rate: `u` `c` chasing or `f` batting first, `n` overs per side, `t` target, `r` runs, `o` overs bowled. Example: ' . dlscalc_page_url( 'run-rate-calculator' ) . '?u=c&n=20&t=181&r=95&o=11.2',
+		'- Strike rate and batting average: `r` runs, `b` balls faced, optional `i` innings, `o` not outs, `f` fours, `x` sixes, `g` target strike rate. Example: ' . dlscalc_page_url( 'strike-rate-calculator' ) . '?r=182&b=140&i=5&o=1',
+		'- Bowling average and economy rate: `o` overs bowled, `r` runs conceded, `k` wickets, optional `d` dot balls. Example: ' . dlscalc_page_url( 'bowling-average-calculator' ) . '?o=38.4&r=212&k=9',
 	);
 
 	foreach ( dlscalc_llms_sections() as $section => $items ) {

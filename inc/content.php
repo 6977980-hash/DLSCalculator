@@ -17,19 +17,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function dlscalc_content_dates() {
 	return array(
-		'dls-calculator'            => '2026-10-19',
-		'dls-target-calculator-t20' => '2026-10-19',
-		'dls-par-score-table'       => '2026-10-19',
-		'net-run-rate-calculator'   => '2026-10-19',
-		'run-rate-calculator'       => '2026-10-19',
-		'live-dls-par-score'        => '2026-10-19',
-		'dls-method'                => '2026-10-19',
-		'how-to-calculate-nrr'      => '2026-10-19',
-		'vjd-method'                => '2026-10-19',
-		'about'                     => '2026-10-19',
-		'contact'                   => '2026-10-19',
-		'privacy-policy'            => '2026-10-19',
-		'famous-dls-matches'        => '2026-10-19',
+		'dls-calculator'             => '2026-10-19',
+		'dls-target-calculator-t20'  => '2026-10-19',
+		'dls-par-score-table'        => '2026-10-19',
+		'net-run-rate-calculator'    => '2026-10-19',
+		'run-rate-calculator'        => '2026-10-19',
+		'strike-rate-calculator'     => '2026-10-19',
+		'bowling-average-calculator' => '2026-10-19',
+		'live-dls-par-score'         => '2026-10-19',
+		'dls-method'                 => '2026-10-19',
+		'how-to-calculate-nrr'       => '2026-10-19',
+		'vjd-method'                 => '2026-10-19',
+		'about'                      => '2026-10-19',
+		'contact'                    => '2026-10-19',
+		'privacy-policy'             => '2026-10-19',
+		'famous-dls-matches'         => '2026-10-19',
 	) + array_fill_keys( array_keys( dlscalc_matches() ), '2026-10-19' );
 }
 
@@ -76,6 +78,18 @@ function dlscalc_nrr_sources() {
 }
 
 /**
+ * Sources cited on the stats calculator pages.
+ *
+ * @return array<int, array{0: string, 1: string}> Label, URL.
+ */
+function dlscalc_stats_sources() {
+	return array(
+		array( 'MCC: the Laws of Cricket (Law 21 no ball, Law 22 wide, Law 23 bye and leg bye)', 'https://www.lords.org/mcc/the-laws-of-cricket' ),
+		array( 'ICC playing conditions for every format', 'https://www.icc-cricket.com/about/cricket/rules-and-regulations/playing-conditions' ),
+	);
+}
+
+/**
  * Sources list.
  *
  * @param array $sources Label and URL pairs; the DLS sources by default.
@@ -95,16 +109,18 @@ function dlscalc_sources_html( $sources = null ) {
  */
 function dlscalc_related_html( $slugs ) {
 	$text = array(
-		'dls-calculator'            => array( 'DLS Calculator', 'Stoppages in both innings, any format.' ),
-		'dls-target-calculator-t20' => array( 'DLS Target Calculator T20', 'Rain slider and par table for 20-over matches.' ),
-		'dls-par-score-table'       => array( 'DLS Par Score Table', 'Par for every over and wicket, 5 to 50 overs.' ),
-		'live-dls-par-score'        => array( 'Live DLS Par Score', 'Who is ahead on DLS, over by over, during the chase.' ),
-		'dls-method'                => array( 'DLS method explained', 'Resources, the formula and the ICC examples.' ),
-		'how-to-calculate-nrr'      => array( 'How to calculate NRR', 'The net run rate formula, step by step.' ),
-		'vjd-method'                => array( 'VJD method vs DLS', 'Jayadevan\'s rain rule and how it differs.' ),
-		'run-rate-calculator'       => array( 'Run Rate Calculator', 'Required rate and runs per ball for the chase.' ),
-		'net-run-rate-calculator'   => array( 'Net Run Rate Calculator', 'Your NRR and the margin you need to qualify.' ),
-		'famous-dls-matches'        => array( 'Famous DLS matches', 'Rain-hit classics recalculated, target by target.' ),
+		'dls-calculator'             => array( 'DLS Calculator', 'Stoppages in both innings, any format.' ),
+		'dls-target-calculator-t20'  => array( 'DLS Target Calculator T20', 'Rain slider and par table for 20-over matches.' ),
+		'dls-par-score-table'        => array( 'DLS Par Score Table', 'Par for every over and wicket, 5 to 50 overs.' ),
+		'live-dls-par-score'         => array( 'Live DLS Par Score', 'Who is ahead on DLS, over by over, during the chase.' ),
+		'dls-method'                 => array( 'DLS method explained', 'Resources, the formula and the ICC examples.' ),
+		'how-to-calculate-nrr'       => array( 'How to calculate NRR', 'The net run rate formula, step by step.' ),
+		'vjd-method'                 => array( 'VJD method vs DLS', 'Jayadevan\'s rain rule and how it differs.' ),
+		'run-rate-calculator'        => array( 'Run Rate Calculator', 'Required rate and runs per ball for the chase.' ),
+		'net-run-rate-calculator'    => array( 'Net Run Rate Calculator', 'Your NRR and the margin you need to qualify.' ),
+		'strike-rate-calculator'     => array( 'Strike Rate Calculator', 'Strike rate and batting average, one innings or a season.' ),
+		'bowling-average-calculator' => array( 'Bowling Average Calculator', 'Bowling average, economy rate and bowling strike rate.' ),
+		'famous-dls-matches'         => array( 'Famous DLS matches', 'Rain-hit classics recalculated, target by target.' ),
 	) + array_map(
 		function ( $m ) {
 			return array( $m['title'], $m['card'] );
@@ -136,7 +152,7 @@ function dlscalc_faqs( $slug ) {
 	$calc = esc_url( dlscalc_page_url( 'dls-calculator' ) );
 	$nrr  = esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) );
 	$faqs = array(
-		'dls-calculator'            => array(
+		'dls-calculator'             => array(
 			array( 'Is this the official ICC DLS calculator?', 'No. DLSCalc is an independent calculator, not an ICC product. It uses the DLS Standard Edition resource table and formulas that the ICC publishes in its playing conditions, the official method when the ICC\'s Professional Edition software is not available. International matches use that software, so an official target can differ from ours by a few runs.' ),
 			array( 'How many overs are needed for a DLS result?', 'Team 2 must be able to face at least 20 overs in an ODI and 5 overs in a T20, even if the match started with fewer overs. If fewer are possible, there is no result, unless Team 2 has already passed the target or been bowled out. The calculator warns you when the chase falls below that minimum.' ),
 			array( 'Can I add more than one rain break?', 'Yes. Add a row for every stoppage in either innings, up to ten per innings. The resources lost in each stoppage are added together, which is how the ICC playing conditions handle several interruptions.' ),
@@ -147,7 +163,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'What if rain ends Team 1\'s innings early?', 'Add a Team 1 stoppage at the overs bowled when play stopped, with the wickets down, and enter every remaining over as overs lost. The calculator then treats Team 1\'s innings as finished and usually sets Team 2 a target above Team 1\'s score.' ),
 			array( 'Can I save or share a result?', 'Yes. The page address updates with your inputs, so the link reproduces the same result. Use the WhatsApp button, copy the link, or print the page with the par table for the scorers.' ),
 		),
-		'dls-target-calculator-t20' => array(
+		'dls-target-calculator-t20'  => array(
 			array( 'What is the minimum for a result in a T20?', 'Team 2 must be able to face at least 5 overs for a result in a 20-over match. If rain cuts the chase below 5 overs, there is no result unless Team 2 has already passed the target or been bowled out.' ),
 			array( 'How do I read the T20 par score table?', 'Find the completed overs down the left and the wickets Team 2 has lost across the top. If play stops for good at that point, Team 2 wins with more runs than that number and the match is tied on it.' ),
 			array( 'Do the IPL, PSL and T20 World Cup use DLS?', 'Yes, all three use Duckworth-Lewis-Stern. Their official targets come from the Professional Edition software, so they can differ from this Standard Edition calculator by a run or two in some situations.' ),
@@ -155,7 +171,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Does this work for T10 and other short formats?', 'Yes. Set the overs per side to any number from 5 to 20, such as 10 for a T10 match. The minimum overs for a result in T10 leagues are set by each competition, so check its playing conditions.' ),
 			array( 'Why does a 15-over chase not need three quarters of the runs?', 'Team 2 keeps all 10 wickets for fewer overs, so it can bat more aggressively. A 15-over innings is worth 45.2% against 56.6% for 20 overs, about 80% of the resources, so the target falls to about 80% of the score.' ),
 		),
-		'dls-par-score-table'       => array(
+		'dls-par-score-table'        => array(
 			array( 'What is a DLS par score?', 'It is the score Team 2 needs at a given point of the chase to be level with Team 1 under DLS. If play stops for good there, Team 2 wins with more runs than the par score and the match is tied on it.' ),
 			array( 'How is the par score table calculated?', 'Each cell takes the resources Team 2 has used by that over with that many wickets down, divides them by Team 1\'s resources and multiplies by Team 1\'s score, rounded down. All values come from the ICC Standard Edition table.' ),
 			array( 'Why does the par score rise so much with wickets?', 'Wickets are resources too. A team that is 4 down has less batting left than a team that is 1 down after the same overs, so it is judged to have used more of its resources and must have scored more to be ahead.' ),
@@ -163,7 +179,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Can I use the table for an ODI?', 'Yes. Choose 50 overs and enter Team 1\'s score to get the par after every over from 1 to 49, for 0 to 9 wickets down. Shorter matches from 5 overs upwards work the same way.' ),
 			array( 'What if Team 1\'s innings was interrupted?', 'This table assumes Team 1 batted its full overs. If Team 1 lost overs or Team 2\'s chase has already been cut, use the <a href="' . $calc . '">DLS calculator</a>, which gives the par table for the rest of the chase after every stoppage.' ),
 		),
-		'net-run-rate-calculator'   => array(
+		'net-run-rate-calculator'    => array(
 			array( 'What is a good net run rate?', 'Anything above zero means a team scores faster than its opponents do against it. In a tight group a gap of 0.1 can decide who qualifies, and anything above +1.000 after a few matches is a strong position.' ),
 			array( 'What happens to NRR when a team is bowled out?', 'The full quota of overs is counted, not the overs the team actually faced. A team bowled out for 120 in 15 overs of a T20 is counted as 120 runs in 20 overs. If rain cut the match, the overs that side was given count instead, so enter them in "Overs per side in this match". Tick "all out" on a match and the calculator does this for you.' ),
 			array( 'How does DLS affect net run rate?', 'When a match finishes after DLS has changed the target, Team 1 is credited with the target minus one run, off the overs Team 2 was given. If the match is abandoned but DLS decides a result, Team 1 is credited with Team 2\'s par score off the overs Team 2 actually faced. Enter those figures for Team 1 in the match row.' ),
@@ -173,7 +189,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Why is my answer different from the official table?', 'Check that overs are written as overs and balls (19.4, not 19.67), that a side bowled out has its full quota, and that no-result matches are left out. Official tables round to three decimals, as this calculator does.' ),
 			array( 'Is my points table saved?', 'Yes, on this device only. The page keeps your table in the browser, so it is there when you come back after the next match. Nothing you type is sent to us. Use the share link to send the same table to someone else.' ),
 		),
-		'run-rate-calculator'       => array(
+		'run-rate-calculator'        => array(
 			array( 'What is a good run rate in T20 cricket?', 'Around 8 to 9 runs an over is a par score in most T20 leagues today, and above 10 is a fast innings. In ODIs, 5.5 to 6 an over is typical, with the fastest innings going well past 7.' ),
 			array( 'What is the required run rate formula?', 'Required run rate = runs needed ÷ overs left. Runs needed is the target minus the runs scored, and overs left are counted in balls, so 44 balls left is 7.33 overs, not 7.4.' ),
 			array( 'What is the difference between run rate and net run rate?', 'Run rate is how fast one team scores in one innings. <a href="' . $nrr . '">Net run rate</a> compares a team\'s scoring rate with its opponents\' rate across a whole tournament, and is used to separate teams level on points.' ),
@@ -181,7 +197,23 @@ function dlscalc_faqs( $slug ) {
 			array( 'How is the projected score worked out?', 'Projected score = runs so far + run rate × overs left. The calculator shows it at the current rate and at 1, 2 and 3 runs an over faster, plus a few fixed rates, rounded to the nearest run.' ),
 			array( 'What if rain changes the target?', 'Use the revised DLS target from the <a href="' . $calc . '">DLS calculator</a> as the target here, and the reduced overs per side. The required run rate is then worked out for the new chase.' ),
 		),
-		'live-dls-par-score'        => array(
+		'strike-rate-calculator'     => array(
+			array( 'How do you calculate strike rate in cricket?', 'Strike rate = runs scored ÷ balls faced × 100. A batter who makes 45 off 30 balls has a strike rate of 150.00, which means 150 runs for every 100 balls at that pace.' ),
+			array( 'How is batting average calculated?', 'Batting average = runs ÷ times out, and times out = innings minus not outs. 182 runs in 5 innings with 1 not out is 182 ÷ 4 = 45.50. Dividing by innings gives the runs per innings instead.' ),
+			array( 'Do wides and no-balls count as balls faced?', 'No-balls do, because the batter can score off them and any runs hit off a no-ball go to the batter. Wides do not count as balls faced, and the runs from wides are extras, not the batter\'s runs.' ),
+			array( 'What is a good strike rate in T20 cricket?', 'For a top-order batter in professional T20 cricket, 125 to 140 is typical and 150 or more is fast. In ODIs 80 to 95 is typical, and in Tests 45 to 60. Club and tennis ball cricket each have their own levels.' ),
+			array( 'What is the average of a batter who has never been out?', 'There is none yet: the average divides by the number of dismissals, and with no dismissals it cannot be worked out. Scorecards show it as a dash, and the calculator says "None yet" until the batter is out once.' ),
+			array( 'Is bowling strike rate the same thing?', 'No. A bowler\'s strike rate is the balls bowled per wicket taken, so lower is better. The <a href="' . esc_url( dlscalc_page_url( 'bowling-average-calculator' ) ) . '">bowling average calculator</a> works it out with the economy rate.' ),
+		),
+		'bowling-average-calculator' => array(
+			array( 'How do you calculate bowling average?', 'Bowling average = runs conceded ÷ wickets taken. 212 runs for 9 wickets is an average of 23.56. Lower is better, and a bowler with no wickets has no average yet.' ),
+			array( 'How do you calculate economy rate in cricket?', 'Economy rate = runs conceded ÷ overs bowled, with the overs counted in balls. 38.4 overs is 232 balls, or 38.67 overs, so 212 runs is an economy rate of 5.48, not 5.52.' ),
+			array( 'What is bowling strike rate?', 'It is the balls bowled per wicket: balls ÷ wickets. 232 balls for 9 wickets is a strike rate of 25.8, a wicket roughly every four overs. Lower is better.' ),
+			array( 'Do wides and no-balls count in a bowler\'s figures?', 'Yes. The runs from wides and no-balls are charged to the bowler, but these are not legal balls, so they do not count in the overs. Byes and leg byes are not charged to the bowler.' ),
+			array( 'Does a run out count as a bowler\'s wicket?', 'No. The bowler is credited only for bowled, caught, leg before wicket, stumped and hit wicket. Run outs and the other ways of getting out go in the team\'s total but not in the bowler\'s wickets.' ),
+			array( 'What is a good economy rate in T20 cricket?', 'In professional T20 cricket an economy rate under 7.5 an over is good and under 7 is excellent. In ODIs under 5 is good, and in Tests under 3.' ),
+		),
+		'live-dls-par-score'         => array(
 			array( 'What does the live DLS par score mean?', 'It is the score the chasing team needs at that moment to be level under DLS if play never resumes. Above par, Team 2 would win; below par, Team 1 would win; exactly on par, the match is tied.' ),
 			array( 'How often should I update the score?', 'After every over is enough for most matches. When dark clouds arrive, add a row in the middle of the over too, like 12.3, so the par matches the exact ball when the umpires take the players off.' ),
 			array( 'Why does the par jump when a wicket falls?', 'Wickets are resources too. A team that loses a wicket has less batting left, so DLS judges that it has used more of its resources and must already have more runs to stay ahead.' ),
@@ -191,7 +223,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Does it work with no signal at the ground?', 'Yes. After you open DLSCalc once with a connection, your phone keeps the calculators, the par table and this tracker, so they open and work offline. On most phones you can also add DLSCalc to the home screen from the browser menu, and it opens like an app.' ),
 			array( 'Is this the same par that appears on TV?', 'International matches use the DLS Professional Edition, which runs on ICC software and is not published. This tracker uses the published Standard Edition, so the par is usually the same and sometimes differs by a run or two.' ),
 		),
-		'dls-method'                => array(
+		'dls-method'                 => array(
 			array( 'Why is DLS used instead of the average run rate?', 'Run rate ignores wickets. A team on 100 for 0 and a team on 100 for 8 after 20 overs are in very different positions, and DLS accounts for that by treating wickets in hand as part of a team\'s resources.' ),
 			array( 'Is DLS used in T20 cricket?', 'Yes. The ICC uses one version of DLS for every limited-overs format, including T20 internationals, the IPL, the PSL and the T20 World Cup. A full 20-over innings is 56.6% of the resources of a 50-over innings.' ),
 			array( 'Can the DLS target be higher than Team 1\'s score?', 'Yes. When Team 1 loses overs during its own innings but Team 2 gets more overs to bat, Team 2 has more resources, and the target is raised using G50.' ),
@@ -199,7 +231,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Why is a DLS target rounded down and then increased by one?', 'The formula gives the par score, which ties the match. It is rounded down to a whole run, and the target to win is one run more.' ),
 			array( 'Who invented the DLS method?', 'Frank Duckworth and Tony Lewis, two English statisticians, created the Duckworth-Lewis method in the 1990s. Steven Stern, an Australian statistics professor, updated it, and it became Duckworth-Lewis-Stern in 2014.' ),
 		),
-		'how-to-calculate-nrr'      => array(
+		'how-to-calculate-nrr'       => array(
 			array( 'What is a good net run rate?', 'Anything above zero means a team scores faster than its opponents. In tight groups a gap of 0.1 or less often decides who qualifies, so every run counts.' ),
 			array( 'Is NRR the same as run rate?', 'No. Run rate is how fast one innings is scored. Net run rate compares a team\'s scoring rate with its opponents\' rate across all its matches in a tournament.' ),
 			array( 'Why do overs like 17.3 matter so much?', 'Because 17.3 overs is 17.5 overs as a number, not 17.3. The digit after the point counts balls out of six. Using the wrong value is the most common NRR mistake.' ),
@@ -207,7 +239,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Does a bigger win always improve NRR more?', 'Usually, but how you win matters too. Chasing a target in fewer overs can lift NRR more than a similar winning margin batting first, because the overs you save count as much as the runs.' ),
 			array( 'Do super overs count in NRR?', 'No. Under ICC playing conditions only the runs and overs of the main match count towards net run rate, not a super over played to break a tie.' ),
 		),
-		'vjd-method'                => array(
+		'vjd-method'                 => array(
 			array( 'What is the full form of VJD in cricket?', 'VJD stands for V. Jayadevan, the Indian engineer from Thrissur, Kerala, who created the method. It is also called the Jayadevan system.' ),
 			array( 'Is the VJD method still used?', 'Yes, in BCCI domestic cricket in India. Match reports from 2026 show Vijay Hazare Trophy and BCCI age-group matches decided by VJD. International matches and the IPL use DLS.' ),
 			array( 'Which is better, VJD or DLS?', 'Neither has been shown to be clearly better in every situation. The ICC reviewed VJD in 2012 and kept Duckworth-Lewis, while the BCCI has kept VJD for its domestic matches.' ),

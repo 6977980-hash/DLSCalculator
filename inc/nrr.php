@@ -513,6 +513,186 @@ function dlscalc_nrr_run_rate( $p ) {
 }
 
 /**
+ * A career total such as runs or balls: a whole number up to 999999.
+ *
+ * @param mixed $s Value as typed.
+ * @return int|float NAN when invalid.
+ */
+function dlscalc_nrr_count( $s ) {
+	$s = trim( (string) $s );
+	return preg_match( '/^\d{1,6}$/', $s ) ? (int) $s : NAN;
+}
+
+/**
+ * Career overs such as "1043.2", up to 99999 overs, to balls.
+ *
+ * @param mixed $s Overs as typed.
+ * @return int|float NAN when invalid.
+ */
+function dlscalc_nrr_career_balls( $s ) {
+	$s = trim( (string) $s );
+	if ( ! preg_match( '/^\d{1,5}(\.\d)?$/', $s ) ) {
+		return NAN;
+	}
+	$p = explode( '.', $s );
+	$b = isset( $p[1] ) ? (int) $p[1] : 0;
+	return $b > 5 ? NAN : (int) $p[0] * 6 + $b;
+}
+
+/**
+ * Strike rate and batting average.
+ *
+ * @param array $p Inputs: r runs, b balls faced, i innings, o not outs, f fours, x sixes, g target strike rate.
+ * @return array
+ */
+function dlscalc_nrr_batting( $p ) {
+	$r  = dlscalc_nrr_count( $p['r'] ?? '' );
+	$b  = dlscalc_nrr_count( $p['b'] ?? '' );
+	$i  = dlscalc_dls_blank( $p['i'] ?? '' ) ? null : dlscalc_nrr_count( $p['i'] );
+	$o  = dlscalc_dls_blank( $p['o'] ?? '' ) ? 0 : dlscalc_nrr_count( $p['o'] );
+	$f  = dlscalc_dls_blank( $p['f'] ?? '' ) ? 0 : dlscalc_nrr_count( $p['f'] );
+	$x  = dlscalc_dls_blank( $p['x'] ?? '' ) ? 0 : dlscalc_nrr_count( $p['x'] );
+	$g  = dlscalc_dls_blank( $p['g'] ?? '' ) ? null : dlscalc_nrr_count( $p['g'] );
+	$na = function ( $v ) {
+		return is_float( $v ) && is_nan( $v );
+	};
+	if ( $na( $r ) ) {
+		return array(
+			'err'   => 'Enter the runs scored.',
+			'field' => 'r',
+		);
+	}
+	if ( $na( $b ) || $b < 1 ) {
+		return array(
+			'err'   => 'Enter the balls faced, at least 1.',
+			'field' => 'b',
+		);
+	}
+	if ( null !== $i && $na( $i ) ) {
+		return array(
+			'err'   => 'Innings must be a whole number.',
+			'field' => 'i',
+		);
+	}
+	if ( $na( $o ) || ( null !== $i && $o > $i ) ) {
+		return array(
+			'err'   => 'Not outs must be a whole number, no more than the innings.',
+			'field' => 'o',
+		);
+	}
+	if ( $na( $f ) || $na( $x ) ) {
+		return array(
+			'err'   => 'Fours and sixes must be whole numbers.',
+			'field' => $na( $f ) ? 'f' : 'x',
+		);
+	}
+	if ( $f * 4 + $x * 6 > $r || $f + $x > $b ) {
+		return array(
+			'err'   => 'The fours and sixes add up to more runs or balls than the batter had.',
+			'field' => 'f',
+		);
+	}
+	if ( null !== $g && ( $na( $g ) || $g < 1 || $g > 600 ) ) {
+		return array(
+			'err'   => 'Target strike rate must be between 1 and 600.',
+			'field' => 'g',
+		);
+	}
+	$sr      = $r * 100 / $b;
+	$outs    = null === $i ? null : $i - $o;
+	$avg     = $outs ? dlscalc_nrr_fx( $r / $outs, 2 ) : null;
+	$lines   = array();
+	$lines[] = array( 'Batting average', null !== $avg ? $avg : ( null === $i ? 'Add innings and not outs' : 'None yet: never out' ) );
+	$lines[] = array( 'Runs per ball', dlscalc_nrr_fx( $r / $b, 2 ) );
+	if ( $i ) {
+		$lines[] = array( 'Runs per innings', dlscalc_nrr_fx( $r / $i, 2 ) );
+	}
+	if ( $outs ) {
+		$lines[] = array( 'Balls per dismissal', dlscalc_nrr_fx( $b / $outs, 1 ) );
+	}
+	if ( $f + $x > 0 ) {
+		$lines[] = array( 'Runs in fours and sixes', ( $f * 4 + $x * 6 ) . ' (' . dlscalc_nrr_fx( ( $f * 4 + $x * 6 ) * 100 / $r, 1 ) . '%)' );
+		$lines[] = array( 'Balls per boundary', dlscalc_nrr_fx( $b / ( $f + $x ), 1 ) );
+	}
+	if ( null !== $g ) {
+		// Whole-number sum, so the rounding up is exact in both engines.
+		foreach ( array( 6, 12, 30 ) as $n ) {
+			$need    = max( 0, (int) ceil( ( $g * ( $b + $n ) - 100 * $r ) / 100 ) );
+			$lines[] = array( 'Strike rate ' . $g . ' after ' . $n . ' more balls', $need > 6 * $n ? 'Not possible: needs ' . $need . ' runs' : $need . ( 1 === $need ? ' run' : ' runs' ) . ' needed' );
+		}
+	}
+	return array(
+		'label' => 'Strike rate',
+		'big'   => dlscalc_nrr_fx( $sr, 2 ),
+		'sr'    => dlscalc_nrr_fx( $sr, 2 ),
+		'avg'   => $avg,
+		'outs'  => $outs,
+		'line'  => $r . ( 1 === $r ? ' run' : ' runs' ) . ' off ' . $b . ( 1 === $b ? ' ball' : ' balls' ) . ( null !== $avg ? ', average ' . $avg . ' (' . $outs . ( 1 === $outs ? ' dismissal)' : ' dismissals)' ) : '' ),
+		'lines' => $lines,
+	);
+}
+
+/**
+ * Bowling average, economy rate and bowling strike rate.
+ *
+ * @param array $p Inputs: o overs bowled, r runs conceded, k wickets, d dot balls.
+ * @return array
+ */
+function dlscalc_nrr_bowling( $p ) {
+	$b  = dlscalc_nrr_career_balls( $p['o'] ?? '' );
+	$r  = dlscalc_nrr_count( $p['r'] ?? '' );
+	$k  = dlscalc_dls_blank( $p['k'] ?? '' ) ? 0 : dlscalc_nrr_count( $p['k'] );
+	$d  = dlscalc_dls_blank( $p['d'] ?? '' ) ? null : dlscalc_nrr_count( $p['d'] );
+	$na = function ( $v ) {
+		return is_float( $v ) && is_nan( $v );
+	};
+	if ( $na( $b ) || $b < 1 ) {
+		return array(
+			'err'   => 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.',
+			'field' => 'o',
+		);
+	}
+	if ( $na( $r ) ) {
+		return array(
+			'err'   => 'Enter the runs conceded.',
+			'field' => 'r',
+		);
+	}
+	if ( $na( $k ) || $k > $b ) {
+		return array(
+			'err'   => 'Wickets must be a whole number, no more than the balls bowled.',
+			'field' => 'k',
+		);
+	}
+	if ( null !== $d && ( $na( $d ) || $d > $b ) ) {
+		return array(
+			'err'   => 'Dot balls must be a whole number, no more than the balls bowled.',
+			'field' => 'd',
+		);
+	}
+	$econ    = dlscalc_nrr_fx( $r * 6 / $b, 2 );
+	$avg     = $k ? dlscalc_nrr_fx( $r / $k, 2 ) : null;
+	$sr      = $k ? dlscalc_nrr_fx( $b / $k, 1 ) : null;
+	$lines   = array();
+	$lines[] = array( 'Economy rate', $econ );
+	$lines[] = array( 'Bowling strike rate', null !== $sr ? $sr : 'None yet: no wickets' );
+	$lines[] = array( 'Balls bowled', $b . ' (' . dlscalc_dls_overs( $b ) . ' overs)' );
+	$lines[] = array( 'Runs per ball', dlscalc_nrr_fx( $r / $b, 2 ) );
+	if ( null !== $d ) {
+		$lines[] = array( 'Dot balls', $d . ' (' . dlscalc_nrr_fx( $d * 100 / $b, 1 ) . '%)' );
+	}
+	return array(
+		'label' => $k ? 'Bowling average' : 'Economy rate',
+		'big'   => $k ? $avg : $econ,
+		'avg'   => $avg,
+		'econ'  => $econ,
+		'sr'    => $sr,
+		'line'  => $k . ( 1 === $k ? ' wicket' : ' wickets' ) . ' for ' . $r . ( 1 === $r ? ' run' : ' runs' ) . ' in ' . dlscalc_dls_overs( $b ) . ' overs' . ( $k ? ', economy ' . $econ : '' ),
+		'lines' => $lines,
+	);
+}
+
+/**
  * Overs and balls converter.
  *
  * @param array $p Inputs: v overs, j balls.

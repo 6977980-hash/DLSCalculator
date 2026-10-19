@@ -1,6 +1,6 @@
 # Keyword map (one owner page per keyword)
 
-Check this file before writing a new page, a title, an H1 or a new H2 section. Updated 19 October 2026.
+Check this file before writing a new page, a title, an H1 or a new H2 section. Updated 19 October 2026 (stats pages added, audit F16).
 Volumes are Google Keyword Planner averages per month, Oct 2025 to Sep 2026 (global / Pakistan + India + Bangladesh), from `/mnt/project-files/keywords/`.
 
 ## Rules
@@ -23,6 +23,8 @@ Volumes are Google Keyword Planner averages per month, Oct 2025 to Sep 2026 (glo
 | `/net-run-rate-calculator/` | **net run rate calculator** | nrr calculator (5K), nrr calculator cricket / t20 / ipl / psl, qualification and scenario terms (cricket qualification calculator, how many runs to win to improve nrr, points table calculator, t20 world cup / ipl / psl qualification scenarios) | 50K / 5K | net run rate formula, how to calculate nrr (summary + link only) |
 | `/run-rate-calculator/` | **run rate calculator cricket** | required run rate calculator (500), current run rate calculator (50), required run rate formula, projected score calculator, overs to balls calculator (50), rrr calculator | 5K / 500 | net run rate |
 | `/dls-method/` | **dls method** | how dls method works (500), dls method formula (500), how is dls target calculated (50), dls full form (5K), dls resource table / duckworth lewis table / dls table t20 / dls table 50 overs, dls minimum overs / dls rules, d/l vs dls | 50K / 50K | calculator terms |
+| `/strike-rate-calculator/` | **strike rate calculator cricket**, **batting average calculator cricket** | strike rate formula, batting average formula (not outs), runs per innings, balls per boundary, target strike rate, good strike rate T20 / ODI / Test | 500 / 500 each | bowling strike rate (one sentence + link to the bowling page) |
+| `/bowling-average-calculator/` | **bowling average calculator**, **economy rate calculator cricket** | bowling average formula, economy rate formula (overs in balls), bowling strike rate, dot ball %, which wickets count for the bowler, good figures by format | 500 / 500 and 50 / 50 | batting strike rate (link to the strike rate page) |
 | `/how-to-calculate-nrr/` | **how to calculate nrr** | net run rate formula (5K), nrr formula (5K), nrr full form (5K), what is nrr in cricket (5K) | 5K / 500 | net run rate calculator |
 | `/vjd-method/` | **vjd method** | vjd method in cricket (5K), vjd vs dls (50), jayadevan method | 5K / 5K | dls method |
 | `/famous-dls-matches/` | **famous dls matches** | dls controversy matches, famous rain-affected matches, dls calculator accuracy (official vs our target table) | no data | "dls calculator" in title or H1 |
@@ -41,10 +43,7 @@ Volumes are Google Keyword Planner averages per month, Oct 2025 to Sep 2026 (glo
 
 ## Free keywords for future pages (no owner yet)
 
-| Keyword | Volume | Suggested page |
-| --- | --- | --- |
-| strike rate calculator cricket, batting average calculator cricket | 500 / 500 | `/strike-rate-calculator/` (or one batting stats page) |
-| bowling average calculator, economy rate calculator cricket | 500, 50 | `/economy-rate-calculator/` (or one bowling stats page) |
+None left from the keyword research. The stats keywords got their pages in audit fix phase 4 (F16, 19 October 2026).
 
 ## Fixes made on 19 October 2026
 

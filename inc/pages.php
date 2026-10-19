@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DLSCALC_PAGES_VERSION', 5 );
+define( 'DLSCALC_PAGES_VERSION', 6 );
 
 /**
  * Pages the theme owns: slug => title. Content comes from theme templates, not the editor.

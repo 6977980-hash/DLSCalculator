@@ -19,13 +19,16 @@ if ( ! defined( 'ABSPATH' ) ) {
  * NRR calculator; t points table, y your team, v team to pass, o next opponent (0 = not in the
  * table), k bat first ("f") or chase ("c"), e score, h overs per side and d points for a win for
  * the scenario. Run rate page: u "c" chasing or "f" batting first, n overs per side, t target,
- * r runs so far, o overs bowled.
+ * r runs so far, o overs bowled. Strike rate page: r runs, b balls faced, i innings, o not outs,
+ * f fours, x sixes, g target strike rate. Bowling page: o overs, r runs conceded, k wickets,
+ * d dot balls. The stats pages have optional fields, so "blank" makes a link leave out what it
+ * does not carry instead of filling in the sample figures.
  *
- * @return array<string, array{tool: string, defaults: array<string, string>}>
+ * @return array<string, array{tool: string, blank?: bool, defaults: array<string, string>}>
  */
 function dlscalc_nrr_tools() {
 	return array(
-		'net-run-rate-calculator' => array(
+		'net-run-rate-calculator'    => array(
 			'tool'     => 'nrr',
 			'defaults' => array(
 				'u' => '',
@@ -41,7 +44,7 @@ function dlscalc_nrr_tools() {
 				'd' => '2',
 			),
 		),
-		'run-rate-calculator'     => array(
+		'run-rate-calculator'        => array(
 			'tool'     => 'runRate',
 			'defaults' => array(
 				'u' => 'c',
@@ -51,11 +54,34 @@ function dlscalc_nrr_tools() {
 				'o' => '12.4',
 			),
 		),
+		'strike-rate-calculator'     => array(
+			'tool'     => 'batting',
+			'blank'    => true,
+			'defaults' => array(
+				'r' => '182',
+				'b' => '140',
+				'i' => '5',
+				'o' => '1',
+				'f' => '18',
+				'x' => '6',
+				'g' => '150',
+			),
+		),
+		'bowling-average-calculator' => array(
+			'tool'     => 'bowling',
+			'blank'    => true,
+			'defaults' => array(
+				'o' => '38.4',
+				'r' => '212',
+				'k' => '9',
+				'd' => '130',
+			),
+		),
 	);
 }
 
 /**
- * Whether the current page is one of the NRR tool pages.
+ * Whether the current page is one of the NRR tool pages (NRR, run rate and the stats calculators).
  *
  * @return bool
  */
@@ -153,9 +179,13 @@ function dlscalc_nrr_teams_from_rows() {
  * @return array<string, string>
  */
 function dlscalc_nrr_inputs( $slug ) {
-	$in = dlscalc_nrr_tools()[ $slug ]['defaults'];
+	$tool = dlscalc_nrr_tools()[ $slug ];
+	$in   = $tool['defaults'];
 	if ( ! dlscalc_nrr_has_params() ) {
 		return $in;
+	}
+	if ( ! empty( $tool['blank'] ) ) {
+		$in = array_fill_keys( array_keys( $in ), '' );
 	}
 	$rows = array(
 		'x' => 'net-run-rate-calculator' === $slug ? dlscalc_nrr_matches_from_rows() : null,
@@ -176,7 +206,7 @@ function dlscalc_nrr_inputs( $slug ) {
  * @return bool
  */
 function dlscalc_nrr_has_params() {
-	foreach ( array( 'u', 'q', 'x', 't', 'y', 'v', 'o', 'k', 'e', 'h', 'd', 'n', 'r', 'j', 'x_rf', 't_n' ) as $key ) {
+	foreach ( array( 'u', 'q', 'x', 't', 'y', 'v', 'o', 'k', 'e', 'h', 'd', 'n', 'r', 'j', 'b', 'i', 'f', 'g', 'x_rf', 't_n' ) as $key ) {
 		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return true;
 		}
@@ -219,7 +249,7 @@ function dlscalc_nrr_permalink( $slug, $in ) {
  */
 
 /**
- * NRR engine and tool script, deferred, only on the NRR and run rate pages.
+ * NRR engine and tool script, deferred, only on the NRR, run rate and stats pages.
  */
 function dlscalc_nrr_scripts() {
 	if ( ! dlscalc_is_nrr_page() ) {
@@ -486,4 +516,64 @@ function dlscalc_nrr_solve_head( $s, $in ) {
 		return 'Qualification scenario';
 	}
 	return 'f' === $s['bat'] ? 'Batting first with ' . (int) $in['e'] . ', ' . $s['me'] . ' needs' : 'Chasing ' . ( (int) $in['e'] + 1 ) . ', ' . $s['me'] . ' needs';
+}
+
+/**
+ * One number input of a stats calculator, with its error message when the engine flags it.
+ *
+ * @param array  $r     Engine result.
+ * @param array  $in    Inputs.
+ * @param string $name  Parameter.
+ * @param string $label Field label.
+ * @param string $extra Extra input attributes (type, inputmode, min, placeholder).
+ */
+function dlscalc_stats_field( $r, $in, $name, $label, $extra = 'type="number" inputmode="numeric" min="0"' ) {
+	?>
+	<label class="fld"><?php echo esc_html( $label ); ?>
+		<input <?php echo $extra; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute strings from the templates. ?> name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $in[ $name ] ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $r, $name ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside. ?>>
+		<?php dlscalc_dls_field_err( $r, $name ); ?>
+	</label>
+	<?php
+}
+
+/**
+ * Share text for a stats result, the same in stats-page JS.
+ *
+ * @param array  $r    Engine result.
+ * @param string $name Calculator name for an error.
+ * @return string
+ */
+function dlscalc_stats_share( $r, $name ) {
+	return empty( $r['err'] ) ? $r['label'] . ': ' . $r['big'] . '. ' . $r['line'] . '.' : $name . ':';
+}
+
+/**
+ * Result panel of a stats calculator: headline number, one line and the table of other figures.
+ *
+ * @param array  $r     Engine result.
+ * @param string $slug  Page slug.
+ * @param array  $in    Inputs.
+ * @param string $label Headline label while the inputs have an error.
+ * @param string $name  Calculator name for the share text.
+ */
+function dlscalc_stats_result( $r, $slug, $in, $label, $name ) {
+	$err = $r['err'] ?? '';
+	?>
+	<aside class="result" id="result" aria-live="polite" aria-label="Result">
+		<p class="alert" data-out="err"<?php echo $err ? '' : ' hidden'; ?>><?php echo esc_html( $err ); ?></p>
+		<div>
+			<div class="result__label" data-out="label"><?php echo esc_html( $err ? $label : $r['label'] ); ?></div>
+			<div class="result__big" data-out="big"><?php echo esc_html( $err ? '–' : $r['big'] ); ?></div>
+			<div class="result__line" data-out="line"><?php echo esc_html( $err ? 'Check the inputs.' : $r['line'] ); ?></div>
+		</div>
+		<table class="result__table">
+			<tbody data-out="lines">
+				<?php foreach ( $err ? array() : $r['lines'] as $line ) : ?>
+					<tr><th scope="row"><?php echo esc_html( $line[0] ); ?></th><td><?php echo esc_html( $line[1] ); ?></td></tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+		<?php dlscalc_share_buttons( dlscalc_stats_share( $r, $name ), dlscalc_nrr_permalink( $slug, $in ) ); ?>
+	</aside>
+	<?php
 }
