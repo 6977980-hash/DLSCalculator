@@ -88,6 +88,14 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 	.xbtn { margin-left: auto; }
 }
 
+/* Answer bar on phones while the result panel is below the screen (audit F51) */
+.stick { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); background: var(--green); color: var(--cream); font-size: 16px; line-height: 1.3; text-decoration: none; box-shadow: 0 -2px 12px rgba(0, 0, 0, .25); }
+.stick[hidden] { display: none; }
+.stick:hover, .stick:focus { color: var(--cream); }
+.stick b { margin-right: 4px; font-family: var(--font-head); font-size: 28px; line-height: 1; color: var(--gold); }
+.stick__more { flex: none; font-weight: 700; text-decoration: underline; }
+.has-stick body { padding-bottom: 64px; }
+
 .embed-code { width: 100%; margin: 4px 0 12px; padding: 10px 12px; font: 13px/1.5 ui-monospace, monospace; color: var(--ink); background: #efebe0; border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
 .sheet { display: none; }
 

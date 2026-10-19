@@ -1,9 +1,10 @@
 /*!
- * DLSCalc service worker, served at /sw.js by inc/pwa.php (which fills in VERSION and PAGES).
+ * DLSCalc service worker, served at /sw.js by inc/pwa.php (which fills in VERSION, PAGES and LINKS).
  * Keeps the calculators working with no signal at the ground:
  * - on install it saves the calculator pages and the theme files they use;
  * - pages: network first, saved copy when offline (any ?inputs open the saved page); pages sent
- *   as private or no-store (a logged-in user's) are never saved;
+ *   as private or no-store (a logged-in user's) are never saved; a page that was never saved gets a
+ *   short "No signal" page listing the saved ones instead (audit F47);
  * - theme files with ?ver=: saved copy first; without one (fonts, icons, images): the saved copy at
  *   once, refreshed in the background, so a changed image shows on the next visit;
  * - one saved copy per file: a new ?ver= replaces the old one;
@@ -15,6 +16,7 @@
 
 var VERSION = '__VERSION__';
 var PAGES = __PAGES__;
+var LINKS = __LINKS__;
 var CACHE = 'dlscalc-' + VERSION;
 var THEME = '/wp-content/themes/dlscalc/';
 
@@ -27,6 +29,29 @@ function saveable(res) {
 function keep(cache, req, res) {
 	return cache.delete(new URL(req.url).pathname, { ignoreSearch: true }).then(function () {
 		return cache.put(req, res);
+	});
+}
+
+/** "No signal" page for a page that is not saved, listing the saved pages that work offline (audit F47). */
+function offlinePage() {
+	var esc = function (s) {
+		return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; });
+	};
+	return Promise.all(Object.keys(LINKS).map(function (url) {
+		return caches.match(url).then(function (hit) {
+			return hit ? '<li><a href="' + esc(url) + '">' + esc(LINKS[url]) + '</a></li>' : '';
+		});
+	})).then(function (items) {
+		var html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+			'<meta name="robots" content="noindex"><title>No signal | DLS Calculator</title><style>' +
+			'body{margin:0;font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f5f3ec;color:#10231c}' +
+			'main{max-width:34rem;margin:0 auto;padding:32px 16px}h1{font-size:1.6rem;line-height:1.25;margin:0 0 12px}' +
+			'ul{padding:0;list-style:none}li{margin:0 0 8px}a{display:block;padding:12px 14px;background:#fff;border:1px solid #dad6ca;border-radius:10px;color:#13452f;font-weight:600;text-decoration:none}' +
+			'@media (prefers-color-scheme:dark){body{background:#101814;color:#e4ece6}a{background:#18231d;border-color:#2b3b31;color:#7fd3a0}}' +
+			'</style></head><body><main><h1>No signal: this page is not saved on this phone yet</h1>' +
+			'<p>It opens again once you are back online. These pages work offline and keep calculating with no connection:</p>' +
+			'<ul>' + items.join('') + '</ul><p><a href="">Try again</a></p></main></body></html>';
+		return new Response(html, { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
 	});
 }
 
@@ -85,7 +110,7 @@ self.addEventListener('fetch', function (event) {
 			return res;
 		}).catch(function () {
 			return caches.match(url.pathname, { ignoreSearch: true }).then(function (hit) {
-				return hit || caches.match('/');
+				return hit || offlinePage();
 			});
 		}));
 		return;

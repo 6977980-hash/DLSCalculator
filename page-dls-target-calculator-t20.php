@@ -27,7 +27,7 @@ dlscalc_tool_page_open(
 dlscalc_par_sheet_head();
 ?>
 <div class="tool">
-	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="t20" novalidate>
+	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="t20" novalidate<?php echo dlscalc_dls_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<div class="fields">
 			<label class="fld">Overs per side at start
 				<input type="number" inputmode="numeric" min="5" max="20" name="n" value="<?php echo esc_attr( $dlscalc_in['n'] ); ?>" autocomplete="off">

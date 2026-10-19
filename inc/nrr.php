@@ -68,7 +68,7 @@ function dlscalc_nrr_cmp( $a, $b ) {
  * @return string
  */
 function dlscalc_nrr_overs_err( $label, $s, $fallback ) {
-	if ( preg_match( '/^(\d{1,5})\.(\d)a?$/', trim( (string) $s ), $m ) && (int) $m[2] > 5 ) {
+	if ( preg_match( '/^(\d{1,5})\.(\d)a?$/', dlscalc_dls_overs_in( $s ), $m ) && (int) $m[2] > 5 ) {
 		return $label . ': ' . $m[1] . '.' . $m[2] . ' is not valid. Balls after the dot go from 0 to 5, so after ' . $m[1] . '.5 comes ' . ( (int) $m[1] + 1 ) . '.';
 	}
 	return $fallback;
@@ -572,7 +572,7 @@ function dlscalc_nrr_count( $s ) {
  * @return int|float NAN when invalid.
  */
 function dlscalc_nrr_career_balls( $s ) {
-	$s = trim( (string) $s );
+	$s = dlscalc_dls_overs_in( $s );
 	if ( ! preg_match( '/^\d{1,5}(\.\d)?$/', $s ) ) {
 		return NAN;
 	}

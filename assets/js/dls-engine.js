@@ -48,9 +48,17 @@
 		return TABLE[wkts][Math.min(300, ballsLeft)] / 10;
 	}
 
+	/**
+	 * Overs as typed, tidied: a comma (some Android number pads have no dot) reads as the dot and a
+	 * trailing dot ("40.") is dropped (audit F55). Same in nrr-engine.js and dlscalc_dls_overs_in() in inc/dls.php.
+	 */
+	function oversIn(s) {
+		return String(s == null ? '' : s).trim().replace(',', '.').replace(/\.(a?)$/, '$1');
+	}
+
 	/** "32.4" (32 overs and 4 balls) to 196 balls. NaN if it is not a valid overs figure. */
 	function balls(s) {
-		s = String(s == null ? '' : s).trim();
+		s = oversIn(s);
 		if (!/^\d{1,3}(\.\d)?$/.test(s)) {
 			return NaN;
 		}
@@ -69,7 +77,7 @@
 	 * rule that balls after the dot go from 0 to 5 (audit F19).
 	 */
 	function oversHelp(label, s) {
-		var m = /^(\d{1,3})\.(\d)$/.exec(String(s == null ? '' : s).trim());
+		var m = /^(\d{1,3})\.(\d)$/.exec(oversIn(s));
 		if (m) {
 			return label + ': ' + m[0] + ' is not valid. Balls after the dot go from 0 to 5, so after ' + m[1] + '.5 comes ' + (parseInt(m[1], 10) + 1) + '.';
 		}

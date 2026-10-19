@@ -36,7 +36,7 @@ dlscalc_tool_page_open(
 );
 ?>
 <div class="tool">
-	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-form="rr" novalidate>
+	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-form="rr" novalidate<?php echo dlscalc_nrr_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<fieldset class="seg">
 			<legend class="screen-reader-text">Innings</legend>
 			<label><input type="radio" name="u" value="c"<?php checked( $dlscalc_chase ); ?>><span>Chasing a target</span></label>

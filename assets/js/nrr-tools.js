@@ -54,6 +54,64 @@
 	};
 
 	/**
+	 * A result link opened with no signal gets the page the service worker saved without inputs
+	 * (data-plain), so the form is filled from the address first, the way the server reads the link
+	 * online (audit F46). Returns a lookup of the address values (null when not in the link), or
+	 * null when there is nothing to fill.
+	 */
+	function linked(form, keys) {
+		if (!form.hasAttribute('data-plain') || !window.URLSearchParams) {
+			return null;
+		}
+		var q = new URLSearchParams(location.search);
+		if (!keys.some(function (k) { return q.has(k); })) {
+			return null;
+		}
+		return function (k) {
+			return q.has(k) ? q.get(k).trim().slice(0, 2000) : null;
+		};
+	}
+
+	/** Puts a link value in a text field, select or radio group (unknown radio values pick the first, as the server does). */
+	function setField(form, name, value) {
+		var el = form.elements[name];
+		if (!el || value === null) {
+			return;
+		}
+		if (!el.tagName) {
+			var radios = Array.prototype.slice.call(el);
+			(radios.filter(function (r) { return r.value === value; })[0] || radios[0]).checked = true;
+		} else if (el.tagName !== 'SELECT' || $$('option', el).some(function (o) { return o.value === value; })) {
+			el.value = value;
+		}
+	}
+
+	/** Replaces the filled rows before the spare one with one row per item, filled by fill(row, item). */
+	function fillRows(box, items, fill) {
+		var spare = $('.mrow--spare, .trow--spare', box);
+		$$(':scope > *', box).forEach(function (row) {
+			if (row !== spare) {
+				box.removeChild(row);
+			}
+		});
+		items.forEach(function (item) {
+			var row = spare.cloneNode(true);
+			row.classList.remove('mrow--spare', 'trow--spare');
+			fill(row, item);
+			box.insertBefore(row, spare);
+		});
+	}
+
+	var put = function (row, f, value) {
+		var el = $('[data-f="' + f + '"]', row);
+		if (el.type === 'checkbox') {
+			el.checked = !!value;
+		} else {
+			el.value = value;
+		}
+	};
+
+	/**
 	 * Rows that can be added and removed: drop the spare no-JS row, keep its markup for new rows.
 	 * onChange runs after any add or remove.
 	 */
@@ -174,6 +232,41 @@
 			});
 		};
 
+		var got = linked(calcForm, ['u', 'q', 'x', 't', 'y', 'v', 'o', 'k', 'e', 'h', 'd', 'z']);
+		if (got) {
+			setField(calcForm, 'q', got('q'));
+			if (got('x') !== null) {
+				fillRows(matchBox, got('x').split('_').filter(Boolean), function (row, part) {
+					var x = part.split('-'), extra = x.slice(4), of = x[1] || '', oa = x[3] || '';
+					put(row, 'rf', x[0] || '');
+					put(row, 'of', of.replace(/a$/, ''));
+					put(row, 'fa', /a$/.test(of));
+					put(row, 'ra', x[2] || '');
+					put(row, 'oa', oa.replace(/a$/, ''));
+					put(row, 'aa', /a$/.test(oa));
+					put(row, 'mo', extra.filter(function (e) { return e !== 'n' && e !== ''; })[0] || '');
+					put(row, 'nr', extra.indexOf('n') > -1);
+				});
+			}
+			if (got('t') !== null) {
+				fillRows(teamBox, NRR.parseTeams(got('t')), function (row, t) {
+					put(row, 'n', t.name);
+					Object.keys(t.raw).forEach(function (f) { put(row, f, t.raw[f]); });
+				});
+			}
+			syncPickers(NRR.parseTeams(teams()));
+			['y', 'v', 'o', 'k', 'e', 'h', 'd', 'z'].forEach(function (k) { setField(tableForm, k, got(k)); });
+			tab = got('u') === 't' ? 't' : 'c';
+			$$('[data-tab]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-tab') === tab ? 'true' : 'false'); });
+			$$('[data-pane]').forEach(function (pane) {
+				if (pane.getAttribute('data-pane') === tab) {
+					pane.removeAttribute('data-off');
+				} else {
+					pane.setAttribute('data-off', '');
+				}
+			});
+		}
+
 		var first = true;
 		function update() {
 			var p = params();
@@ -260,6 +353,10 @@
 	/* Run rate page ------------------------------------------------------------------------ */
 
 	function runRatePage(form, conv) {
+		var got = linked(form, ['u', 'n', 't', 'r', 'o']);
+		if (got) {
+			['u', 'n', 't', 'r', 'o'].forEach(function (k) { setField(form, k, got(k)); });
+		}
 		var params = function () {
 			var u = $('[name="u"]:checked', form);
 			return {
@@ -315,6 +412,11 @@
 	function statsPage(form, tool) {
 		var names = tool === 'batting' ? ['r', 'b', 'i', 'o', 'f', 'x', 'g'] : ['o', 'r', 'k', 'd'];
 		var title = tool === 'batting' ? 'Strike rate' : 'Bowling average';
+		// Fields left out of a link are blank, as on the server.
+		var got = linked(form, names);
+		if (got) {
+			names.forEach(function (n) { setField(form, n, got(n) === null ? '' : got(n)); });
+		}
 		var params = function () {
 			var p = {};
 			names.forEach(function (n) { p[n] = form.elements[n].value.trim(); });

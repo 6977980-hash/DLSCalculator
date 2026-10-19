@@ -58,7 +58,8 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `inc/llms.php` | Serves `/llms.txt` (built from the site's pages) and `/ads.txt` |
 | `inc/indexnow.php` | IndexNow for Bing and the other IndexNow engines: key file at `/<key>.txt`, and after a deploy (checked every 5 minutes from the theme files' modification times) a ping with the pages whose files changed, or every page when a shared file changed. The key file's `X-IndexNow-Last` header shows the last ping |
 | `docs/keyword-map.md` | One owner page per keyword. Check it before adding a page, title, H1 or section. Blocked from the web by `docs/.htaccess` |
-| `dev/tests/run.sh` | Engine tests: the ICC DLS worked examples plus NRR and run rate examples in JS and PHP, JS and PHP agreement on about 2,000 cases (DLS, live tracker, NRR, solver, run rate), and every table cell against the ICC table. Needs Node and PHP |
+| `dev/tests/run.sh` | Engine tests: the ICC DLS worked examples plus NRR and run rate examples in JS and PHP, JS and PHP agreement on about 2,000 cases (DLS, live tracker, NRR, solver, run rate), and every table cell against the ICC table. Also checks our result for 34 real rain-hit matches (`dev/tests/real-matches.json`, with the gap to the official target). Needs Node and PHP |
+| `dev/tests/e2e/` | Live-site browser tests: every tool driven like a visitor on phone and desktop, sharing, print, no-JS forms, offline mode, slow 3G (see its README). `.github/workflows/live-tests.yml` runs them and the engine tests after each push to `main` |
 | `dev/make-charts.mjs` | Redraws the SVG charts in `assets/img/dls/` from the engine (`node dev/make-charts.mjs`) |
 | `dev/make-images.mjs` | Regenerates the icons and Open Graph images (`node dev/make-images.mjs`, needs Playwright and Pillow; add slugs to redraw only those share images). Blocked from the web by `dev/.htaccess` |
 

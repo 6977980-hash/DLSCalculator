@@ -1,0 +1,30 @@
+# Tests the live site after each deploy. Hostinger deploys main on push, so this waits a few
+# minutes, then runs the engine tests and the browser tests against https://dlscalculator.com.
+# Also runs every morning and by hand (Actions > Live site tests > Run workflow).
+name: Live site tests
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Engine tests (ICC examples, JS vs PHP, real matches)
+        run: sh dev/tests/run.sh
+      - name: Install Playwright
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - name: Wait for the Hostinger deploy
+        if: github.event_name == 'push'
+        run: sleep 240
+      - name: Browser tests on the live site
+        run: node dev/tests/e2e/run.mjs https://dlscalculator.com

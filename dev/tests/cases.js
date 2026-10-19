@@ -23,7 +23,7 @@ icc.push(
 	{ fn: 'calc', p: { n: '50', r: '', g: '245' }, expect: { field: 'r' } },
 	{ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '40.6' }, expect: { field: 'c' } },
 	{ fn: 'calc', p: { n: '50', r: '250', g: '245', b: '12-1-10_22.9-3-2' }, expect: { field: 'b-2-at' } },
-	{ fn: 'calc', p: { n: '50', r: '250', g: '245', a: '20-3-1,5' }, expect: { field: 'a-1-lost', err: 'Team 1 stoppage 1, overs lost: write overs as 32.4 for 32 overs and 4 balls.' } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', a: '20-3-1:5' }, expect: { field: 'a-1-lost', err: 'Team 1 stoppage 1, overs lost: write overs as 32.4 for 32 overs and 4 balls.' } },
 	{ fn: 'calc', p: { n: '50', r: '250', g: '245', b: '30-2-5_20-3-5' }, expect: { field: 'b-2-at' } },
 	{ fn: 'parTable', p: { o: '20', r: '160', c: '15.6' }, expect: { field: 'c' } },
 	{ fn: 'live', p: { n: '20', r: '160', g: '245', x: '5.8-40-1' }, expect: { err: 'Score entry 1: 5.8 is not valid. Balls after the dot go from 0 to 5, so after 5.5 comes 6.' } }
@@ -181,5 +181,16 @@ cases.push({ fn: 'nrr.batting', p: { r: '20', b: '40', g: '700' } });
 cases.push({ fn: 'nrr.bowling', p: { o: '12.7', r: '50' } });
 cases.push({ fn: 'nrr.bowling', p: { o: '1', r: '5', k: '7' } });
 cases.push({ fn: 'nrr.bowling', p: { o: '10', r: '50', d: 'x' } });
+
+// Overs typed with a comma (Android number pads) or a trailing dot read as the same overs (audit F55).
+const NRRJS = require('../../assets/js/nrr-engine.js');
+cases.push({ fn: 'calc', p: { n: '50.', r: '250', g: '245', c: '50', b: '12,0-1-10.' }, expect: { R2: 86.8, target: 218, allot: 240 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '40,' }, expect: { allot: 240 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '40,7' }, expect: { field: 'c', err: 'Overs for Team 2 at the start of the chase: 40.7 is not valid. Balls after the dot go from 0 to 5, so after 40.5 comes 41.' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '5,3-40-1_10.-80-2' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-19,4-150-20._142-18.a-145-20' }, expect: { nrr: NRRJS.calc({ q: '20', x: '160-19.4-150-20_142-18a-145-20' }).nrr } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20,7-150-20' }, expect: { err: BALLS('Match 1, overs faced', '20.7') } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '181', r: '92', o: '12,4' }, expect: { big: NRRJS.runRate({ u: 'c', n: '20', t: '181', r: '92', o: '12.4' }).big } });
+cases.push({ fn: 'nrr.bowling', p: { o: '38,4', r: '212', k: '9' }, expect: { big: NRRJS.bowling({ o: '38.4', r: '212', k: '9' }).big } });
 
 process.stdout.write(JSON.stringify(cases));
