@@ -65,7 +65,7 @@
 			form.elements.c.value = got('c', '');
 			form.elements.g.value = got('g', '') === '200' ? '200' : '245';
 			var fmt = got('f', '');
-			form.elements.f.value = ['odi', 't20', 't10', 'custom'].indexOf(fmt) > -1 ? fmt : ({ 50: 'odi', 20: 't20', 10: 't10' }[form.elements.n.value] || 'custom');
+			form.elements.f.value = ['odi', 't20', 't20ko', 't10', 'custom'].indexOf(fmt) > -1 ? fmt : ({ 50: 'odi', 20: 't20', 10: 't10' }[form.elements.n.value] || 'custom');
 			$$('.lrow:not(.lrow--spare)', box).forEach(function (row) { box.removeChild(row); });
 			got('x', '').split('_').filter(Boolean).forEach(function (part) {
 				var row = spare.cloneNode(true), v = part.split('-');

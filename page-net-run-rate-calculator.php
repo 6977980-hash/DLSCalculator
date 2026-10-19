@@ -46,7 +46,7 @@ dlscalc_tool_page_open(
 					<input type="number" inputmode="numeric" min="1" max="50" name="q" value="<?php echo esc_attr( $dlscalc_in['q'] ); ?>" autocomplete="off">
 				</label>
 			</div>
-			<p class="hint">Enter every match your team has played. Write overs as 19.4 for 19 overs and 4 balls. If a side was bowled out, tick "all out" and its full quota of overs is counted.</p>
+			<p class="hint">Enter every match your team has played. Write overs as 19.4 for 19 overs and 4 balls. If a side was bowled out, tick "all out" and its full quota of overs is counted. For a no result, tick "No result"; its scores can stay blank.</p>
 			<?php dlscalc_nrr_match_rows( $dlscalc_in['x'] ); ?>
 			<div><button type="button" class="btn btn--line" data-add>+ Add match</button></div>
 			<div data-submit><button type="submit" class="btn btn--green">Calculate NRR</button></div>
@@ -63,7 +63,7 @@ dlscalc_tool_page_open(
 			</div>
 			<p class="result__line" data-out="cline"><?php echo esc_html( $dlscalc_cerr ? 'Check the inputs.' : $dlscalc_c['rf'] . ' runs in ' . dlscalc_dls_overs( $dlscalc_c['bf'] ) . ' overs against ' . $dlscalc_c['ra'] . ' in ' . dlscalc_dls_overs( $dlscalc_c['ba'] ) . ' overs, from ' . $dlscalc_c['counted'] . ( 1 === $dlscalc_c['counted'] ? ' match.' : ' matches.' ) ); ?></p>
 			<?php dlscalc_share_buttons( dlscalc_nrr_calc_share( $dlscalc_c ), $dlscalc_link ); ?>
-			<p class="result__note">ICC method: overs count in balls, a side bowled out counts its full quota, and no-result matches are left out.</p>
+			<p class="result__note">ICC method: overs count in balls, a side bowled out counts its full quota, and no-result matches are left out. <a href="<?php echo esc_url( dlscalc_page_url( 'contact' ) ); ?>">Found a wrong answer? Tell us.</a></p>
 		</section>
 	</div>
 	<section class="panel block">

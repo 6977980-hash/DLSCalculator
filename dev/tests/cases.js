@@ -78,12 +78,21 @@ for (let i = 0; i < 150; i++) {
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20-150-20_160-20-150-20' }, expect: { nrr: '+0.500' } });
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '168-20-151-20_142-18.3a-145-20' }, expect: { nrr: '+0.350', bf: 240 } });
 cases.push({ fn: 'nrr.calc', p: { q: '20', x: '120-15a-121-14.2_150-20-140-20-n' }, expect: { nrr: '-2.442', counted: 1 } });
+// A no result needs no complete scores: rain before Team 2 batted, or nothing typed (audit F63).
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '150-20-140-20_80-10---n' }, expect: { nrr: '+0.500', counted: 1 } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '150-20-140-20_80-10-0-0-n' }, expect: { nrr: '+0.500', counted: 1 } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '80-10---n' }, expect: { err: 'Enter at least one match with a result.' } });
 // Minimum overs go by format, not by the overs the match started with (audit F12): a 40-over ODI
 // still needs 20 overs for Team 2, a 15-over T20 still needs 5.
 const NO_RESULT = 'Team 2 can face fewer than 20 overs, so under ICC rules there is no result unless the match was already decided.';
 cases.push({ fn: 'calc', p: { n: '40', r: '220', g: '245', c: '40', b: '10-2-25', f: 'odi' }, expect: { allot: 90, warn: NO_RESULT } });
 cases.push({ fn: 'calc', p: { n: '40', r: '220', g: '245', c: '40', b: '10-2-25', f: 'custom' }, expect: { allot: 90, warn: '' } });
 cases.push({ fn: 'calc', p: { n: '40', r: '220', g: '245', c: '40', b: '10-2-15', f: 'odi' }, expect: { allot: 150, warn: '' } });
+// T20 knockouts such as the T20 World Cup semi-finals and final need 10 overs (audit F64).
+cases.push({ fn: 'calc', p: { n: '20', r: '160', g: '245', c: '8', f: 't20ko' }, expect: { allot: 48, warn: 'Team 2 can face fewer than 10 overs, so under ICC rules there is no result unless the match was already decided.' } });
+cases.push({ fn: 'calc', p: { n: '20', r: '160', g: '245', c: '8', f: 't20' }, expect: { allot: 48, warn: '' } });
+cases.push({ fn: 'calc', p: { n: '20', r: '160', g: '245', c: '10', f: 't20ko' }, expect: { allot: 60, warn: '' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', c: '8', f: 't20ko', x: '3-20-1' }, expect: { warn: 'Team 2 can face fewer than 10 overs, so under ICC rules there is no result unless the match was already decided.' } });
 cases.push({ fn: 'calc', p: { n: '50', r: '220', g: '245', c: '50', b: '10-2-35' }, expect: { warn: NO_RESULT } });
 cases.push({ fn: 't20', p: { n: '15', r: '130', l: '0', b: '3-1-11' }, expect: { allot: 24, warn: 'Team 2 can face fewer than 5 overs, so under ICC rules there is no result unless the match was already decided.' } });
 cases.push({ fn: 'live', p: { n: '40', r: '220', g: '245', c: '30', f: 'odi', x: '5-30-1' }, expect: { target: 186, warn: '' } });

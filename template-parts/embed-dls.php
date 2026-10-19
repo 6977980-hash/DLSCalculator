@@ -19,6 +19,7 @@ $dlscalc_warn = $dlscalc_err ? '' : dlscalc_embed_warn( $r['warn'] );
 $dlscalc_fmts = array(
 	'odi'    => 'ODI',
 	't20'    => 'T20',
+	't20ko'  => 'T20 knockout (10-over minimum)',
 	't10'    => 'T10',
 	'custom' => 'Other',
 );

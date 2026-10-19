@@ -24,6 +24,7 @@ $dlscalc_warn = $dlscalc_err ? '' : ( $dlscalc_last ? ( $dlscalc_last['warn'] ??
 $dlscalc_fmts = array(
 	'odi'    => 'ODI',
 	't20'    => 'T20',
+	't20ko'  => 'T20 knockout (10-over minimum)',
 	't10'    => 'T10',
 	'custom' => 'Other format',
 );
@@ -134,7 +135,7 @@ dlscalc_par_sheet_head();
 			<div class="stat"><span>Overs for Team 2</span><b data-out="t2overs"><?php echo esc_html( $dlscalc_err ? '–' : dlscalc_dls_overs( $dlscalc_r['allot'] ) ); ?></b></div>
 		</div>
 		<?php dlscalc_share_buttons( $dlscalc_share, dlscalc_dls_permalink( $dlscalc_slug, $dlscalc_in ) ); ?>
-		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. Rain during the chase changes the target: enter the stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>.</p>
+		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. Rain during the chase changes the target: enter the stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>. <a href="<?php echo esc_url( dlscalc_page_url( 'contact' ) ); ?>">Found a wrong answer? Tell us.</a></p>
 	</aside>
 </div>
 

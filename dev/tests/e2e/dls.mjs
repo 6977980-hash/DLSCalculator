@@ -161,6 +161,17 @@ export default [
 		}
 	},
 	{
+		name: 'dls calculator: T20 knockout needs 10 overs (audit F64)',
+		run: async ({ ctx, base }) => {
+			const page = await open(ctx, base + '/dls-calculator/');
+			await page.selectOption(`${form} [name=f]`, 't20ko');
+			eq(await page.inputValue(`${form} [name=n]`), '20', 'overs per side');
+			await page.fill(`${form} [name=r]`, '160');
+			await page.fill(`${form} [name=c]`, '8');
+			ok(/fewer than 10 overs/.test((await outs(page)).warn), 'knockout minimum overs warning');
+		}
+	},
+	{
 		name: 'home: quick box result and its link to the calculator agree',
 		run: async ({ ctx, base }) => {
 			const page = await open(ctx, base + '/');
