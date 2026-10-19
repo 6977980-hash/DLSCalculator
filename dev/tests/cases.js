@@ -13,6 +13,22 @@ const icc = [
 	{ fn: 'calc', p: { n: '50', r: '226', g: '245', c: '33', a: '47.1-8-2.5', b: '25-2-5' }, expect: { R2: 64.7, target: 158 } },
 ];
 
+// Penalty runs to Team 1 during the chase (ICC DLS 6.2) raise the target and every par; bad inputs
+// name their field, and overs like 12.7 get the 0-to-5 balls rule (audit F15, F19).
+icc.push(
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10', k: '5' }, expect: { R2: 86.8, par: 222, target: 223 } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_22-3-2_30.2-6-7.4', k: '5' }, expect: { par: 164, ended: true } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', k: '100' }, expect: { field: 'k' } },
+	{ fn: 'calc', p: { n: '12.7', r: '250', g: '245' }, expect: { field: 'n', err: 'Overs per side: 12.7 is not valid. Balls after the dot go from 0 to 5, so after 12.5 comes 13.' } },
+	{ fn: 'calc', p: { n: '50', r: '', g: '245' }, expect: { field: 'r' } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '40.6' }, expect: { field: 'c' } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', b: '12-1-10_22.9-3-2' }, expect: { field: 'b-2-at' } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', a: '20-3-1,5' }, expect: { field: 'a-1-lost', err: 'Team 1 stoppage 1, overs lost: write overs as 32.4 for 32 overs and 4 balls.' } },
+	{ fn: 'calc', p: { n: '50', r: '250', g: '245', b: '30-2-5_20-3-5' }, expect: { field: 'b-2-at' } },
+	{ fn: 'parTable', p: { o: '20', r: '160', c: '15.6' }, expect: { field: 'c' } },
+	{ fn: 'live', p: { n: '20', r: '160', g: '245', x: '5.8-40-1' }, expect: { err: 'Score entry 1: 5.8 is not valid. Balls after the dot go from 0 to 5, so after 5.5 comes 6.' } }
+);
+
 let seed = 20261019;
 const rnd = (n) => {
 	seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -38,7 +54,7 @@ for (let i = 0; i < 400; i++) {
 		return out.join('_');
 	};
 	const M = 6 + rnd(N - 5);
-	cases.push({ fn: 'calc', p: { n: ov(N), r: String(80 + rnd(300)), g: ['245', '200', '222.5'][rnd(3)], c: ov(M), a: stops(N), b: stops(M), f: ['', 'odi', 't20', 't10', 'custom', 'zz'][rnd(6)] } });
+	cases.push({ fn: 'calc', p: { n: ov(N), r: String(80 + rnd(300)), g: ['245', '200', '222.5'][rnd(3)], c: ov(M), a: stops(N), b: stops(M), f: ['', 'odi', 't20', 't10', 'custom', 'zz'][rnd(6)], k: ['', '', '', '5', '1', 'x'][rnd(6)] } });
 	cases.push({ fn: 't20', p: { n: String(5 + rnd(16)), r: String(60 + rnd(200)), l: String(rnd(16)), b: rnd(2) ? stops(60) : '' } });
 	cases.push({ fn: 'parTable', p: { o: String(5 + rnd(46)), r: String(60 + rnd(300)) } });
 }

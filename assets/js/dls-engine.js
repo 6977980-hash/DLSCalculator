@@ -64,6 +64,27 @@
 		return r ? o + '.' + r : String(o);
 	}
 
+	/**
+	 * Error for an overs figure that balls() could not read, naming the field: "12.7" gets the
+	 * rule that balls after the dot go from 0 to 5 (audit F19).
+	 */
+	function oversHelp(label, s) {
+		var m = /^(\d{1,3})\.(\d)$/.exec(String(s == null ? '' : s).trim());
+		if (m) {
+			return label + ': ' + m[0] + ' is not valid. Balls after the dot go from 0 to 5, so after ' + m[1] + '.5 comes ' + (parseInt(m[1], 10) + 1) + '.';
+		}
+		return label + ': write overs as 32.4 for 32 overs and 4 balls.';
+	}
+
+	/** An error result, with the input it belongs to (form field name, or "b-2-at" for a stoppage). */
+	function fail(err, field) {
+		return { err: err, field: field };
+	}
+
+	function blank(v) {
+		return v == null || String(v).trim() === '';
+	}
+
 	function int(s) {
 		s = String(s == null ? '' : s).trim();
 		return /^\d{1,4}$/.test(s) ? parseInt(s, 10) : NaN;
@@ -102,7 +123,7 @@
 		}
 		return String(str).split('_').slice(0, STOPS_MAX).map(function (part) {
 			var x = part.split('-');
-			return { at: balls(x[0]), w: int(x[1]), lost: balls(x[2]) };
+			return { at: balls(x[0]), w: int(x[1]), lost: balls(x[2]), atS: x[0] || '', lostS: x[2] || '' };
 		});
 	}
 
@@ -110,26 +131,32 @@
 	 * Resources for one innings, with stoppages in order. Each stoppage takes away the resources
 	 * between the overs left before and after it, at the wickets down when it happened.
 	 */
-	function innings(startB, stops, label) {
+	function innings(startB, stops, label, key) {
 		var allot = startB, R = res(startB, 0);
 		var steps = [label + ' starts with ' + overs(startB) + ' overs and 10 wickets: ' + f1(R) + '% of resources.'];
 		for (var i = 0; i < stops.length; i++) {
-			var st = stops[i], name = label + ' stoppage ' + (i + 1);
+			var st = stops[i], name = label + ' stoppage ' + (i + 1), f = key + '-' + (i + 1) + '-';
+			if (isNaN(st.at) && !blank(st.atS)) {
+				return fail(oversHelp(name + ', overs bowled', st.atS), f + 'at');
+			}
+			if (isNaN(st.lost) && !blank(st.lostS)) {
+				return fail(oversHelp(name + ', overs lost', st.lostS), f + 'lost');
+			}
 			if (isNaN(st.at) || isNaN(st.w) || isNaN(st.lost)) {
-				return { err: name + ': fill in overs bowled, wickets down and overs lost (overs like 32.4).' };
+				return fail(name + ': fill in overs bowled, wickets down and overs lost (overs like 32.4).', f + (isNaN(st.at) ? 'at' : (isNaN(st.w) ? 'w' : 'lost')));
 			}
 			if (i > 0 && (st.at < stops[i - 1].at || st.w < stops[i - 1].w)) {
-				return { err: label + ' stoppages must be entered in the order they happened.' };
+				return fail(label + ' stoppages must be entered in the order they happened.', f + (st.at < stops[i - 1].at ? 'at' : 'w'));
 			}
 			var left = allot - st.at;
 			if (st.at <= 0 || left <= 0) {
-				return { err: name + ' must come before the end of the innings (' + overs(allot) + ' overs).' };
+				return fail(name + ' must come before the end of the innings (' + overs(allot) + ' overs).', f + 'at');
 			}
 			if (st.w > 9) {
-				return { err: name + ': wickets down must be 0 to 9.' };
+				return fail(name + ': wickets down must be 0 to 9.', f + 'w');
 			}
 			if (st.lost <= 0 || st.lost > left) {
-				return { err: name + ': overs lost must be more than 0 and no more than ' + overs(left) + '.' };
+				return fail(name + ': overs lost must be more than 0 and no more than ' + overs(left) + '.', f + 'lost');
 			}
 			var before = res(left, st.w), after = res(left - st.lost, st.w);
 			R -= before - after;
@@ -162,29 +189,35 @@
 	/**
 	 * A whole match. o: { N: balls per side at start, S: Team 1 score, G: G50, t1: Team 1 stoppages,
 	 * M: Team 2 balls at start of its innings, t2: Team 2 stoppages, note: optional extra step,
-	 * F: optional format for the minimum overs, see minBalls() }.
+	 * F: optional format for the minimum overs, see minBalls(), P: optional penalty runs awarded to
+	 * Team 1 during the chase, which raise the target and every par score (ICC DLS section 6.2) }.
 	 */
 	function match(o) {
-		var a = innings(o.N, o.t1, 'Team 1');
+		var a = innings(o.N, o.t1, 'Team 1', 'a');
 		if (a.err) {
 			return a;
 		}
-		var b = innings(o.M, o.t2, 'Team 2');
+		var b = innings(o.M, o.t2, 'Team 2', 'b');
 		if (b.err) {
 			return b;
 		}
-		var raw = scale(o.S, b.R, a.R, o.G), par = floorPar(raw);
+		var P = o.P || 0, raw = scale(o.S, b.R, a.R, o.G), base = floorPar(raw), par = base + P;
 		var formula = b.R <= a.R ?
 			'R2 is not more than R1, so par = ' + o.S + ' × ' + f1(b.R) + ' ÷ ' + f1(a.R) + ' = ' + f2(raw) :
 			'R2 is more than R1, so par = ' + o.S + ' + ' + o.G + ' × (' + f1(b.R) + ' − ' + f1(a.R) + ') ÷ 100 = ' + f2(raw);
-		formula += b.ended ?
-			', rounded down to ' + par + '. Team 2 wins if they scored more than ' + par + ' and the match is tied on ' + par + '.' :
-			', rounded down to ' + par + '. Target = ' + par + ' + 1 = ' + (par + 1) + '.';
+		var result = b.ended ?
+			'Team 2 wins if they scored more than ' + par + ' and the match is tied on ' + par + '.' :
+			'Target = ' + par + ' + 1 = ' + (par + 1) + '.';
+		var penalty = P ? 'Team 1 was awarded ' + P + ' penalty ' + (P === 1 ? 'run' : 'runs') + ' during the chase, so the par score and every par in the table go up by ' + P + ' (ICC DLS rules, section 6.2): par = ' + base + ' + ' + P + ' = ' + par + '. ' + result : '';
+		formula += ', rounded down to ' + base + '.' + (P ? '' : ' ' + result);
 		var steps = a.steps.concat(['Team 1 resources, R1 = ' + f1(a.R) + '%.']);
 		if (o.note) {
 			steps.push(o.note);
 		}
 		steps = steps.concat(b.steps, ['Team 2 resources, R2 = ' + f1(b.R) + '%.', formula]);
+		if (P) {
+			steps.push(penalty);
+		}
 
 		var minB = minBalls(o.N, o.F), warn = '';
 		if (minB && (b.ended ? b.lastAt : b.allot) < minB) {
@@ -192,12 +225,12 @@
 		}
 		return {
 			N: o.N, F: o.F || '', S: o.S, G: o.G, M: o.M, R1: a.R, R2: b.R, raw: c2(raw), par: par, target: par + 1,
-			allot: b.allot, lastAt: b.lastAt, ended: b.ended, steps: steps, warn: warn, rows: parRows(o.S, a.R, o.G, b)
+			allot: b.allot, lastAt: b.lastAt, ended: b.ended, steps: steps, warn: warn, rows: parRows(o.S, a.R, o.G, b, P)
 		};
 	}
 
-	/** Par after each completed over left in the chase, for 0 to 9 wickets down. */
-	function parRows(S, R1, G, b) {
+	/** Par after each completed over left in the chase, for 0 to 9 wickets down, plus penalty runs P. */
+	function parRows(S, R1, G, b, P) {
 		var rows = [];
 		if (b.ended) {
 			return rows;
@@ -205,7 +238,7 @@
 		for (var ov = Math.max(1, Math.ceil(b.lastAt / 6)); ov * 6 < b.allot; ov++) {
 			var cells = [];
 			for (var w = 0; w < 10; w++) {
-				cells.push(floorPar(scale(S, r1(b.R - res(b.allot - ov * 6, w)), R1, G)));
+				cells.push(floorPar(scale(S, r1(b.R - res(b.allot - ov * 6, w)), R1, G)) + (P || 0));
 			}
 			rows.push({ over: ov, cells: cells });
 		}
@@ -214,49 +247,59 @@
 
 	function check(S, G) {
 		if (isNaN(S)) {
-			return 'Enter Team 1\'s final score.';
+			return fail('Enter Team 1\'s final score.', 'r');
 		}
 		if (S > 999) {
-			return 'Team 1\'s score looks too high. Enter runs only.';
+			return fail('Team 1\'s score looks too high. Enter runs only.', 'r');
 		}
 		if (!(G > 0 && G <= 500)) {
-			return 'Enter a G50 value between 1 and 500, for example 245.';
+			return fail('Enter a G50 value between 1 and 500, for example 245.', 'g');
 		}
-		return '';
+		return null;
 	}
 
 	/**
 	 * DLS Calculator page. p: { n: overs per side, r: Team 1 runs, g: G50, c: Team 2 overs at the start
-	 * of the chase, a: Team 1 stops, b: Team 2 stops, f: format "odi", "t20", "t10" or "custom" }. Short names that WordPress does not use itself
-	 * (it treats s, m and w as its own query variables).
+	 * of the chase, a: Team 1 stops, b: Team 2 stops, f: format "odi", "t20", "t10" or "custom",
+	 * k: penalty runs awarded to Team 1 during the chase }. Short names that WordPress does not use
+	 * itself (it treats s, m, p and w as its own query variables).
 	 */
 	function calc(p) {
-		var N = balls(p.n), S = int(p.r);
+		var N = balls(p.n), S = int(p.r), P = blank(p.k) ? 0 : int(p.k);
 		var G = /^\d{1,3}(\.\d{1,2})?$/.test(String(p.g == null ? '' : p.g).trim()) ? parseFloat(p.g) : NaN;
-		var M = (p.c == null || String(p.c).trim() === '') ? N : balls(p.c);
+		var M = blank(p.c) ? N : balls(p.c);
+		if (isNaN(N) && !blank(p.n)) {
+			return fail(oversHelp('Overs per side', p.n), 'n');
+		}
 		if (isNaN(N) || N < 6 || N > 300) {
-			return { err: 'Overs per side must be between 1 and 50.' };
+			return fail('Overs per side must be between 1 and 50.', 'n');
 		}
 		var e = check(S, G);
 		if (e) {
-			return { err: e };
+			return e;
 		}
-		if (isNaN(M) || M < 1 || M > N) {
-			return { err: 'Overs for Team 2 at the start of the chase must be between 0.1 and ' + overs(N) + '.' };
+		if (isNaN(M)) {
+			return fail(oversHelp('Overs for Team 2 at the start of the chase', p.c), 'c');
+		}
+		if (M < 1 || M > N) {
+			return fail('Overs for Team 2 at the start of the chase must be between 0.1 and ' + overs(N) + '.', 'c');
+		}
+		if (isNaN(P) || P > 99) {
+			return fail('Penalty runs must be a whole number from 0 to 99.', 'k');
 		}
 		var F = ['odi', 't20', 't10', 'custom'].indexOf(p.f) > -1 ? p.f : '';
-		return match({ N: N, S: S, G: G, t1: parseStops(p.a), M: M, t2: parseStops(p.b), F: F });
+		return match({ N: N, S: S, G: G, t1: parseStops(p.a), M: M, t2: parseStops(p.b), F: F, P: P });
 	}
 
 	/** T20 page. p: { n: overs per side (5 to 20), r: Team 1 runs, l: overs lost before the chase, b: chase stops }. */
 	function t20(p) {
 		var No = int(p.n), S = int(p.r), L = int(p.l);
 		if (isNaN(No) || No < 5 || No > 20) {
-			return { err: 'Overs per side must be between 5 and 20.' };
+			return fail('Overs per side must be between 5 and 20.', 'n');
 		}
 		var e = check(S, 245);
 		if (e) {
-			return { err: e };
+			return e;
 		}
 		L = isNaN(L) ? 0 : Math.min(L, No - 5);
 		var r = match({
@@ -280,15 +323,18 @@
 	function parTable(p) {
 		var No = int(p.o), S = int(p.r);
 		if (isNaN(No) || No < 5 || No > 50) {
-			return { err: 'Overs per side must be between 5 and 50.' };
+			return fail('Overs per side must be between 5 and 50.', 'o');
 		}
 		var e = check(S, 245);
 		if (e) {
-			return { err: e };
+			return e;
 		}
-		var M = (p.c == null || String(p.c).trim() === '') ? No * 6 : balls(p.c);
-		if (isNaN(M) || M < 6 || M > No * 6) {
-			return { err: 'Overs for Team 2 must be between 1 and ' + No + '.' };
+		var M = blank(p.c) ? No * 6 : balls(p.c);
+		if (isNaN(M)) {
+			return fail(oversHelp('Overs for Team 2', p.c), 'c');
+		}
+		if (M < 6 || M > No * 6) {
+			return fail('Overs for Team 2 must be between 1 and ' + No + '.', 'c');
 		}
 		var r = match({ N: No * 6, S: S, G: 245, t1: [], M: M, t2: [] });
 		r.No = No;
@@ -311,6 +357,9 @@
 			var x = parts[i].split('-'), at = balls(x[0]), runs = int(x[1]), w = int(x[2]), name = 'Score entry ' + (i + 1);
 			if (x.join('') === '') {
 				continue;
+			}
+			if (isNaN(at) && !blank(x[0])) {
+				return { err: oversHelp(name, x[0]) };
 			}
 			if (isNaN(at) || isNaN(runs) || isNaN(w)) {
 				return { err: name + ': fill in overs, runs and wickets (overs like 12.3).' };
@@ -351,7 +400,7 @@
 	}
 
 	return {
-		res: res, balls: balls, overs: overs, scale: scale, innings: innings, match: match,
+		res: res, balls: balls, overs: overs, oversHelp: oversHelp, scale: scale, innings: innings, match: match,
 		parRows: parRows, parseStops: parseStops, calc: calc, t20: t20, parTable: parTable, live: live, STOPS_MAX: STOPS_MAX, LIVE_MAX: LIVE_MAX
 	};
 }));

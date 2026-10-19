@@ -120,3 +120,8 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 	.par { min-width: 0; }
 	.par thead th { position: static; color: #000; background: #eee; }
 }
+
+/* Field errors and scenario buttons */
+.fld__err { font-size: 14px; font-weight: 600; color: #8a1c12; }
+.fld input[aria-invalid="true"] { border: 2px solid #b3261e; }
+.scenarios { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 18px; }

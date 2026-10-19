@@ -76,7 +76,7 @@ function dlscalc_llms_txt() {
 		'',
 		'Each calculator reads its inputs from the address, so a link opens the worked result:',
 		'',
-		'- DLS calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, optional `f` format (`odi`, `t20`, `t10`, `custom`) for the minimum overs. Example: ' . dlscalc_page_url( 'dls-calculator' ) . '?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2 (Team 2 stopped at 12 overs, 1 wicket down, 10 overs lost; then at 22 overs, 3 down, 2 overs lost).',
+		'- DLS calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, optional `f` format (`odi`, `t20`, `t10`, `custom`) for the minimum overs, optional `k` penalty runs awarded to Team 1 during the chase (they raise the target and every par score). Example: ' . dlscalc_page_url( 'dls-calculator' ) . '?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2 (Team 2 stopped at 12 overs, 1 wicket down, 10 overs lost; then at 22 overs, 3 down, 2 overs lost).',
 		'- T20 DLS target: `n`, `r`, `l` overs lost before the chase, `b`. Example: ' . dlscalc_page_url( 'dls-target-calculator-t20' ) . '?n=20&r=180&l=5',
 		'- DLS par score table: `o` overs per side, `r` Team 1 runs. Example: ' . dlscalc_page_url( 'dls-par-score-table' ) . '?o=20&r=160',
 		'- Net run rate: `q` overs per side, `x` matches as `scored-overs-conceded-overs` joined with `_` (add `a` after overs for all out, `-15` for a match cut to 15 overs a side, `-n` for a no result). Example: ' . dlscalc_page_url( 'net-run-rate-calculator' ) . '?q=20&x=180-20-150-20_140-18.3-145-20',

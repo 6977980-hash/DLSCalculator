@@ -440,7 +440,8 @@ add_filter(
 
 /**
  * Author, date, category, tag and attachment archives are thin duplicate pages on a site like this;
- * send them home (attachments to their parent).
+ * send them home (attachments to their parent). Runs before WordPress's own canonical redirect,
+ * which would otherwise send ?author=1 to /author/<username>/ and give the login name away.
  */
 function dlscalc_redirect_thin_archives() {
 	if ( is_author() || is_date() || is_category() || is_tag() ) {
@@ -453,4 +454,4 @@ function dlscalc_redirect_thin_archives() {
 		exit;
 	}
 }
-add_action( 'template_redirect', 'dlscalc_redirect_thin_archives' );
+add_action( 'template_redirect', 'dlscalc_redirect_thin_archives', 1 );
