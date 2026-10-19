@@ -1,0 +1,15 @@
+/*
+Theme Name:   DLSCalc
+Theme URI:    https://dlscalculator.com/
+Description:  Child theme for dlscalculator.com: DLS, T20 DLS target, net run rate and run rate calculators. Requires the GeneratePress parent theme.
+Author:       Ch Alee
+Template:     generatepress
+Version:      0.1.0
+Requires at least: 6.4
+Requires PHP: 7.4
+License:      GNU General Public License v2 or later
+License URI:  https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain:  dlscalc
+*/
+
+/* Styles live in assets/css/main.css so they can be versioned and loaded on their own. */
