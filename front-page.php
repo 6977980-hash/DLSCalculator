@@ -67,7 +67,13 @@ get_header();
 		<div class="wrap">
 			<h2 class="section__title">Choose a calculator</h2>
 			<div class="card-grid">
-				<?php foreach ( dlscalc_tools() as $dlscalc_slug => $dlscalc_tool ) : ?>
+				<?php
+				foreach ( dlscalc_tools() as $dlscalc_slug => $dlscalc_tool ) :
+					// A new tool's page only exists once WP admin has been opened after the deploy.
+					if ( ! dlscalc_page_is_live( $dlscalc_slug ) ) {
+						continue;
+					}
+					?>
 					<a class="card-link" href="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) ); ?>">
 						<span class="card-link__title"><?php echo esc_html( $dlscalc_tool['title'] ); ?></span>
 						<span class="card-link__text"><?php echo esc_html( $dlscalc_tool['blurb'] ); ?></span>
