@@ -1,6 +1,9 @@
 // DLS tools driven like a visitor: typing, stoppage rows, the T20 slider, the par table, the live
 // tracker, the widget, the home box, sharing, printing and the no-JavaScript forms.
+import { createRequire } from 'module';
 import { DLS, fresh, ok, eq, outs, watch } from './lib.mjs';
+
+const realMatches = createRequire(import.meta.url)('../real-matches.json');
 
 const form = 'form[data-tool]';
 
@@ -303,6 +306,21 @@ export default [
 				const w = await big(`/embed/dls/?f=${f}&n=${n}&r=${r}&c=${c}`, /data-o="target"[^>]*>\s*([^<\s]+)/);
 				if (w !== want) {
 					bad.push(`embed ${n}/${r}/${c}: ${w} (engine ${want})`);
+				}
+			}
+			ok(!bad.length, bad.join('; '));
+		}
+	},
+	{
+		name: 'real matches: the live calculator gives our Standard result for 34 rain-hit matches',
+		run: async ({ base }) => {
+			const bad = [];
+			for (const m of realMatches) {
+				const html = await (await fetch(fresh(base + '/dls-calculator/?' + new URLSearchParams(m.p)))).text();
+				const got = (html.match(/data-out="big"[^>]*>\s*([^<\s]+)/) || [])[1];
+				const want = 'target' in m.standard ? m.standard.target : m.standard.par;
+				if (String(got) !== String(want)) {
+					bad.push(`${m.id}: ${got} (expected ${want})`);
 				}
 			}
 			ok(!bad.length, bad.join('; '));
