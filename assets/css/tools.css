@@ -73,16 +73,6 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 .block__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .block__head .hint { margin-top: 4px; }
 .steps { margin: 12px 0 0; padding-left: 22px; font-size: 16px; line-height: 1.7; color: var(--text); }
-.par-wrap, .table-wrap { overflow: auto; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
-.par-wrap { max-height: 520px; }
-.par, .data { width: 100%; font-variant-numeric: tabular-nums; }
-.par { min-width: 620px; }
-.par th, .par td, .data th, .data td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); font-size: 15px; text-align: center; }
-.par thead th, .data thead th { position: sticky; top: 0; background: var(--green); color: var(--cream); font-size: 14px; }
-.par tbody th, .data tbody th { background: #efebe0; }
-.data td { text-align: left; }
-.data--num td { text-align: center; }
-.data caption { padding: 10px 12px; font-size: 14px; color: var(--muted); text-align: left; }
 .chart { margin-top: 16px; }
 .chart__bars { display: flex; align-items: flex-end; gap: 6px; height: 200px; overflow-x: auto; }
 .bar { flex: 1 0 30px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; font-size: 13px; font-variant-numeric: tabular-nums; }
@@ -91,21 +81,6 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 .bar__v { font-weight: 700; }
 .bar__l, .chart__axis { color: var(--muted); }
 .chart__axis { margin-top: 6px; font-size: 13px; text-align: center; }
-
-/* Article below the tool */
-.tool-prose { margin-top: 48px; }
-.tool-prose .table-wrap { margin: 16px 0; }
-.figure { margin: 24px 0; }
-.figure img { display: block; width: 100%; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
-.figure figcaption { margin-top: 8px; font-size: 14px; color: var(--muted); }
-.faq { display: flex; flex-direction: column; gap: 10px; }
-.faq details { background: var(--white); border: 1px solid var(--line); border-radius: 12px; padding: 0 18px; }
-.faq summary { padding: 14px 0; font-weight: 700; cursor: pointer; }
-.faq details p { margin: 0 0 14px; font-size: 16px; }
-.sources { font-size: 16px; }
-.related { max-width: 820px; margin-top: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
-.related .card-link { padding: 18px 20px; gap: 4px; }
-.related .card-link__title { font-size: 22px; }
 
 @media (max-width: 640px) {
 	.panel, .result, .quick { padding: 18px; }

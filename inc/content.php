@@ -23,6 +23,12 @@ function dlscalc_content_dates() {
 		'net-run-rate-calculator'   => '2026-10-19',
 		'run-rate-calculator'       => '2026-10-19',
 		'live-dls-par-score'        => '2026-10-19',
+		'dls-method'                => '2026-10-19',
+		'how-to-calculate-nrr'      => '2026-10-19',
+		'vjd-method'                => '2026-10-19',
+		'about'                     => '2026-10-19',
+		'contact'                   => '2026-10-19',
+		'privacy-policy'            => '2026-10-19',
 	);
 }
 
@@ -93,6 +99,8 @@ function dlscalc_related_html( $slugs ) {
 		'dls-par-score-table'       => array( 'DLS Par Score Table', 'Par for every over and wicket, 5 to 50 overs.' ),
 		'live-dls-par-score'        => array( 'Live DLS Par Score', 'Who is ahead on DLS, over by over, during the chase.' ),
 		'dls-method'                => array( 'DLS method explained', 'Resources, the formula and the ICC examples.' ),
+		'how-to-calculate-nrr'      => array( 'How to calculate NRR', 'The net run rate formula, step by step.' ),
+		'vjd-method'                => array( 'VJD method vs DLS', 'Jayadevan\'s rain rule and how it differs.' ),
 		'run-rate-calculator'       => array( 'Run Rate Calculator', 'Required rate and runs per ball for the chase.' ),
 		'net-run-rate-calculator'   => array( 'Net Run Rate Calculator', 'Your NRR and the margin you need to qualify.' ),
 	);
@@ -172,6 +180,29 @@ function dlscalc_faqs( $slug ) {
 			array( 'Is there a minimum number of overs for a result?', 'Yes. Team 2 must have faced at least 20 overs in a 50-over match, or 5 overs in a 20-over match, for DLS to decide the result. Before that point the tracker warns that a stoppage would mean no result.' ),
 			array( 'Will I lose the score if I close the page?', 'No. The tracker keeps the match on this device, so a reload or a closed tab picks up where you left off. Use "Start a new match" to clear it, or share the link so another scorer can follow the same match.' ),
 			array( 'Is this the same par that appears on TV?', 'International matches use the DLS Professional Edition, which runs on ICC software and is not published. This tracker uses the published Standard Edition, so the par is usually the same and sometimes differs by a run or two.' ),
+		),
+		'dls-method'                => array(
+			array( 'Why is DLS used instead of the average run rate?', 'Run rate ignores wickets. A team on 100 for 0 and a team on 100 for 8 after 20 overs are in very different positions, and DLS accounts for that by treating wickets in hand as part of a team\'s resources.' ),
+			array( 'Is DLS used in T20 cricket?', 'Yes. The ICC uses one version of DLS for every limited-overs format, including T20 internationals, the IPL, the PSL and the T20 World Cup. A full 20-over innings is 56.6% of the resources of a 50-over innings.' ),
+			array( 'Can the DLS target be higher than Team 1\'s score?', 'Yes. When Team 1 loses overs during its own innings but Team 2 gets more overs to bat, Team 2 has more resources, and the target is raised using G50.' ),
+			array( 'Who decides how many overs are lost?', 'The match officials, based on the playing time lost and the playing conditions of the competition. DLS only works out the target for the overs they set.' ),
+			array( 'Why is a DLS target rounded down and then increased by one?', 'The formula gives the par score, which ties the match. It is rounded down to a whole run, and the target to win is one run more.' ),
+			array( 'Who invented the DLS method?', 'Frank Duckworth and Tony Lewis, two English statisticians, created the Duckworth-Lewis method in the 1990s. Steven Stern, an Australian statistics professor, updated it, and it became Duckworth-Lewis-Stern in 2014.' ),
+		),
+		'how-to-calculate-nrr'      => array(
+			array( 'What is a good net run rate?', 'Anything above zero means a team scores faster than its opponents. In tight groups a gap of 0.1 or less often decides who qualifies, so every run counts.' ),
+			array( 'Is NRR the same as run rate?', 'No. Run rate is how fast one innings is scored. Net run rate compares a team\'s scoring rate with its opponents\' rate across all its matches in a tournament.' ),
+			array( 'Why do overs like 17.3 matter so much?', 'Because 17.3 overs is 17.5 overs as a number, not 17.3. The digit after the point counts balls out of six. Using the wrong value is the most common NRR mistake.' ),
+			array( 'Can NRR be calculated for a single match?', 'Yes. Use the same formula for just that match: runs scored ÷ overs faced minus runs conceded ÷ overs bowled. In one match the two teams\' NRRs are equal and opposite.' ),
+			array( 'Does a bigger win always improve NRR more?', 'Usually, but how you win matters too. Chasing a target in fewer overs can lift NRR more than a similar winning margin batting first, because the overs you save count as much as the runs.' ),
+			array( 'Do super overs count in NRR?', 'No. Under ICC playing conditions only the runs and overs of the main match count towards net run rate, not a super over played to break a tie.' ),
+		),
+		'vjd-method'                => array(
+			array( 'What is the full form of VJD in cricket?', 'VJD stands for V. Jayadevan, the Indian engineer from Thrissur, Kerala, who created the method. It is also called the Jayadevan system.' ),
+			array( 'Is the VJD method still used?', 'Yes, in BCCI domestic cricket in India. Match reports from 2026 show Vijay Hazare Trophy and BCCI age-group matches decided by VJD. International matches and the IPL use DLS.' ),
+			array( 'Which is better, VJD or DLS?', 'Neither has been shown to be clearly better in every situation. The ICC reviewed VJD in 2012 and kept Duckworth-Lewis, while the BCCI has kept VJD for its domestic matches.' ),
+			array( 'Is VJD used in the IPL?', 'No. The IPL follows ICC playing conditions and uses the DLS method for rain-affected matches, even though reports in 2010 suggested VJD would be tried.' ),
+			array( 'How does VJD treat wickets?', 'Wickets count for the overs a team has already played, through the normal curve. For the overs still to come after an interruption, the target curve is used, and it does not depend on wickets.' ),
 		),
 	);
 	return $faqs[ $slug ] ?? array();

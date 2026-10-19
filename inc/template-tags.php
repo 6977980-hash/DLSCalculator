@@ -119,6 +119,7 @@ function dlscalc_default_footer_links() {
 		'live-dls-par-score'   => 'Live DLS par',
 		'dls-method'           => 'DLS method guide',
 		'how-to-calculate-nrr' => 'NRR guide',
+		'vjd-method'           => 'VJD method',
 		'privacy-policy'       => 'Privacy Policy',
 		'contact'              => 'Contact',
 	);
@@ -184,16 +185,19 @@ function dlscalc_author() {
 }
 
 /**
- * "By Ch Alee · Last updated …" line under the page title.
+ * "By Ch Alee · Last updated … · 9 min read" line under the page title.
+ *
+ * @param int $minutes Reading time; 0 leaves it out.
  */
-function dlscalc_byline() {
+function dlscalc_byline( $minutes = 0 ) {
 	$author = dlscalc_author();
 	printf(
-		'<p class="byline">By <a href="%1$s">%2$s</a> · Last updated <time datetime="%3$s">%4$s</time></p>',
+		'<p class="byline">By <a href="%1$s">%2$s</a> · Last updated <time datetime="%3$s">%4$s</time>%5$s</p>',
 		esc_url( dlscalc_page_url( 'about' ) ),
 		esc_html( $author['name'] ),
 		esc_attr( dlscalc_updated_date( 'c' ) ),
-		esc_html( dlscalc_updated_date( 'j F Y' ) )
+		esc_html( dlscalc_updated_date( 'j F Y' ) ),
+		$minutes ? ' · ' . (int) $minutes . ' min read' : '' // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- integer.
 	);
 }
 

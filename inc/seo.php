@@ -65,6 +65,10 @@ function dlscalc_seo_pages() {
 			'title'       => 'How to Calculate NRR in Cricket: Net Run Rate Formula',
 			'description' => 'The net run rate formula with a worked two-match example, the all-out rule, DLS matches and no-results, and how a team can improve its NRR.',
 		),
+		'vjd-method'                => array(
+			'title'       => 'VJD Method in Cricket: Jayadevan System vs DLS Explained',
+			'description' => 'What the VJD method is, who V. Jayadevan is, how his rain rule sets targets, where the BCCI used it, and how it differs from DLS and the old D/L method.',
+		),
 		'about'                     => array(
 			'title'       => 'About DLSCalc and Ch Alee | DLSCalc',
 			'description' => 'DLSCalc is built by Ch Alee, a cricketer and tournament organiser. How the calculators work, the ICC sources they follow and their limits.',
@@ -184,7 +188,7 @@ add_action( 'wp_head', 'dlscalc_head_meta', 3 );
 
 /**
  * Base schema: Organization and WebSite on every page, BreadcrumbList and WebPage on inner pages.
- * Tool pages add WebApplication and FAQPage, and guides add Article, when they are built.
+ * Tool pages add WebApplication and FAQPage; guides add Article and FAQPage.
  */
 function dlscalc_head_schema() {
 	if ( dlscalc_seo_plugin_active() || is_404() ) {
@@ -254,7 +258,7 @@ function dlscalc_head_schema() {
 			'itemListElement' => $items,
 		);
 		$graph[] = array(
-			'@type'        => 'WebPage',
+			'@type'        => dlscalc_webpage_type(),
 			'@id'          => get_permalink() . '#webpage',
 			'url'          => get_permalink(),
 			'name'         => $seo['title'],
@@ -264,7 +268,7 @@ function dlscalc_head_schema() {
 			'dateModified' => dlscalc_updated_date( 'c' ),
 			'inLanguage'   => 'en',
 		);
-		$graph   = array_merge( $graph, dlscalc_tool_schema( $seo ) );
+		$graph   = array_merge( $graph, dlscalc_tool_schema( $seo ), dlscalc_guide_schema( $seo ) );
 	}
 
 	echo '<script type="application/ld+json">' . wp_json_encode(
@@ -373,6 +377,27 @@ add_filter(
 	function () {
 		return array();
 	}
+);
+
+/**
+ * The site has no blog: list only the theme's own pages, so WordPress's sample post and page stay out.
+ */
+add_filter(
+	'wp_sitemaps_post_types',
+	function ( $types ) {
+		return array_intersect_key( $types, array( 'page' => true ) );
+	}
+);
+add_filter(
+	'wp_sitemaps_posts_query_args',
+	function ( $args, $post_type ) {
+		if ( 'page' === $post_type ) {
+			$args['post_name__in'] = array_keys( dlscalc_site_pages() );
+		}
+		return $args;
+	},
+	10,
+	2
 );
 
 /**
