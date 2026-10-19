@@ -50,6 +50,9 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `assets/js/nrr-tools.js` | Live results, match and team rows, saved points table, permalinks and sharing on the NRR and run rate pages |
 | `assets/fonts/` | Barlow Condensed 700 and Source Sans 3 (latin, SIL Open Font License) |
 | `assets/img/` | Favicon, Apple touch icon, app icons, logo and per-page Open Graph images |
+| `inc/ads.php` | Ad slots (print nothing until `DLSCALC_ADSENSE_CLIENT` is set) and the `/ads.txt` body |
+| `inc/llms.php` | Serves `/llms.txt` (built from the site's pages) and `/ads.txt` |
+| `docs/keyword-map.md` | One owner page per keyword. Check it before adding a page, title, H1 or section. Blocked from the web by `docs/.htaccess` |
 | `dev/tests/run.sh` | Engine tests: the ICC DLS worked examples plus NRR and run rate examples in JS and PHP, JS and PHP agreement on about 2,000 cases (DLS, live tracker, NRR, solver, run rate), and every table cell against the ICC table. Needs Node and PHP |
 | `dev/make-charts.mjs` | Redraws the SVG charts in `assets/img/dls/` from the engine (`node dev/make-charts.mjs`) |
 | `dev/make-images.mjs` | Regenerates the icons and Open Graph images (`node dev/make-images.mjs`, needs Playwright and Pillow; add slugs to redraw only those share images). Blocked from the web by `dev/.htaccess` |
@@ -79,6 +82,14 @@ The names avoid WordPress's own query variables (`s` is search, `m` is a date ar
 ## Menus
 
 Header and footer links work out of the box and skip pages that are not published. To change them, create menus in Appearance → Menus and assign them to **Main menu** and **Footer menu**.
+
+## Ads
+
+Ad slots are reserved but print nothing yet. To switch ads on, set `DLSCALC_ADSENSE_CLIENT` in `inc/ads.php` to the AdSense publisher ID (`ca-pub-…`): that loads AdSense Auto ads and adds the Google line to `/ads.txt`. For fixed units, put their `data-ad-slot` IDs in `dlscalc_ad_units()`: `top` sits where the article starts (under the calculator, or under a guide's contents box) and `bottom` above the author box. About, Contact, Privacy Policy and 404 pages never show ads. Each fixed slot reserves 280 px so a loading ad does not shift the page.
+
+## llms.txt and ads.txt
+
+WordPress serves both (`inc/llms.php`), like robots.txt. A real file with the same name in `public_html` would win, so none should exist there.
 
 ## SEO plugins
 
