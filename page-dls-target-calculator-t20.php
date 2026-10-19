@@ -33,7 +33,7 @@ dlscalc_par_sheet_head();
 				<input type="number" inputmode="numeric" min="5" max="20" name="n" value="<?php echo esc_attr( $dlscalc_in['n'] ); ?>" autocomplete="off">
 			</label>
 			<label class="fld">Team 1 final score
-				<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
+				<input type="text" inputmode="numeric" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
 			</label>
 		</div>
 		<div class="slider">

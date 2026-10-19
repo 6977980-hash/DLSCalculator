@@ -52,7 +52,7 @@ dlscalc_dls_scenarios_html( $dlscalc_in );
 					<?php dlscalc_dls_field_err( $dlscalc_r, 'n' ); ?>
 				</label>
 				<label class="fld">Team 1 final score
-					<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'r' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+					<input type="text" inputmode="numeric" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'r' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
 					<?php dlscalc_dls_field_err( $dlscalc_r, 'r' ); ?>
 				</label>
 			</div>

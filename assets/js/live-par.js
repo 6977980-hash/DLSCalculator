@@ -25,8 +25,22 @@
 			} catch (e) { /* private mode: the permalink still works */ }
 		}
 	};
+	// The tracker's own inputs in the address (as dlscalc_dls_has_params()); other keys such as
+	// fbclid, utm_source or gclid from a shared link do not count (audit F67).
+	var LINK_KEYS = ['n', 'r', 'g', 'c', 'f', 'x', 'x_at'];
+	var hasInputs = function () {
+		var q = location.search.replace(/^\?/, '').split('&').map(function (kv) {
+			var k = kv.split('=')[0];
+			try {
+				return decodeURIComponent(k);
+			} catch (e) {
+				return k;
+			}
+		});
+		return LINK_KEYS.some(function (k) { return q.indexOf(k) > -1 || q.indexOf(k + '[]') > -1; });
+	};
 	// A return visit with no inputs in the address picks up the match saved on this device.
-	if (!location.search) {
+	if (!hasInputs()) {
 		var saved = store.get();
 		if (saved) {
 			location.replace(location.pathname + '?' + saved + '#result');
@@ -58,10 +72,11 @@
 	// server reads the link online; otherwise the next entry would overwrite the saved log (audit F46).
 	if (form.hasAttribute('data-plain') && window.URLSearchParams) {
 		var linkQ = new URLSearchParams(location.search);
-		if (['n', 'r', 'g', 'c', 'f', 'x'].some(function (k) { return linkQ.has(k); })) {
+		if (hasInputs()) {
 			var got = function (k, dflt) { return linkQ.has(k) ? linkQ.get(k).trim().slice(0, 120) : dflt; };
-			form.elements.n.value = got('n', form.elements.n.value);
-			form.elements.r.value = got('r', form.elements.r.value);
+			// Left out of the link means blank, as on the server (audit F69).
+			form.elements.n.value = got('n', '');
+			form.elements.r.value = got('r', '');
 			form.elements.c.value = got('c', '');
 			form.elements.g.value = got('g', '') === '200' ? '200' : '245';
 			var fmt = got('f', '');
@@ -85,7 +100,9 @@
 
 	var log = function () {
 		return $$('.lrow', box).map(function (row) {
-			var v = [val(row, 'at'), val(row, 'r'), val(row, 'w')];
+			// "-" and "_" separate fields and entries, so a typed "24-1" travels as "24−1" and the
+			// engine can say runs go without wickets (audit F66), as nrr-tools.js does.
+			var v = [val(row, 'at'), val(row, 'r'), val(row, 'w')].map(function (t) { return t.replace(/-/g, '−').replace(/_/g, ''); });
 			return v.join('') === '' ? '' : v.join('-');
 		}).filter(Boolean).join('_');
 	};
@@ -151,8 +168,12 @@
 		return { label: 'DLS par at ' + at + ', ' + e.w + ' down', big: String(e.par), line: line, word: false };
 	};
 
-	var first = true;
-	function update() {
+	var first = true, rebuilding = false;
+	// fromOtherTab: the change came from another tab's save, so it is shown but not saved again.
+	function update(fromOtherTab) {
+		if (rebuilding) {
+			return;
+		}
 		var p = params(), r = DLS.live(p), err = r.err || '';
 		text('err', err);
 		show(out('err'), !!err);
@@ -193,7 +214,9 @@
 		var q = query(p);
 		if (!first) {
 			history.replaceState(null, '', location.pathname + '?' + q + '#result');
-			store.set(q);
+			if (fromOtherTab !== true) {
+				store.set(q);
+			}
 		}
 		var msg = err ? 'Live DLS par score:' : (last && last.state === 'on' ?
 			'DLS par after ' + DLS.overs(last.at) + (last.at === 6 ? ' over: ' : ' overs: ') + last.par + '. Team 2 ' + last.runs + '/' + last.w + ', ' + status(last)[0] + '. Live tracker:' :
@@ -201,10 +224,10 @@
 		out('wa').href = 'https://wa.me/?text=' + encodeURIComponent(msg + ' ' + link(p));
 	}
 
+	var removeRow;
 	var wire = function (row) {
 		$('[data-remove]', row).addEventListener('click', function () {
-			box.removeChild(row);
-			update();
+			removeRow(row);
 		});
 	};
 	$$('.lrow', box).forEach(wire);
@@ -229,11 +252,69 @@
 		runs.select();
 	});
 
+	// Rebuilds the score log from a log value ("5-38-1_10-71-2"). Removing a focused box fires its
+	// change event, so updates wait until the rebuild is done; otherwise a half-built log is saved.
+	var setLog = function (x) {
+		rebuilding = true;
+		$$('.lrow', box).forEach(function (row) { box.removeChild(row); });
+		x.split('_').filter(Boolean).forEach(function (part) {
+			var row = blank.cloneNode(true), v = part.split('-');
+			['at', 'r', 'w'].forEach(function (f, i) { $('[data-f="' + f + '"]', row).value = v[i] || ''; });
+			box.appendChild(row);
+			wire(row);
+		});
+		rebuilding = false;
+	};
+
+	// "Start a new match" and each row's × can be undone until the next change (audit F68).
+	var undo = $('[data-undo]', form), undoLog = null;
+	var offerUndo = function (msg, before) {
+		undoLog = before;
+		$('[data-undo-msg]', undo).textContent = msg;
+		undo.hidden = false;
+	};
+	var dropUndo = function () {
+		undoLog = null;
+		undo.hidden = true;
+	};
+	$('[data-undo-btn]', undo).addEventListener('click', function () {
+		if (undoLog !== null) {
+			setLog(undoLog);
+			dropUndo();
+			update();
+		}
+	});
+	removeRow = function (row) {
+		var before = log();
+		box.removeChild(row);
+		update();
+		offerUndo('Score entry removed.', before);
+	};
 	$('[data-reset]', form).addEventListener('click', function () {
+		var before = log();
 		$$('.lrow', box).forEach(function (row) { box.removeChild(row); });
 		update();
+		if (before) {
+			offerUndo('Score log cleared for a new match.', before);
+		}
 	});
 
+	// The same match open in another tab: take its latest save instead of overwriting it with this
+	// tab's older score log on the next keystroke (audit F72).
+	window.addEventListener('storage', function (e) {
+		if (e.key !== KEY || !e.newValue || !window.URLSearchParams) {
+			return;
+		}
+		var q = new URLSearchParams(e.newValue);
+		['n', 'r', 'c', 'f'].forEach(function (k) { form.elements[k].value = q.get(k) || ''; });
+		form.elements.g.value = q.get('g') === '200' ? '200' : '245';
+		setLog(q.get('x') || '');
+		dropUndo();
+		update(true);
+	});
+
+	form.addEventListener('input', dropUndo);
+	add.addEventListener('click', dropUndo);
 	form.addEventListener('input', update);
 	form.addEventListener('change', update);
 	form.addEventListener('submit', function (e) {

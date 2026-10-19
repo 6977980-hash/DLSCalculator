@@ -35,7 +35,7 @@ dlscalc_par_sheet_head();
 					<input type="number" inputmode="numeric" min="5" max="50" name="o" value="<?php echo esc_attr( $dlscalc_in['o'] ); ?>" autocomplete="off">
 				</label>
 				<label class="fld">Team 1 final score
-					<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
+					<input type="text" inputmode="numeric" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
 				</label>
 				<label class="fld">Overs for Team 2 (if cut before the chase)
 					<input type="text" inputmode="decimal" name="c" value="<?php echo esc_attr( $dlscalc_in['c'] ); ?>" placeholder="Same as Team 1" autocomplete="off">
