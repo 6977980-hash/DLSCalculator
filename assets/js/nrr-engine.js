@@ -153,6 +153,12 @@
 				continue;
 			}
 			var nr = x.slice(4).indexOf('n') >= 0, mq = quota;
+			// A no result is left out, so its scores need not be complete (audit F63).
+			if (nr) {
+				rows.push({ n: i + 1, nr: true });
+				steps.push(name + ': no result, so it is left out of net run rate.');
+				continue;
+			}
 			var mo = x.slice(4).filter(function (t) {
 				return t !== 'n' && t !== '';
 			})[0];
@@ -176,11 +182,7 @@
 			if (a.at > mq || d.at > mq || (!a.allOut && a.at === 0) || (!d.allOut && d.at === 0)) {
 				return { err: name + ': overs must be more than 0 and no more than ' + mov + ' per side' + (cut ? ' in this match.' : '.') };
 			}
-			rows.push({ n: i + 1, rf: a.runs, bf: a.b, ra: d.runs, ba: d.b, nr: nr, mq: mq });
-			if (nr) {
-				steps.push(name + ': no result, so it is left out of net run rate.');
-				continue;
-			}
+			rows.push({ n: i + 1, rf: a.runs, bf: a.b, ra: d.runs, ba: d.b, nr: false, mq: mq });
 			counted++;
 			rf += a.runs;
 			bf += a.b;

@@ -47,6 +47,21 @@ export default [
 		}
 	},
 	{
+		name: 'nrr calculator: a no result needs no complete scores (audit F63)',
+		run: async ({ ctx, base }) => {
+			const page = await open(ctx, base + '/net-run-rate-calculator/');
+			const before = (await outs(page)).cbig;
+			await page.getByRole('button', { name: '+ Add match' }).click();
+			const i = (await page.locator('input[name^="x_rf["]').count()) - 1;
+			await page.fill(`input[name="x_rf[${i}]"]`, '80');
+			await page.fill(`input[name="x_of[${i}]"]`, '10');
+			await page.check(`input[name="x_nr[${i}]"]`);
+			const o = await outs(page);
+			ok(!o.cerr, 'no error: ' + o.cerr);
+			eq(o.cbig, before, 'no result leaves the NRR unchanged');
+		}
+	},
+	{
 		name: 'nrr calculator: overs like 19.6 are refused with the 0-to-5 balls rule',
 		run: async ({ ctx, base }) => {
 			const page = await open(ctx, base + '/net-run-rate-calculator/');

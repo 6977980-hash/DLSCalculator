@@ -402,7 +402,7 @@ function dlscalc_dls_result_panel( $r, $slug, $in, $stats ) {
 			<button type="button" class="btn btn--ghost js-only" data-copy>Copy link</button>
 			<button type="button" class="btn btn--ghost js-only" data-print>Print par sheet</button>
 		</div>
-		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ: usually by 3 runs or fewer in T20s, more in high-scoring ODIs.</p>
+		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ: usually by 3 runs or fewer in T20s, more in high-scoring ODIs. <a href="<?php echo esc_url( dlscalc_page_url( 'contact' ) ); ?>">Found a wrong answer? Tell us.</a></p>
 	</aside>
 	<?php
 }

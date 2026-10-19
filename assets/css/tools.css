@@ -17,6 +17,7 @@
 .fields { display: flex; flex-wrap: wrap; gap: 14px; }
 .fld { display: flex; flex-direction: column; gap: 6px; flex: 1 1 140px; min-width: 0; font-size: 15px; font-weight: 600; }
 .fld--wide { flex-basis: 280px; }
+.fld .hint { font-size: 13px; font-weight: 400; }
 .fields .fld--narrow { flex: 0 1 260px; }
 .tool__group > .fld { flex: none; max-width: 320px; }
 .fld[hidden] { display: none; }
@@ -59,6 +60,7 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 .result__big { font-family: var(--font-head); font-size: 88px; font-weight: 700; line-height: .95; color: var(--gold); }
 .result__line { font-size: 18px; margin-top: 4px; }
 .result__note { margin: 0; font-size: 13px; line-height: 1.5; color: #c9d4cd; }
+.result__note a { color: var(--gold); }
 .stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .stat { background: #1d5a3f; border-radius: 10px; padding: 10px 14px; }
 .stat span { display: block; font-size: 13px; color: #c9d4cd; }

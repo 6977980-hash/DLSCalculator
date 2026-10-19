@@ -316,12 +316,17 @@ function dlscalc_dls_innings( $start_b, $stops, $label, $key ) {
  * Fewest balls Team 2 must face for a result, by format. See minBalls() in the JS engine.
  *
  * @param int    $n Balls per side at the start.
- * @param string $f Format: odi, t20, t10, custom, or '' to go by the overs.
+ * @param string $f Format: odi, t20, t20ko (T20 knockout, 10 overs), t10, custom, or '' to go by the overs.
  * @return int
  */
 function dlscalc_dls_min_balls( $n, $f = '' ) {
-	if ( 'odi' === $f || 't20' === $f ) {
-		return 'odi' === $f ? 120 : 30;
+	$min = array(
+		'odi'   => 120,
+		't20'   => 30,
+		't20ko' => 60,
+	);
+	if ( isset( $min[ $f ] ) ) {
+		return $min[ $f ];
 	}
 	if ( 't10' === $f || 'custom' === $f ) {
 		return 0;
@@ -527,7 +532,7 @@ function dlscalc_dls_calc( $p ) {
 			't1' => dlscalc_dls_parse_stops( $p['a'] ?? '' ),
 			'M'  => $m,
 			't2' => dlscalc_dls_parse_stops( $p['b'] ?? '' ),
-			'F'  => in_array( $p['f'] ?? '', array( 'odi', 't20', 't10', 'custom' ), true ) ? $p['f'] : '',
+			'F'  => in_array( $p['f'] ?? '', array( 'odi', 't20', 't20ko', 't10', 'custom' ), true ) ? $p['f'] : '',
 			'P'  => $pen,
 		)
 	);

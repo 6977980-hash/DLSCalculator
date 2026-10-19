@@ -122,6 +122,15 @@ function dlscalc_nrr_calc( $p ) {
 		}
 		$extra = array_slice( $x, 4 );
 		$nr    = in_array( 'n', $extra, true );
+		// A no result is left out, so its scores need not be complete (audit F63).
+		if ( $nr ) {
+			$rows[]  = array(
+				'n'  => $i + 1,
+				'nr' => true,
+			);
+			$steps[] = $name . ': no result, so it is left out of net run rate.';
+			continue;
+		}
 		$mq    = $quota;
 		$mo    = array_values(
 			array_filter(
@@ -160,13 +169,9 @@ function dlscalc_nrr_calc( $p ) {
 			'bf' => $a['b'],
 			'ra' => $d['runs'],
 			'ba' => $d['b'],
-			'nr' => $nr,
+			'nr' => false,
 			'mq' => $mq,
 		);
-		if ( $nr ) {
-			$steps[] = $name . ': no result, so it is left out of net run rate.';
-			continue;
-		}
 		++$counted;
 		$rf     += $a['runs'];
 		$bf     += $a['b'];

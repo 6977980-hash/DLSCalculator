@@ -220,13 +220,14 @@
 	}
 
 	/**
-	 * Fewest overs (in balls) Team 2 must face for a result, by format: 20 in an ODI and 5 in a T20,
-	 * even when the match started with fewer overs. F: "odi", "t20", "t10" or "custom" (no ICC
+	 * Fewest overs (in balls) Team 2 must face for a result, by format: 20 in an ODI, 5 in a T20 and
+	 * 10 in a T20 knockout such as the ICC Men's T20 World Cup semi-finals and final (audit F64),
+	 * even when the match started with fewer overs. F: "odi", "t20", "t20ko", "t10" or "custom" (no ICC
 	 * minimum); without one, a 50-over match counts as an ODI and a 20-over match as a T20.
 	 */
 	function minBalls(N, F) {
-		if (F === 'odi' || F === 't20') {
-			return F === 'odi' ? 120 : 30;
+		if (F === 'odi' || F === 't20' || F === 't20ko') {
+			return { odi: 120, t20: 30, t20ko: 60 }[F];
 		}
 		if (F === 't10' || F === 'custom') {
 			return 0;
@@ -309,7 +310,7 @@
 
 	/**
 	 * DLS Calculator page. p: { n: overs per side, r: Team 1 runs, g: G50, c: Team 2 overs at the start
-	 * of the chase, a: Team 1 stops, b: Team 2 stops, f: format "odi", "t20", "t10" or "custom",
+	 * of the chase, a: Team 1 stops, b: Team 2 stops, f: format "odi", "t20", "t20ko", "t10" or "custom",
 	 * k: penalty runs awarded to Team 1 during the chase }. Short names that WordPress does not use
 	 * itself (it treats s, m, p and w as its own query variables).
 	 */
@@ -336,7 +337,7 @@
 		if (isNaN(P) || P > 99) {
 			return fail('Penalty runs must be a whole number from 0 to 99.', 'k');
 		}
-		var F = ['odi', 't20', 't10', 'custom'].indexOf(p.f) > -1 ? p.f : '';
+		var F = ['odi', 't20', 't20ko', 't10', 'custom'].indexOf(p.f) > -1 ? p.f : '';
 		return match({ N: N, S: S, G: G, t1: parseStops(p.a), M: M, t2: parseStops(p.b), F: F, P: P });
 	}
 

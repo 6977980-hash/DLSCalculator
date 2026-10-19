@@ -17,10 +17,11 @@ $dlscalc_r    = dlscalc_dls_run( $dlscalc_slug, $dlscalc_in );
 $dlscalc_n    = $dlscalc_in['n'];
 $dlscalc_g    = $dlscalc_in['g'];
 $dlscalc_gsel = in_array( $dlscalc_g, array( '245', '200' ), true ) ? $dlscalc_g : 'custom';
-// Format sets the minimum overs for a result (ODI 20, T20 5). Links without one go by the overs.
+// Format sets the minimum overs for a result (ODI 20, T20 5, T20 knockout 10, audit F64). Links without one go by the overs.
 $dlscalc_fmts = array(
 	'odi'    => array( '50', 'ODI (50 overs)' ),
 	't20'    => array( '20', 'T20 (20 overs)' ),
+	't20ko'  => array( '20', 'T20 knockout (10-over minimum)' ),
 	't10'    => array( '10', 'T10 (10 overs)' ),
 	'custom' => array( '', 'Other format' ),
 );
@@ -55,7 +56,7 @@ dlscalc_dls_scenarios_html( $dlscalc_in );
 					<?php dlscalc_dls_field_err( $dlscalc_r, 'r' ); ?>
 				</label>
 			</div>
-			<p class="hint">Match shortened before it began? Keep the format and type the overs it started with, such as 40 for an ODI. The format sets the minimum overs for a result: 20 in an ODI, 5 in a T20.</p>
+			<p class="hint">Match shortened before it began? Keep the format and type the overs it started with, such as 40 for an ODI. The format sets the minimum overs for a result: 20 in an ODI, 5 in a T20, and 10 in knockouts that ask for it, such as the ICC Men's T20 World Cup semi-finals and final.</p>
 			<div class="fields">
 				<label class="fld fld--wide">G50 (used when Team 2 has more resources)
 					<select data-gsel>
@@ -67,6 +68,8 @@ dlscalc_dls_scenarios_html( $dlscalc_in );
 				<label class="fld fld--narrow" data-gwrap<?php echo 'custom' === $dlscalc_gsel ? '' : ' hidden'; ?>>Custom G50
 					<input type="text" inputmode="decimal" name="g" value="<?php echo esc_attr( $dlscalc_g ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'g' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
 					<?php dlscalc_dls_field_err( $dlscalc_r, 'g' ); ?>
+					<?php // A custom value must come from the competition's rules (audit F60). ?>
+					<span class="hint">Check this value in your tournament's playing conditions.</span>
 				</label>
 			</div>
 			<?php // Which G50 applies depends on the competition (audit F59). ?>
