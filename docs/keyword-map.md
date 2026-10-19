@@ -51,5 +51,6 @@ Volumes are Google Keyword Planner averages per month, Oct 2025 to Sep 2026 (glo
 - Home title was "DLS Calculator & Net Run Rate Calculator for Cricket", which competed with both tool pages. Now "DLSCalc: Free Cricket Calculators for Rain Targets, NRR & Run Rate".
 - `/dls-calculator/` title and H1 said "Par Score", the par table's keyword. Now "DLS Calculator: Revised Target for Rain-Hit Matches".
 - `/dls-target-calculator-t20/` had an H2 "T20 par score table". Now "Par score for the rest of the chase", the same wording as the DLS calculator.
+- Audit F10 (19 Oct): `/dls-calculator/` H2 "Par score table for the rest of the chase" is now "Par score for the rest of the chase", and the T20 title "Rain Target & Par Table" is now "DLS Target Calculator T20: Rain Target & Par Score". "Par table" / "par score table" stay with `/dls-par-score-table/` only.
 
 Checked and left as they are: the NRR calculator only summarises the formula and links to `/how-to-calculate-nrr/`; tool pages link to `/dls-method/` for the method; the run rate page's "How is run rate different from net run rate?" is a short contrast with a link.

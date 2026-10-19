@@ -27,6 +27,7 @@ function dlscalc_dls_tools() {
 				'c' => '50',
 				'a' => '',
 				'b' => '12-1-10',
+				'f' => '',
 			),
 		),
 		'dls-target-calculator-t20' => array(
@@ -132,7 +133,7 @@ function dlscalc_dls_inputs( $slug ) {
  * @return bool
  */
 function dlscalc_dls_has_params() {
-	foreach ( array( 'n', 'r', 'g', 'c', 'a', 'b', 'l', 'o', 'x', 'a_at', 'b_at', 'x_at' ) as $key ) {
+	foreach ( array( 'n', 'r', 'g', 'c', 'a', 'b', 'l', 'o', 'x', 'f', 'a_at', 'b_at', 'x_at' ) as $key ) {
 		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return true;
 		}
@@ -171,22 +172,10 @@ function dlscalc_dls_permalink( $slug, $in ) {
 	return add_query_arg( array_map( 'rawurlencode', array_filter( $in, 'strlen' ) ), dlscalc_page_url( $slug ) );
 }
 
-/**
- * Parameter URLs repeat the clean page with other numbers: keep them out of the index.
- * The canonical (printed by WordPress) always points to the clean URL.
+/*
+ * Parameter URLs (result permalinks) stay indexable: WordPress prints a canonical to the clean
+ * page URL, which passes their signals there. A noindex on top would conflict with it (audit F8).
  */
-add_filter(
-	'wp_robots',
-	function ( $robots ) {
-		if ( is_page() && dlscalc_dls_has_params() && isset( dlscalc_dls_tools()[ dlscalc_current_slug() ] ) ) {
-			$robots['noindex'] = true;
-			if ( empty( $robots['nofollow'] ) ) {
-				$robots['follow'] = true;
-			}
-		}
-		return $robots;
-	}
-);
 
 /**
  * Engine and tool script, deferred, only on the DLS pages and home. The live par tracker has its

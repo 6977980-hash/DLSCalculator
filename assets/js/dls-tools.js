@@ -77,7 +77,7 @@
 	// Inputs as permalink parameters, in a fixed order so links read the same every time.
 	var params = function () {
 		var p = {};
-		['n', 'r', 'g', 'c', 'l', 'o'].forEach(function (k) {
+		['n', 'r', 'g', 'c', 'l', 'o', 'f'].forEach(function (k) {
 			var el = form.elements[k];
 			if (el) {
 				p[k] = String(el.value).trim();
@@ -187,17 +187,16 @@
 		}
 	}
 
-	// Format and G50 pickers fill the plain inputs that carry the values.
+	// The format picker fills in its usual overs, unless overs a rain-shortened match started with
+	// are already typed (a 40-over ODI keeps 40). The format itself sets the minimum overs.
 	var preset = $('[data-preset]', form);
 	if (preset) {
 		preset.addEventListener('change', function () {
-			if (preset.value !== 'custom') {
-				form.elements.n.value = preset.value;
-				form.elements.c.value = preset.value;
+			var to = preset.options[preset.selectedIndex].getAttribute('data-overs'), now = form.elements.n.value.trim();
+			if (to && ['', '50', '20', '10'].indexOf(now) > -1) {
+				form.elements.n.value = to;
+				form.elements.c.value = to;
 			}
-		});
-		form.elements.n.addEventListener('input', function () {
-			preset.value = ['50', '20', '10'].indexOf(form.elements.n.value.trim()) > -1 ? form.elements.n.value.trim() : 'custom';
 		});
 	}
 	var gsel = $('[data-gsel]', form);

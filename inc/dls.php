@@ -241,12 +241,19 @@ function dlscalc_dls_innings( $start_b, $stops, $label ) {
 }
 
 /**
- * Fewest balls Team 2 must face for a result: 20 overs in a 50-over match, 5 in a 20-over match.
+ * Fewest balls Team 2 must face for a result, by format. See minBalls() in the JS engine.
  *
- * @param int $n Balls per side at the start.
+ * @param int    $n Balls per side at the start.
+ * @param string $f Format: odi, t20, t10, custom, or '' to go by the overs.
  * @return int
  */
-function dlscalc_dls_min_balls( $n ) {
+function dlscalc_dls_min_balls( $n, $f = '' ) {
+	if ( 'odi' === $f || 't20' === $f ) {
+		return 'odi' === $f ? 120 : 30;
+	}
+	if ( 't10' === $f || 'custom' === $f ) {
+		return 0;
+	}
 	return 300 === $n ? 120 : ( 120 === $n ? 30 : 0 );
 }
 
@@ -279,13 +286,14 @@ function dlscalc_dls_match( $o ) {
 	}
 	$steps = array_merge( $steps, $b['steps'], array( 'Team 2 resources, R2 = ' . dlscalc_dls_f1( $b['R'] ) . '%.', $formula ) );
 
-	$min_b = dlscalc_dls_min_balls( $o['N'] );
+	$min_b = dlscalc_dls_min_balls( $o['N'], $o['F'] ?? '' );
 	$warn  = '';
 	if ( $min_b && ( $b['ended'] ? $b['lastAt'] : $b['allot'] ) < $min_b ) {
 		$warn = 'Team 2 ' . ( $b['ended'] ? 'faced' : 'can face' ) . ' fewer than ' . dlscalc_dls_overs( $min_b ) . ' overs, so under ICC rules there is no result unless the match was already decided.';
 	}
 	return array(
 		'N'      => $o['N'],
+		'F'      => $o['F'] ?? '',
 		'S'      => $o['S'],
 		'G'      => $o['G'],
 		'M'      => $o['M'],
@@ -373,7 +381,7 @@ function dlscalc_dls_blank( $v ) {
 /**
  * DLS Calculator page.
  *
- * @param array $p Keys n, r, g, c, a, b as strings (see calc() in the JS engine).
+ * @param array $p Keys n, r, g, c, a, b, f as strings (see calc() in the JS engine).
  * @return array
  */
 function dlscalc_dls_calc( $p ) {
@@ -399,6 +407,7 @@ function dlscalc_dls_calc( $p ) {
 			't1' => dlscalc_dls_parse_stops( $p['a'] ?? '' ),
 			'M'  => $m,
 			't2' => dlscalc_dls_parse_stops( $p['b'] ?? '' ),
+			'F'  => in_array( $p['f'] ?? '', array( 'odi', 't20', 't10', 'custom' ), true ) ? $p['f'] : '',
 		)
 	);
 }
@@ -429,6 +438,7 @@ function dlscalc_dls_t20( $p ) {
 			't1'   => array(),
 			'M'    => ( $no - $l ) * 6,
 			't2'   => dlscalc_dls_parse_stops( $p['b'] ?? '' ),
+			'F'    => 't20',
 			'note' => $l ? 'Rain cut ' . $l . ( 1 === $l ? ' over' : ' overs' ) . ' before the chase, so Team 2 starts with ' . ( $no - $l ) . ' overs.' : '',
 		)
 	);
@@ -495,6 +505,7 @@ function dlscalc_dls_live( $p ) {
 			'r' => $p['r'] ?? '',
 			'g' => $p['g'] ?? '',
 			'c' => $p['c'] ?? '',
+			'f' => $p['f'] ?? '',
 		)
 	);
 	if ( isset( $base['err'] ) ) {
@@ -555,6 +566,7 @@ function dlscalc_dls_live( $p ) {
 							'lost' => $base['allot'] - $at,
 						),
 					),
+					'F'  => $base['F'],
 				)
 			);
 			$e['state'] = 'on';

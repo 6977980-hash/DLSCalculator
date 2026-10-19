@@ -132,7 +132,8 @@
 				if ((v[0] + v[1] + v[2] + v[3]).replace(/a/g, '') === '') {
 					return '';
 				}
-				return v.join('-') + (field(row, 'nr') ? '-n' : '');
+				var cut = field(row, 'mo').replace(/[-_]/g, '');
+				return v.join('-') + (cut ? '-' + cut : '') + (field(row, 'nr') ? '-n' : '');
 			}).filter(Boolean).join('_');
 		};
 		var teams = function () {

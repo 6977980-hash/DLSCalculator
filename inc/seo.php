@@ -38,7 +38,7 @@ function dlscalc_seo_pages() {
 			'description' => 'Work out the DLS revised target and par score for any rain-hit match. Uses the ICC Standard Edition table, handles several interruptions and shows every step.',
 		),
 		'dls-target-calculator-t20' => array(
-			'title'       => 'DLS Target Calculator T20: Rain Target & Par Table | DLSCalc',
+			'title'       => 'DLS Target Calculator T20: Rain Target & Par Score | DLSCalc',
 			'description' => 'DLS target calculator for T20 matches. Enter the score and overs lost to get the revised target, par score and an over-by-over par table for every wicket.',
 		),
 		'dls-par-score-table'       => array(
@@ -413,10 +413,11 @@ add_filter(
 );
 
 /**
- * Author, date and attachment archives are thin duplicate pages on a site like this; send them home.
+ * Author, date, category, tag and attachment archives are thin duplicate pages on a site like this;
+ * send them home (attachments to their parent).
  */
 function dlscalc_redirect_thin_archives() {
-	if ( is_author() || is_date() ) {
+	if ( is_author() || is_date() || is_category() || is_tag() ) {
 		wp_safe_redirect( home_url( '/' ), 301 );
 		exit;
 	}

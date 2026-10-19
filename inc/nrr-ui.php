@@ -104,6 +104,7 @@ function dlscalc_nrr_matches_from_rows() {
 	$oa    = dlscalc_nrr_get_rows( 'x_oa' );
 	$fa    = dlscalc_nrr_get_rows( 'x_fa' );
 	$aa    = dlscalc_nrr_get_rows( 'x_aa' );
+	$mo    = dlscalc_nrr_get_rows( 'x_mo' );
 	$nr    = dlscalc_nrr_get_rows( 'x_nr' );
 	$parts = array();
 	foreach ( array_slice( $rf, 0, DLSCALC_MATCHES_MAX, true ) as $i => $runs ) {
@@ -113,7 +114,8 @@ function dlscalc_nrr_matches_from_rows() {
 		}
 		$row[1] .= isset( $fa[ $i ] ) ? 'a' : '';
 		$row[3] .= isset( $aa[ $i ] ) ? 'a' : '';
-		$parts[] = implode( '-', $row ) . ( isset( $nr[ $i ] ) ? '-n' : '' );
+		$cut     = str_replace( array( '-', '_' ), '', trim( $mo[ $i ] ?? '' ) );
+		$parts[] = implode( '-', $row ) . ( '' === $cut ? '' : '-' . $cut ) . ( isset( $nr[ $i ] ) ? '-n' : '' );
 	}
 	return implode( '_', $parts );
 }
@@ -212,21 +214,9 @@ function dlscalc_nrr_permalink( $slug, $in ) {
 	return add_query_arg( array_map( 'rawurlencode', array_filter( $in, 'strlen' ) ), dlscalc_page_url( $slug ) );
 }
 
-/**
- * Parameter URLs repeat the clean page with other numbers: keep them out of the index.
+/*
+ * Parameter URLs stay indexable with WordPress's canonical to the clean page; see inc/dls-ui.php.
  */
-add_filter(
-	'wp_robots',
-	function ( $robots ) {
-		if ( is_page() && dlscalc_is_nrr_page() && dlscalc_nrr_has_params() ) {
-			$robots['noindex'] = true;
-			if ( empty( $robots['nofollow'] ) ) {
-				$robots['follow'] = true;
-			}
-		}
-		return $robots;
-	}
-);
 
 /**
  * NRR engine and tool script, deferred, only on the NRR and run rate pages.
@@ -248,15 +238,18 @@ function dlscalc_nrr_scripts() {
 add_action( 'wp_enqueue_scripts', 'dlscalc_nrr_scripts', 100 );
 
 /**
- * Fields of one match row, for the inputs: overs without the all-out mark, plus the flags.
+ * Fields of one match row, for the inputs: overs without the all-out mark, the overs per side
+ * when rain cut that match, plus the flags.
  *
  * @param string $part One match from the permalink value.
- * @return array{rf: string, of: string, fa: bool, ra: string, oa: string, aa: bool, nr: bool}
+ * @return array{rf: string, of: string, fa: bool, ra: string, oa: string, aa: bool, mo: string, nr: bool}
  */
 function dlscalc_nrr_match_fields( $part ) {
-	$x  = explode( '-', $part );
-	$of = $x[1] ?? '';
-	$oa = $x[3] ?? '';
+	$x     = explode( '-', $part );
+	$of    = $x[1] ?? '';
+	$oa    = $x[3] ?? '';
+	$extra = array_slice( $x, 4 );
+	$mo    = array_values( array_diff( $extra, array( 'n', '' ) ) );
 	return array(
 		'rf' => $x[0] ?? '',
 		'of' => rtrim( $of, 'a' ),
@@ -264,7 +257,8 @@ function dlscalc_nrr_match_fields( $part ) {
 		'ra' => $x[2] ?? '',
 		'oa' => rtrim( $oa, 'a' ),
 		'aa' => 'a' === substr( $oa, -1 ),
-		'nr' => 'n' === ( $x[4] ?? '' ),
+		'mo' => $mo[0] ?? '',
+		'nr' => in_array( 'n', $extra, true ),
 	);
 }
 
@@ -323,6 +317,9 @@ function dlscalc_nrr_match_row( $i, $row ) {
 				<input type="text" inputmode="decimal" name="x_oa[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['oa'] ); ?>" placeholder="e.g. 20" data-f="oa" autocomplete="off">
 			</label>
 		</div>
+		<label class="fld mrow__cut">Overs per side in this match, if rain cut it
+			<input type="text" inputmode="decimal" name="x_mo[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['mo'] ); ?>" placeholder="Full overs" data-f="mo" autocomplete="off">
+		</label>
 		<div class="mrow__end">
 			<?php $check( 'fa', $row['fa'], 'We were all out' ); ?>
 			<?php $check( 'aa', $row['aa'], 'They were all out' ); ?>

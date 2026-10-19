@@ -82,11 +82,23 @@ function dlscalc_create_pages() {
 add_action( 'after_switch_theme', 'dlscalc_create_pages' );
 
 /**
- * A deploy that adds pages runs creation again the next time an admin opens WP admin.
+ * A deploy that adds pages runs creation again the next time an admin opens WP admin. WP admin
+ * fires several requests at once (heartbeat, ajax), so an option acts as a lock: add_option() only
+ * succeeds for one request, and the others skip. Without it two requests made two /vjd-method/ pages.
  */
 function dlscalc_maybe_create_pages() {
-	if ( (int) get_option( 'dlscalc_pages_version', 0 ) < DLSCALC_PAGES_VERSION && current_user_can( 'manage_options' ) ) {
-		dlscalc_create_pages();
+	if ( (int) get_option( 'dlscalc_pages_version', 0 ) >= DLSCALC_PAGES_VERSION || ! current_user_can( 'manage_options' ) || wp_doing_ajax() ) {
+		return;
 	}
+	$lock = 'dlscalc_pages_lock';
+	if ( ! add_option( $lock, time(), '', 'no' ) ) {
+		// A lock left by a request that died is cleared after a minute.
+		if ( time() - (int) get_option( $lock ) < 60 ) {
+			return;
+		}
+		update_option( $lock, time(), false );
+	}
+	dlscalc_create_pages();
+	delete_option( $lock );
 }
 add_action( 'admin_init', 'dlscalc_maybe_create_pages' );

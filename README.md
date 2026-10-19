@@ -72,14 +72,14 @@ Lighthouse (mobile, local test server): Performance 99 to 100, Accessibility 100
 
 Every tool keeps its inputs in the address, so a shared link opens the same result:
 
-- DLS Calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`. Example: `/dls-calculator/?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2`.
+- DLS Calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, `f` format (`odi`, `t20`, `t10` or `custom`; sets the minimum overs for a result, ODI 20 and T20 5; without it a 50-over match counts as ODI and a 20-over match as T20). Example: `/dls-calculator/?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2`.
 - T20: `n`, `r`, `l` overs lost before the chase, `b`.
 - Par score table: `o` overs per side, `r`, and optional `c`.
 - Live DLS par: `n`, `r`, `g`, `c`, and `x` the score log as `overs-runs-wickets` joined with `_`.
-- Net run rate: `q` overs per side and `x` matches as `scored-overs-conceded-overs`, with `a` after overs for an all-out innings and `-n` on the end for a no result. Qualification scenario: `u=t` opens it, `t` the points table (teams joined with `_`, fields with `~`: name, played, won, points, runs for, overs faced, runs against, overs bowled), `y` your team, `v` team to pass, `o` next opponent (`0` = not in the table), `k` `f` bat first or `c` chase, `e` score, `h` overs per side, `d` points for a win.
+- Net run rate: `q` overs per side and `x` matches as `scored-overs-conceded-overs`, with `a` after overs for an all-out innings, an optional fifth field for the overs per side when rain cut that match (`143-15-120-12a-15`; an all-out side counts those overs) and `-n` on the end for a no result. Qualification scenario: `u=t` opens it, `t` the points table (teams joined with `_`, fields with `~`: name, played, won, points, runs for, overs faced, runs against, overs bowled), `y` your team, `v` team to pass, `o` next opponent (`0` = not in the table), `k` `f` bat first or `c` chase, `e` score, `h` overs per side, `d` points for a win.
 - Run rate: `u` `c` chasing or `f` batting first, `n`, `t` target, `r` runs, `o` overs bowled.
 
-The names avoid WordPress's own query variables (`s` is search, `m` is a date archive, `p` and `w` are taken too). Pages with parameters send `noindex, follow`, and the canonical always points to the clean URL. The NRR points table and the live tracker are also saved in the visitor's browser (localStorage), so a return visit to the clean URL reopens them.
+The names avoid WordPress's own query variables (`s` is search, `m` is a date archive, `p` and `w` are taken too). Pages with parameters stay indexable, and the canonical always points to the clean URL (a noindex on top would conflict with it). The NRR points table and the live tracker are also saved in the visitor's browser (localStorage), so a return visit to the clean URL reopens them.
 
 ## Menus
 

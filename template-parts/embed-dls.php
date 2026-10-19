@@ -24,7 +24,6 @@ $dlscalc_full = dlscalc_dls_permalink( 'dls-calculator', $in + array( 'g' => '24
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, follow">
 <title>DLS calculator widget | DLSCalc</title>
-<link rel="canonical" href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">
 <style>
 *{box-sizing:border-box}
 body{margin:0;font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#10231c;background:transparent}
