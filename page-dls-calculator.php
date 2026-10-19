@@ -110,5 +110,5 @@ dlscalc_tool_page_open(
 	<?php get_template_part( 'template-parts/content/dls-calculator' ); ?>
 </div>
 <?php
-dlscalc_tool_page_close( array( 'dls-target-calculator-t20', 'dls-par-score-table', 'dls-method', 'net-run-rate-calculator' ) );
+dlscalc_tool_page_close( array( 'dls-target-calculator-t20', 'dls-par-score-table', 'dls-method', 'net-run-rate-calculator', 'famous-dls-matches' ) );
 get_footer();

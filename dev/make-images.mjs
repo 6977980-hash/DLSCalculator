@@ -31,6 +31,16 @@ const pages = {
   'how-to-calculate-nrr': ['Guide', 'How to calculate net run rate', 'The NRR formula with a step-by-step example'],
   'vjd-method': ['Guide', 'VJD method vs DLS', 'Jayadevan\'s rain rule, explained and compared'],
   about: ['About', 'About DLSCalc and Ch Alee', 'Cricketer and tournament organiser'],
+  'famous-dls-matches': ['Famous DLS matches', 'Rain-hit classics, recalculated', 'Official targets vs our DLS calculator, match by match'],
+  '1992-world-cup-semi-final-england-south-africa': ['1992 World Cup', '22 off 13 became 21 off 1 ball', 'England vs South Africa, and what DLS would have set'],
+  '2003-world-cup-south-africa-sri-lanka': ['2003 World Cup', 'The par score that knocked out the hosts', 'South Africa vs Sri Lanka in Durban: why 229 only tied'],
+  '2015-world-cup-semi-final-new-zealand-south-africa': ['2015 World Cup', '298 in 43 overs: the DLS target explained', 'New Zealand vs South Africa semi-final, Auckland'],
+  '2019-world-cup-semi-final-india-new-zealand': ['2019 World Cup', 'The DLS targets India never chased', 'India vs New Zealand semi-final, Old Trafford'],
+  't20-world-cup-2022-india-bangladesh': ['T20 World Cup 2022', 'India vs Bangladesh: 151 in 16 overs', 'How the DLS target was set in Adelaide'],
+  't20-world-cup-2022-england-ireland': ['T20 World Cup 2022', 'England vs Ireland: the par of 110', 'Ireland win by 5 runs on DLS at the MCG'],
+  't20-world-cup-2022-pakistan-south-africa': ['T20 World Cup 2022', 'Pakistan vs South Africa: 142 in 14 overs', 'Why South Africa needed 73 off 5 after the rain'],
+  'ipl-2023-final-csk-gt': ['IPL 2023 final', 'CSK vs GT: 171 in 15 overs on DLS', 'The rain-hit final Jadeja finished off the last ball'],
+  't20-world-cup-2024-afghanistan-bangladesh': ['T20 World Cup 2024', 'Afghanistan vs Bangladesh: 114 in 19 overs', 'Three rain breaks and a first semi-final'],
 };
 
 const og = ([kicker, title, line]) => `<div style="width:1200px;height:630px;box-sizing:border-box;background:#13452F;color:#F5F3EC;padding:64px 72px;display:flex;flex-direction:column;justify-content:space-between;font-family:SS;position:relative;overflow:hidden">

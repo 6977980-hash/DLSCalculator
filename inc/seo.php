@@ -81,7 +81,7 @@ function dlscalc_seo_pages() {
 			'title'       => 'Contact | DLSCalc',
 			'description' => 'Contact DLSCalc to report a mistake or suggest a new cricket calculator.',
 		),
-	);
+	) + dlscalc_match_seo_pages();
 }
 
 /**

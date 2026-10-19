@@ -9,7 +9,7 @@ WordPress child theme for [dlscalculator.com](https://dlscalculator.com): DLS, T
 
 1. Install and activate GeneratePress (Appearance → Themes → Add New).
 2. Let Hostinger deploy this repo, then activate **DLSCalc** in Appearance → Themes.
-3. On activation the theme creates its pages (Home, the four calculators, the DLS par score table, the live DLS par tracker, the three guides, About, Contact), sets Home as the front page and turns on pretty permalinks. Existing pages are never changed. When a deploy adds a page, it is created the next time an admin opens WP admin.
+3. On activation the theme creates its pages (Home, the four calculators, the DLS par score table, the live DLS par tracker, the three guides, About, Contact, and the famous DLS matches hub with one page per match under it), sets Home as the front page and turns on pretty permalinks. Existing pages are never changed. When a deploy adds a page, it is created the next time an admin opens WP admin.
 4. Publish WordPress's draft **Privacy Policy** page (Pages → Privacy Policy → Publish). Its text comes from `page-privacy-policy.php`, so the sample text in the editor never shows.
 5. Optional: delete WordPress's "Sample Page" and "Hello world!" post. They are `noindex` and left out of the sitemap anyway.
 
@@ -31,7 +31,9 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `inc/nrr-ui.php` | NRR and run rate pages: inputs from the URL and no-JS forms, match and team rows, standings, script loading |
 | `inc/content.php` | FAQs (also used for FAQPage schema), sources, related links and content dates |
 | `inc/guides.php` | Guides (`dlscalc_guides()`: heading, answer box, contents, call to action), Article schema, trust page layout, contact email |
-| `page-guide.php` | Shared template for `/dls-method/`, `/how-to-calculate-nrr/` and `/vjd-method/`; articles in `template-parts/content/<slug>.php` |
+| `page-guide.php` | Shared template for the guides (`/dls-method/`, `/how-to-calculate-nrr/`, `/vjd-method/`) and the famous matches pages; articles in `template-parts/content/<slug>.php` |
+| `inc/matches.php` | Famous rain-hit matches: facts, the DLS Calculator inputs for each and the official target to compare with |
+| `inc/matches-ui.php` | `/famous-dls-matches/` hub and the match pages under it: URLs, SEO data, FAQs, the recalculation box and the accuracy table |
 | `page-about.php`, `page-contact.php`, `page-privacy-policy.php` | Trust pages, written in the theme |
 | `page-dls-calculator.php`, `page-dls-target-calculator-t20.php`, `page-dls-par-score-table.php`, `page-live-dls-par-score.php` | The DLS tool pages and the live par tracker; their articles are in `template-parts/content/` |
 | `page-net-run-rate-calculator.php`, `page-run-rate-calculator.php` | NRR calculator with the qualification scenario, and the run rate calculator |

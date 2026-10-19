@@ -35,7 +35,7 @@ function dlscalc_guides() {
 				'faq'            => 'FAQ',
 			),
 			'cta'       => array( 'dls-calculator', 'Rain in your match right now?', 'Open the DLS Calculator' ),
-			'related'   => array( 'dls-calculator', 'dls-target-calculator-t20', 'dls-par-score-table', 'vjd-method' ),
+			'related'   => array( 'dls-calculator', 'dls-target-calculator-t20', 'dls-par-score-table', 'vjd-method', 'famous-dls-matches' ),
 		),
 		'how-to-calculate-nrr' => array(
 			'h1'        => 'How to Calculate NRR in Cricket (Net Run Rate Formula)',
@@ -73,7 +73,7 @@ function dlscalc_guides() {
 			'cta'       => array( 'dls-calculator', 'Need a rain target for your match?', 'Open the DLS Calculator' ),
 			'related'   => array( 'dls-method', 'dls-calculator', 'dls-target-calculator-t20', 'dls-par-score-table' ),
 		),
-	);
+	) + dlscalc_match_guides();
 }
 
 /**

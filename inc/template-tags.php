@@ -47,7 +47,7 @@ function dlscalc_tools() {
  * @return string
  */
 function dlscalc_page_url( $slug ) {
-	return home_url( '/' . trim( $slug, '/' ) . '/' );
+	return home_url( '/' . dlscalc_page_path( $slug ) . '/' );
 }
 
 /**
@@ -120,6 +120,7 @@ function dlscalc_default_footer_links() {
 		'dls-method'           => 'DLS method guide',
 		'how-to-calculate-nrr' => 'NRR guide',
 		'vjd-method'           => 'VJD method',
+		'famous-dls-matches'   => 'Famous DLS matches',
 		'privacy-policy'       => 'Privacy Policy',
 		'contact'              => 'Contact',
 	);
@@ -132,7 +133,7 @@ function dlscalc_default_footer_links() {
  * @return bool
  */
 function dlscalc_page_is_live( $slug ) {
-	$page = get_page_by_path( $slug, OBJECT, 'page' );
+	$page = get_page_by_path( dlscalc_page_path( $slug ), OBJECT, 'page' );
 	return $page && 'publish' === $page->post_status;
 }
 
