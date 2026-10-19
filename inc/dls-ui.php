@@ -194,10 +194,13 @@ function dlscalc_dls_scripts() {
 add_action( 'wp_enqueue_scripts', 'dlscalc_dls_scripts', 100 );
 
 /**
- * Tool styles, inlined after the main stylesheet, only on pages that have a tool.
+ * Tool styles, inlined after the main stylesheet, only on pages that have a tool. The one-line
+ * script marks the page as scripted before it paints, so buttons that need JavaScript take their
+ * place at once and the no-JS extras never show: nothing shifts when the tool script runs.
  */
 function dlscalc_dls_styles() {
 	if ( dlscalc_is_dls_page() ) {
+		echo "<script>document.documentElement.classList.add('js')</script>\n";
 		dlscalc_print_inline_css( 'assets/css/tools.css', 'dlscalc-tools-css' );
 	}
 }
@@ -269,7 +272,7 @@ function dlscalc_dls_stop_row( $key, $n, $row, $team ) {
 		<label class="fld">Overs lost
 			<input type="text" inputmode="decimal" name="<?php echo esc_attr( $key ); ?>_lost[]" value="<?php echo esc_attr( $row['lost'] ); ?>" placeholder="e.g. 10" data-f="lost" autocomplete="off">
 		</label>
-		<button type="button" class="xbtn" aria-label="Remove <?php echo esc_attr( $label ); ?>" data-remove hidden>×</button>
+		<button type="button" class="xbtn" aria-label="Remove <?php echo esc_attr( $label ); ?>" data-remove>×</button>
 	</div>
 	<?php
 }
@@ -303,8 +306,8 @@ function dlscalc_dls_result_panel( $r, $slug, $in, $stats ) {
 				<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>
 				Share on WhatsApp
 			</a>
-			<button type="button" class="btn btn--ghost" data-copy hidden>Copy link</button>
-			<button type="button" class="btn btn--ghost" data-print hidden>Print</button>
+			<button type="button" class="btn btn--ghost js-only" data-copy>Copy link</button>
+			<button type="button" class="btn btn--ghost js-only" data-print>Print</button>
 		</div>
 		<p class="result__note">DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ by a few runs.</p>
 	</aside>

@@ -63,7 +63,7 @@ dlscalc_tool_page_open(
 			<?php $dlscalc_on = 'Par after each completed over, for 0 to 9 wickets down. If play ends for good, Team 2 wins when it is above par and the match is tied on par.'; ?>
 			<p class="hint" data-out="tablenote" data-on="<?php echo esc_attr( $dlscalc_on ); ?>" data-off="Fix the inputs above to see the par table."><?php echo esc_html( empty( $dlscalc_r['err'] ) ? $dlscalc_on : 'Fix the inputs above to see the par table.' ); ?></p>
 		</div>
-		<button type="button" class="btn btn--line noprint" data-print hidden>Print par table</button>
+		<button type="button" class="btn btn--line noprint js-only" data-print>Print par table</button>
 	</div>
 	<?php dlscalc_dls_par_table_html( $dlscalc_r, 'DLS par score by completed overs and wickets down' ); ?>
 </section>

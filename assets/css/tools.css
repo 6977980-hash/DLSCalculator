@@ -30,6 +30,7 @@
 button.btn { cursor: pointer; }
 .btn--ghost { background: transparent; }
 [hidden] { display: none !important; }
+html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .js .stop--spare, .js [data-submit] { display: none; }
 
 /* Tool layout */
 .tool-lede { max-width: 780px; margin: 0 0 24px; font-size: 18px; color: var(--text); }

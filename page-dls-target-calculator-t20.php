@@ -44,7 +44,7 @@ dlscalc_tool_page_open(
 			<h2 id="g-chase">Stoppages during the chase</h2>
 			<p class="hint">Add a row if rain stops the chase. If the match is abandoned, enter all the overs that were left as overs lost.</p>
 			<?php dlscalc_dls_stop_rows( 'b', $dlscalc_in['b'], '' ); ?>
-			<div><button type="button" class="btn btn--line" data-add hidden>+ Add stoppage in the chase</button></div>
+			<div><button type="button" class="btn btn--line" data-add>+ Add stoppage in the chase</button></div>
 		</div>
 		<div data-submit><button type="submit" class="btn btn--green">Calculate</button></div>
 	</form>
