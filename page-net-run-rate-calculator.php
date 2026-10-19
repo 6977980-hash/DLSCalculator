@@ -51,7 +51,7 @@ dlscalc_tool_page_open(
 			<div><button type="button" class="btn btn--line" data-add>+ Add match</button></div>
 			<div data-submit><button type="submit" class="btn btn--green">Calculate NRR</button></div>
 		</form>
-		<aside class="result" id="nrr-result" aria-live="polite" aria-label="Net run rate result">
+		<section class="result" id="nrr-result" aria-live="polite" aria-label="Net run rate result">
 			<p class="alert" data-out="cerr"<?php echo $dlscalc_cerr ? '' : ' hidden'; ?>><?php echo esc_html( $dlscalc_cerr ); ?></p>
 			<div>
 				<div class="result__label">Net run rate</div>
@@ -64,7 +64,7 @@ dlscalc_tool_page_open(
 			<p class="result__line" data-out="cline"><?php echo esc_html( $dlscalc_cerr ? 'Check the inputs.' : $dlscalc_c['rf'] . ' runs in ' . dlscalc_dls_overs( $dlscalc_c['bf'] ) . ' overs against ' . $dlscalc_c['ra'] . ' in ' . dlscalc_dls_overs( $dlscalc_c['ba'] ) . ' overs, from ' . $dlscalc_c['counted'] . ( 1 === $dlscalc_c['counted'] ? ' match.' : ' matches.' ) ); ?></p>
 			<?php dlscalc_share_buttons( dlscalc_nrr_calc_share( $dlscalc_c ), $dlscalc_link ); ?>
 			<p class="result__note">ICC method: overs count in balls, a side bowled out counts its full quota, and no-result matches are left out.</p>
-		</aside>
+		</section>
 	</div>
 	<section class="panel block">
 		<h2>How this net run rate was worked out</h2>
@@ -123,7 +123,7 @@ dlscalc_tool_page_open(
 				</div>
 				<div data-submit><button type="submit" class="btn btn--green">Work out the scenario</button></div>
 			</div>
-			<aside class="result" id="scenario-result" aria-live="polite" aria-label="Scenario result">
+			<section class="result" id="scenario-result" aria-live="polite" aria-label="Scenario result">
 				<p class="alert" data-out="serr"<?php echo $dlscalc_serr ? '' : ' hidden'; ?>><?php echo esc_html( $dlscalc_serr ); ?></p>
 				<div>
 					<div class="result__label" data-out="shead"><?php echo esc_html( dlscalc_nrr_solve_head( $dlscalc_s, $dlscalc_in ) ); ?></div>
@@ -132,7 +132,7 @@ dlscalc_tool_page_open(
 				</div>
 				<?php dlscalc_share_buttons( dlscalc_nrr_solve_share( $dlscalc_s ), $dlscalc_link ); ?>
 				<p class="result__note" data-out="snote"><?php echo esc_html( $dlscalc_serr ? '' : $dlscalc_s['note'] ); ?></p>
-			</aside>
+			</section>
 		</div>
 	</form>
 	<section class="block">

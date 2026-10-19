@@ -56,7 +56,7 @@ a{color:#13452f;font-weight:600}
 <script>document.documentElement.className='js'</script>
 </head>
 <body>
-<div class="w">
+<main class="w">
 	<h1>DLS target calculator</h1>
 	<p class="sub">Rain before the chase? Enter the overs Team 2 gets. ICC DLS Standard Edition.</p>
 	<form method="get" action="" data-embed>
@@ -83,7 +83,7 @@ a{color:#13452f;font-weight:600}
 		<a data-o="full" href="<?php echo esc_url( $dlscalc_full ); ?>" target="_blank" rel="noopener">Stoppages during the chase? Full calculator</a>
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">DLSCalc</a>
 	</div>
-</div>
+</main>
 <script src="<?php echo esc_url( DLSCALC_URI . '/assets/js/dls-engine.js?ver=' . dlscalc_asset_version( 'assets/js/dls-engine.js' ) ); ?>" defer></script>
 <script src="<?php echo esc_url( DLSCALC_URI . '/assets/js/embed.js?ver=' . dlscalc_asset_version( 'assets/js/embed.js' ) ); ?>" defer data-full="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>"></script>
 </body>

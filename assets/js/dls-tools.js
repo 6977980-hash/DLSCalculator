@@ -174,6 +174,10 @@
 				slider.max = String(no - 5);
 			}
 			var lost = Math.min(parseInt(slider.value, 10) || 0, parseInt(slider.max, 10));
+			// Fewer overs per side lowers the slider's top end. A link with more overs lost than the
+			// slider allows keeps its value on first load, so it shows the same error as the server (audit F39).
+			var linked = first && window.URLSearchParams ? new URLSearchParams(location.search).get('l') : null;
+			p.l = linked !== null ? linked : String(lost);
 			text('lostlabel', lost + (lost === 1 ? ' over' : ' overs'));
 			text('mlabel', no >= 5 && no <= 20 ? String(no - lost) : '–');
 		}

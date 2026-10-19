@@ -32,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="table-wrap" tabindex="0" role="region" aria-label="VJD and DLS compared">
 <table class="data">
 	<caption>VJD and DLS compared</caption>
-	<thead><tr><th scope="col"></th><th scope="col">VJD (Jayadevan system)</th><th scope="col">DLS (Duckworth-Lewis-Stern)</th></tr></thead>
+	<thead><tr><th scope="col"><span class="screen-reader-text">Compared</span></th><th scope="col">VJD (Jayadevan system)</th><th scope="col">DLS (Duckworth-Lewis-Stern)</th></tr></thead>
 	<tbody>
 		<tr><th scope="row">Created by</th><td>V. Jayadevan, India</td><td>Frank Duckworth, Tony Lewis and Steven Stern</td></tr>
 		<tr><th scope="row">Used by</th><td>BCCI domestic cricket in India</td><td>ICC for all international cricket, and most leagues</td></tr>

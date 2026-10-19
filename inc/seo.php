@@ -397,10 +397,12 @@ function dlscalc_robots_txt( $output, $public ) {
 	if ( ! $public ) {
 		return $output;
 	}
-	$lines = array( 'User-agent: *', 'Disallow: /wp-admin/', 'Allow: /wp-admin/admin-ajax.php', 'Disallow: /?s=', 'Disallow: /search/', '' );
-	foreach ( array( 'Googlebot', 'Bingbot', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'ClaudeBot', 'Claude-SearchBot', 'Google-Extended', 'Applebot' ) as $bot ) {
-		$lines[] = 'User-agent: ' . $bot;
-		$lines[] = 'Allow: /';
+	// A crawler follows only the most specific group that names it, so the named bots get the same
+	// Disallow lines as everyone else (audit F42); naming them keeps the welcome explicit.
+	$rules = array( 'Disallow: /wp-admin/', 'Allow: /wp-admin/admin-ajax.php', 'Disallow: /?s=', 'Disallow: /search/' );
+	$lines = array();
+	foreach ( array( '*', 'Googlebot', 'Bingbot', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'ClaudeBot', 'Claude-SearchBot', 'Google-Extended', 'Applebot' ) as $bot ) {
+		$lines   = array_merge( $lines, array( 'User-agent: ' . $bot ), $rules );
 		$lines[] = '';
 	}
 	$lines[] = 'Sitemap: ' . home_url( '/wp-sitemap.xml' );

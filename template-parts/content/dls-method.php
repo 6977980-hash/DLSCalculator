@@ -118,7 +118,7 @@ $dlscalc_head .= '</tr></thead>';
 <div class="table-wrap" tabindex="0" role="region" aria-label="D/L and DLS compared">
 <table class="data">
 	<caption>Duckworth-Lewis and Duckworth-Lewis-Stern compared</caption>
-	<thead><tr><th scope="col"></th><th scope="col">Duckworth-Lewis (D/L)</th><th scope="col">Duckworth-Lewis-Stern (DLS)</th></tr></thead>
+	<thead><tr><th scope="col"><span class="screen-reader-text">Compared</span></th><th scope="col">Duckworth-Lewis (D/L)</th><th scope="col">Duckworth-Lewis-Stern (DLS)</th></tr></thead>
 	<tbody>
 		<tr><th scope="row">In use</th><td>1997 to 2014</td><td>Since 2014</td></tr>
 		<tr><th scope="row">Built by</th><td>Frank Duckworth and Tony Lewis</td><td>Updated by Steven Stern</td></tr>

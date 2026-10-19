@@ -88,6 +88,8 @@ dlscalc_par_sheet_head();
 					</select>
 				</label>
 			</div>
+			<?php // The tracker has no Team 1 stoppages or penalty runs (audit F43), so say where those go. ?>
+			<p class="hint">The tracker assumes Team 1 batted its full overs and no penalty runs were awarded during the chase. If Team 1's innings was cut by rain, or Team 1 got penalty runs, use the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>.</p>
 		</div>
 
 		<div class="tool__group" role="group" aria-labelledby="g-log">

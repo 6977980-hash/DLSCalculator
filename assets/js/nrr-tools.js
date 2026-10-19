@@ -128,7 +128,10 @@
 
 		var matches = function () {
 			return $$('.mrow', matchBox).map(function (row) {
-				var v = [field(row, 'rf'), field(row, 'of') + (field(row, 'fa') ? 'a' : ''), field(row, 'ra'), field(row, 'oa') + (field(row, 'aa') ? 'a' : '')];
+				// "-" and "_" separate fields and matches, so a typed minus travels as "−" and the engine can say "cannot be negative".
+				var v = [field(row, 'rf'), field(row, 'of') + (field(row, 'fa') ? 'a' : ''), field(row, 'ra'), field(row, 'oa') + (field(row, 'aa') ? 'a' : '')].map(function (t) {
+					return t.replace(/-/g, '−').replace(/_/g, '');
+				});
 				if ((v[0] + v[1] + v[2] + v[3]).replace(/a/g, '') === '') {
 					return '';
 				}
