@@ -210,6 +210,7 @@ function dlscalc_same_as( $who ) {
 		'organization' => array(),
 		'person'       => array(
 			'https://www.linkedin.com/in/ali-ahmad-chaudhry-12777486/',
+			'https://www.facebook.com/aac7980',
 		),
 	);
 	return $profiles[ $who ] ?? array();
