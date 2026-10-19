@@ -22,17 +22,18 @@ function dlscalc_llms_sections() {
 	$guides   = function_exists( 'dlscalc_guides' ) ? array_keys( dlscalc_guides() ) : array();
 	$tools    = array_merge( array_keys( dlscalc_tools() ), array( 'dls-par-score-table', 'live-dls-par-score' ) );
 	$sections = array(
-		'Calculators' => array(),
-		'Guides'      => array(),
-		'More pages'  => array(),
-		'About'       => array(),
+		'Calculators'        => array(),
+		'Guides'             => array(),
+		'Famous DLS matches' => array(),
+		'More pages'         => array(),
+		'About'              => array(),
 	);
 
 	foreach ( dlscalc_site_pages() as $slug => $title ) {
 		if ( 'home' === $slug || 'privacy-policy' === $slug ) {
 			continue;
 		}
-		$page = get_page_by_path( $slug, OBJECT, 'page' );
+		$page = get_page_by_path( dlscalc_page_path( $slug ), OBJECT, 'page' );
 		if ( ! $page || 'publish' !== $page->post_status ) {
 			continue;
 		}
@@ -40,6 +41,8 @@ function dlscalc_llms_sections() {
 		$desc = $seo[ $slug ]['description'] ?? '';
 		if ( in_array( $slug, $tools, true ) ) {
 			$group = 'Calculators';
+		} elseif ( 'famous-dls-matches' === $slug || isset( dlscalc_matches()[ $slug ] ) ) {
+			$group = 'Famous DLS matches';
 		} elseif ( in_array( $slug, $guides, true ) ) {
 			$group = 'Guides';
 		} elseif ( in_array( $slug, array( 'about', 'contact' ), true ) ) {

@@ -147,5 +147,5 @@ dlscalc_tool_page_open(
 	<?php get_template_part( 'template-parts/content/live-dls-par-score' ); ?>
 </div>
 <?php
-dlscalc_tool_page_close( array( 'dls-calculator', 'dls-par-score-table', 'dls-target-calculator-t20', 'run-rate-calculator' ) );
+dlscalc_tool_page_close( array( 'dls-calculator', 'dls-par-score-table', 'dls-target-calculator-t20', 'run-rate-calculator', 'famous-dls-matches' ) );
 get_footer();

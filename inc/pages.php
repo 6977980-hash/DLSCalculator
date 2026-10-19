@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DLSCALC_PAGES_VERSION', 4 );
+define( 'DLSCALC_PAGES_VERSION', 5 );
 
 /**
  * Pages the theme owns: slug => title. Content comes from theme templates, not the editor.
@@ -33,7 +33,9 @@ function dlscalc_site_pages() {
 			'about'                => 'About DLSCalc',
 			'privacy-policy'       => 'Privacy Policy',
 			'contact'              => 'Contact',
-		)
+			'famous-dls-matches'   => 'Famous DLS Matches',
+		),
+		wp_list_pluck( dlscalc_matches(), 'title' )
 	);
 }
 
@@ -42,14 +44,19 @@ function dlscalc_site_pages() {
  */
 function dlscalc_create_pages() {
 	foreach ( dlscalc_site_pages() as $slug => $title ) {
-		$existing = get_page_by_path( $slug, OBJECT, 'page' );
+		$path     = dlscalc_page_path( $slug );
+		$existing = get_page_by_path( $path, OBJECT, 'page' );
 		// Never touch a page that already exists. WordPress's own draft Privacy Policy is published by
 		// the owner in WP admin; the theme template replaces its sample text, and the footer link appears then.
 		if ( $existing ) {
 			continue;
 		}
+		// Child pages (the match pages under /famous-dls-matches/) come after their parent in the list.
+		$parent = dirname( $path );
+		$parent = '.' === $parent ? null : get_page_by_path( $parent, OBJECT, 'page' );
 		wp_insert_post(
 			array(
+				'post_parent'  => $parent ? $parent->ID : 0,
 				'post_type'    => 'page',
 				'post_status'  => 'publish',
 				'post_title'   => $title,

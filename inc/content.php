@@ -29,7 +29,8 @@ function dlscalc_content_dates() {
 		'about'                     => '2026-10-19',
 		'contact'                   => '2026-10-19',
 		'privacy-policy'            => '2026-10-19',
-	);
+		'famous-dls-matches'        => '2026-10-19',
+	) + array_fill_keys( array_keys( dlscalc_matches() ), '2026-10-19' );
 }
 
 /**
@@ -103,6 +104,12 @@ function dlscalc_related_html( $slugs ) {
 		'vjd-method'                => array( 'VJD method vs DLS', 'Jayadevan\'s rain rule and how it differs.' ),
 		'run-rate-calculator'       => array( 'Run Rate Calculator', 'Required rate and runs per ball for the chase.' ),
 		'net-run-rate-calculator'   => array( 'Net Run Rate Calculator', 'Your NRR and the margin you need to qualify.' ),
+		'famous-dls-matches'        => array( 'Famous DLS matches', 'Rain-hit classics recalculated, target by target.' ),
+	) + array_map(
+		function ( $m ) {
+			return array( $m['title'], $m['card'] );
+		},
+		dlscalc_matches()
 	);
 	echo '<nav class="related noprint" aria-label="Related calculators and guides">';
 	foreach ( $slugs as $slug ) {
@@ -132,7 +139,7 @@ function dlscalc_faqs( $slug ) {
 		'dls-calculator'            => array(
 			array( 'How many overs are needed for a DLS result?', 'Team 2 must be able to face at least 20 overs in a 50-over match and 5 overs in a 20-over match. If fewer are possible, there is no result, unless Team 2 has already passed the target or been bowled out. The calculator warns you when the chase falls below that minimum.' ),
 			array( 'Can I add more than one rain break?', 'Yes. Add a row for every stoppage in either innings, up to ten per innings. The resources lost in each stoppage are added together, which is how the ICC playing conditions handle several interruptions.' ),
-			array( 'Why can my answer differ from the official target?', 'International matches and big franchise leagues use the DLS Professional Edition, which runs on ICC software and is not published. This calculator uses the published Standard Edition table, the ICC\'s official fallback, so targets usually match and sometimes differ by a few runs.' ),
+			array( 'Why can my answer differ from the official target?', 'International matches and big franchise leagues use the DLS Professional Edition, which runs on ICC software and is not published. This calculator uses the published Standard Edition table, the ICC\'s official fallback, so targets usually match and sometimes differ by a few runs. See how close it comes in <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '">famous rain-hit matches</a>.' ),
 			array( 'What is the par to tie?', 'It is one run less than the target. If the match ends with Team 2 exactly on the par score, the match is tied. When Team 2\'s innings is cut short for good, the par score decides the winner.' ),
 			array( 'Which G50 should I use?', 'Use 245 for men\'s internationals and first-class teams. The ICC sets 200 for women\'s, associate and Under-19 matches, but the ECB\'s 2026 methodology lists 245 for Under-19 internationals, so check your competition\'s rules. Local leagues may set their own average first-innings score.' ),
 			array( 'What if rain ends Team 1\'s innings early?', 'Add a Team 1 stoppage at the overs bowled when play stopped, with the wickets down, and enter every remaining over as overs lost. The calculator then treats Team 1\'s innings as finished and usually sets Team 2 a target above Team 1\'s score.' ),
@@ -205,5 +212,5 @@ function dlscalc_faqs( $slug ) {
 			array( 'How does VJD treat wickets?', 'Wickets count for the overs a team has already played, through the normal curve. For the overs still to come after an interruption, the target curve is used, and it does not depend on wickets.' ),
 		),
 	);
-	return $faqs[ $slug ] ?? array();
+	return $faqs[ $slug ] ?? dlscalc_match_faqs( $slug );
 }
