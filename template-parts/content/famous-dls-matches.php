@@ -47,7 +47,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</tbody>
 	</table>
 </div>
-<p>So for a T20, this calculator is a reliable guide to the official target. For an international ODI with a big first innings, treat it as an estimate and expect the official figure to differ, sometimes by 10 to 20 runs. In club, school and tournament cricket that uses the Standard Edition, our answer is the official one.</p>
+<p>So for a T20, this calculator is a reliable guide to the official target. For an international ODI with a big first innings, treat it as an estimate and expect the official figure to differ, sometimes by 9 to 23 runs. In club, school and tournament cricket that uses the Standard Edition, our answer is the official one.</p>
 
 <h2 id="why-differ">Why do some targets differ from the official ones?</h2>
 <ul>
