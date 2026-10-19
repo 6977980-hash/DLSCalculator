@@ -24,8 +24,9 @@ dlscalc_trust_page_open( 'About DLSCalc', 'Built and run by ' . $dlscalc_author[
 </section>
 
 <h2 id="why">Why I built this</h2>
-<p>I play cricket and organise tournaments, and rain has decided more of my matches than I'd like. I built DLSCalc because I needed a quick, accurate way to work out DLS targets and net run rate during live matches, for my own games and for the teams I host.</p>
-<p>Every calculator here follows the ICC playing conditions and shows its working, so players, scorers and organisers can check the numbers themselves while the covers are on.</p>
+<p>I played club cricket for 20 years at National Cricket Club (NCC), a local city-level club registered with the Pakistan Cricket Board (PCB) and owned by the late Professor Nasir Khan. Today I organise tournaments. Ch Alee is the name I write under here; my full name is <?php echo esc_html( $dlscalc_author['alternate'] ); ?>.</p>
+<p>Rain has decided more of my matches than I'd like. I built DLSCalc because I needed a quick, accurate way to work out DLS targets and net run rate during live matches, for my own games and for the teams I host.</p>
+<p>The DLS and net run rate calculators follow the ICC playing conditions, and the batting and bowling calculators follow the MCC Laws of Cricket. Every tool shows its working, so players, scorers and organisers can check the numbers themselves while the covers are on.</p>
 
 <h2 id="how">How the calculators work</h2>
 <ul>

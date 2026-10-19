@@ -2,7 +2,7 @@
 /**
  * Famous rain-affected matches: facts, the inputs we give our DLS Calculator and the official
  * figure to compare with. Facts were checked on 19 October 2026 against the sources listed on each
- * page (Wikipedia match articles, Cricbuzz ball-by-ball commentary, NZC, ICC and IPL reports).
+ * page (Wikipedia match articles, live blogs and match reports, NZC, ICC and IPL reports).
  * Articles are in template-parts/content/<slug>.php; page code is in inc/matches-ui.php.
  *
  * Each match: title (page title and card), h1, seo, answer, card, format (odi or t20), rule (the
@@ -31,8 +31,8 @@ function dlscalc_matches() {
 				'title'       => '1992 World Cup Semi-Final Rain Rule: What DLS Would Have Set',
 				'description' => 'How the most productive overs rule left South Africa needing 21 off 1 ball against England in Sydney in 1992, and the target the DLS method would have set instead.',
 			),
-			'answer'   => 'South Africa needed 22 off 13 balls against England in the 1992 World Cup semi-final when a 12-minute shower cost two overs. The rain rule of the day, "most productive overs", cut the target by just one run, so the equation became 21 off 1 ball. Our DLS calculator gives a target of 235 in 43 overs, which would have left South Africa needing 4 off the last ball.',
-			'card'     => '22 off 13 became 21 off 1. DLS would have asked for 4.',
+			'answer'   => 'South Africa needed 22 off 13 balls against England in the 1992 World Cup semi-final when a 12-minute shower cost two overs. The rain rule of the day, "most productive overs", cut the target by just one run, so the equation became 21 off 1 ball. Under DLS the equation would have been a few runs off the last ball: our calculator gives a target of 235 in 43 overs (4 to win), and the D/L figure usually quoted is 236 (5 to win). Both are estimates, since the real overs were cut during England\'s innings.',
+			'card'     => '22 off 13 became 21 off 1. DLS would have asked for 4 or 5.',
 			'format'   => 'odi',
 			'rule'     => 'Most productive overs',
 			'in'       => array(
@@ -59,8 +59,8 @@ function dlscalc_matches() {
 			),
 			'faqs'     => array(
 				array( 'What did South Africa need off the last ball in 1992?', 'The official requirement was 21 runs off 1 ball, a target of 252 in 43 overs. The SCG scoreboard first showed 22 off 7 and then 22 off 1, which is why many fans remember it as 22 off 1.' ),
-				array( 'Would DLS have saved South Africa in 1992?', 'Not quite. Our calculator gives a target of 235 in 43 overs, so South Africa, on 231 for 6, would have needed 4 off the last ball to win and 3 to tie. That is a real chance, unlike 21 off 1 ball.' ),
-				array( 'Is this match why the Duckworth-Lewis method exists?', 'Yes. Frank Duckworth and Tony Lewis started work on a fairer rain rule after this semi-final, and the ICC first used their method in 1997.' ),
+				array( 'Would DLS have saved South Africa in 1992?', 'Not quite. Our calculator gives a target of 235 in 43 overs, so South Africa, on 231 for 6, would have needed 4 off the last ball to win and 3 to tie. The D/L target usually quoted is 236, 5 to win and 4 to tie. Either way it was a real chance, unlike 21 off 1 ball.' ),
+				array( 'Is this match why the Duckworth-Lewis method exists?', 'Yes. Frank Duckworth and Tony Lewis started work on a fairer rain rule after this semi-final, and their method was first used in international cricket in 1997 and formally adopted by the ICC in 1999.' ),
 			),
 		),
 		'2003-world-cup-south-africa-sri-lanka'          => array(
@@ -348,7 +348,7 @@ function dlscalc_matches() {
 				'description' => 'Three rain breaks, a target of 114 in 19 overs and Afghanistan\'s first World Cup semi-final. How DLS worked in St Vincent in 2024, and the Gulbadin cramp row.',
 			),
 			'answer'   => 'Afghanistan made 115 for 5 in St Vincent at the 2024 T20 World Cup. Rain stopped Bangladesh\'s chase three times, and after the second break, at 81 for 7 in 11.4 overs, one over was lost and the target became 114 in 19 overs. Bangladesh were all out for 105 and Afghanistan won by 8 runs, reaching their first World Cup semi-final. Our calculator gives 113.',
-			'card'     => 'Three rain breaks, one over lost, a first semi-final.',
+			'card'     => 'Three rain breaks, one over lost, a first men\'s World Cup semi-final.',
 			'format'   => 't20',
 			'rule'     => 'DLS',
 			'in'       => array(

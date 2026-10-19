@@ -21,14 +21,14 @@ $dlscalc_before = dlscalc_dls_calc(
 ?>
 <h2 id="what-happened">What happened in St Vincent?</h2>
 <p>Afghanistan played Bangladesh in the last Super 8 match of Group 1 at the 2024 T20 World Cup, at Arnos Vale in Kingstown, St Vincent, on 24 June. The result would decide whether Afghanistan, Australia or Bangladesh reached the semi-finals. Afghanistan batted first and made only <strong>115 for 5 in 20 overs</strong>, with Rahmanullah Gurbaz top-scoring on 43.</p>
-<p>Bangladesh needed 116 to win, and to win inside 12.1 overs to go through themselves: only a win that fast would have lifted their net run rate above Afghanistan's and Australia's. The <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> works out targets like this for any points table.</p>
+<p>Bangladesh needed 116 to win, and to win inside 12.1 overs to go through themselves: only a win that fast would have lifted their net run rate above Afghanistan's and Australia's. The <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> works out targets like this for any points table, and the <a href="<?php echo esc_url( dlscalc_page_url( 'how-to-calculate-nrr' ) . '#special-cases' ); ?>">NRR guide</a> explains how rain-shortened matches count.</p>
 <p>Rain interrupted Bangladesh's chase three times:</p>
 <ol>
 	<li>At 31 for 3 after 3.2 overs. The break lasted about half an hour, but it used up the extra time allowed, so <strong>no overs were lost</strong>.</li>
 	<li>At 81 for 7 after 11.4 overs, as Gulbadin Naib went down with cramp. Afghanistan were two runs ahead of the DLS par. <strong>One over was lost</strong> and the target became <strong>114 in 19 overs</strong>.</li>
 	<li>At 105 for 9 after 17.4 overs, a brief shower. The players went off and came straight back, with no overs lost.</li>
 </ol>
-<p>Bangladesh were all out for <strong>105 in 17.5 overs</strong>, with Litton Das 54 not out. Rashid Khan and Naveen-ul-Haq took 4 wickets each. Afghanistan won by 8 runs on DLS and reached their first semi-final at an ICC event, and the result knocked out both Australia and Bangladesh.</p>
+<p>Bangladesh were all out for <strong>105 in 17.5 overs</strong>, with Litton Das 54 not out. Rashid Khan and Naveen-ul-Haq took 4 wickets each. Afghanistan won by 8 runs on DLS and reached their first semi-final at a men's senior ICC event, and the result knocked out both Australia and Bangladesh.</p>
 
 <h2 id="three-breaks">Three rain breaks, but why only two runs off the target?</h2>
 <p>A stoppage only changes the target when overs are lost, so only the second break counts in DLS. It came when Bangladesh had 8.2 overs left but only 3 wickets, worth 16.5% in the resource table. Losing one over left 7.2 overs, worth 15.5%, so Bangladesh lost just <strong>1.0%</strong> of their resources.</p>
@@ -46,6 +46,6 @@ dlscalc_match_tail(
 	't20-world-cup-2024-afghanistan-bangladesh',
 	array(
 		array( 'Wikipedia: 2024 ICC Men\'s T20 World Cup, Super 8', 'https://en.wikipedia.org/wiki/2024_ICC_Men%27s_T20_World_Cup' ),
-		array( 'cricket.com.au: Afghanistan v Bangladesh match report, June 2024', 'https://www.cricket.com.au/news/4045015/' ),
+		array( 'cricket.com.au: "Funniest thing I\'ve seen": Afghan\'s cramp under scrutiny, June 2024', 'https://www.cricket.com.au/news/4045015/' ),
 	)
 );

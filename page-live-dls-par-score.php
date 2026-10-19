@@ -83,7 +83,7 @@ dlscalc_par_sheet_head();
 				</label>
 				<label class="fld">G50
 					<select name="g">
-						<option value="245"<?php selected( '200' !== $dlscalc_in['g'] ); ?>>245 (men)</option>
+						<option value="245"<?php selected( '200' !== $dlscalc_in['g'] ); ?>>245 (full members)</option>
 						<option value="200"<?php selected( '200' === $dlscalc_in['g'] ); ?>>200 (women, U19)</option>
 					</select>
 				</label>

@@ -198,14 +198,15 @@ function dlscalc_breadcrumbs() {
 /**
  * Author name, role and short bio used site-wide.
  *
- * @return array{name: string, role: string, initials: string, bio: string}
+ * @return array{name: string, alternate: string, role: string, initials: string, bio: string}
  */
 function dlscalc_author() {
 	return array(
-		'name'     => 'Ch Alee',
-		'role'     => 'Cricketer and tournament organiser',
-		'initials' => 'CA',
-		'bio'      => 'I play cricket and organise tournaments, and I built these calculators because I needed accurate rain targets during live matches. Every tool follows the ICC playing conditions and shows its working.',
+		'name'      => 'Ch Alee',
+		'alternate' => 'Ali Ahmad Chaudhry',
+		'role'      => 'Cricketer and tournament organiser',
+		'initials'  => 'CA',
+		'bio'       => 'I played club cricket for 20 years at National Cricket Club (NCC), a city-level club registered with the PCB, and now organise tournaments. I built these calculators because I needed accurate rain targets during live matches. Every tool shows its working.',
 	);
 }
 

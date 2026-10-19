@@ -31,7 +31,7 @@ function dlscalc_match_guides() {
 	$guides = array(
 		'famous-dls-matches' => array(
 			'h1'        => 'Famous DLS Matches: Rain-Hit Classics Recalculated',
-			'answer'    => 'These are the rain-affected matches cricket fans still argue about, from the 1992 World Cup semi-final to the 2023 IPL final. For each one we put the real scores into our DLS Calculator and compare its target with the one the umpires announced, so you can see how the rain rule worked and where our published-table answer differs.',
+			'answer'    => 'These are the rain-affected matches cricket fans still argue about, from the 1992 World Cup semi-final to the 2024 T20 World Cup. For each one we put the real scores into our DLS Calculator and compare its target with the one the umpires announced, so you can see how the rain rule worked and where our published-table answer differs.',
 			'published' => '2026-10-19',
 			'toc'       => array(
 				'matches'    => 'The matches',
@@ -80,7 +80,7 @@ function dlscalc_match_seo_pages() {
 	$pages = array(
 		'famous-dls-matches' => array(
 			'title'       => 'Famous DLS Matches: Rain Rule Controversies Recalculated',
-			'description' => 'The most famous rain-hit cricket matches, from the 1992 World Cup semi-final to the 2023 IPL final, recalculated with our DLS calculator and compared with the official targets.',
+			'description' => 'Famous rain-hit cricket matches from 1992 to the 2024 T20 World Cup, recalculated with our DLS calculator and compared with the official targets.',
 		),
 	);
 	foreach ( dlscalc_matches() as $slug => $m ) {

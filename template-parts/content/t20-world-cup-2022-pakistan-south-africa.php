@@ -12,9 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <h2 id="what-happened">What happened in Sydney?</h2>
 <p>Pakistan played South Africa in the Super 12 stage of the 2022 T20 World Cup at the Sydney Cricket Ground on 3 November. Pakistan needed to win to stay in the tournament. They batted first and made <strong>185 for 9 in 20 overs</strong>, with Shadab Khan hitting 52 off 22 balls.</p>
-<p>Just before the rain, Shadab took the wickets of Temba Bavuma and Aiden Markram in the same over. South Africa were <strong>69 for 4 after 9 overs</strong> when play stopped at 9:42 pm, and the DLS par at that point was 84, so Pakistan were 15 runs ahead.</p>
-<p>Play resumed at 10:40 pm. Six overs had been lost and the target became <strong>142 in 14 overs</strong>, leaving South Africa 73 to get off the last 5 overs. They finished on 108 for 9, and Pakistan won by 33 runs. Pakistan went on to reach the final.</p>
-<p>Some reports give the score at the break as 67 for 4 and the target as 141. The scorecard, ball-by-ball commentary and the 33-run margin all fit 69 for 4 and 142.</p>
+<p>Just before the rain, Shadab took the wickets of Temba Bavuma and Aiden Markram in the same over. South Africa were <strong>69 for 4 after 9 overs</strong> when rain stopped play, and the DLS par at that point was 84, so Pakistan were 15 runs ahead.</p>
+<p>When play resumed, six overs had been lost and the target became <strong>142 in 14 overs</strong>, leaving South Africa 73 to get off the last 5 overs. They finished on 108 for 9, and Pakistan won by 33 runs. Pakistan went on to reach the final.</p>
+<p>Some reports give the score at the break as 66 or 67 for 4 and the target as 141. The scorecard, ball-by-ball commentary and the 33-run margin all fit 69 for 4 and 142.</p>
 
 <h2 id="the-target">Why did South Africa need 73 off 5 overs?</h2>
 <p>Before the rain, South Africa needed 117 off 11 overs. After it, they needed 73 off 5: the overs fell by more than half, but the runs by only 44. The reason is the four wickets they had already lost.</p>
@@ -30,5 +30,6 @@ dlscalc_match_tail(
 	't20-world-cup-2022-pakistan-south-africa',
 	array(
 		array( 'Wikipedia: 2022 ICC Men\'s T20 World Cup', 'https://en.wikipedia.org/wiki/2022_ICC_Men%27s_T20_World_Cup' ),
+		array( 'Khaleej Times (AFP): Pakistan beat South Africa in rain-affected game, November 2022', 'https://www.khaleejtimes.com/sports/t20-world-cup-pakistan-beat-south-africa-in-rain-affected-game-to-keep-slim-semis-hopes-alive' ),
 	)
 );

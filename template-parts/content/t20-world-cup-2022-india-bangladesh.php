@@ -10,12 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Targets posted on Cricbuzz during the rain break, by overs left to Bangladesh.
+// Targets posted in the Scroll.in live blog during the rain break, by overs left to Bangladesh.
 $dlscalc_break = array(
-	19 => 177,
-	17 => 160,
+	18 => 169,
 	15 => 142,
-	12 => 112,
+	13 => 122,
 	10 => 89,
 );
 ?>
@@ -25,7 +24,7 @@ $dlscalc_break = array(
 <p>The break lasted about 52 minutes. Four overs were lost and the target became <strong>151 in 16 overs</strong>, leaving Bangladesh 85 to get off 9 overs with all 10 wickets. Soon after the restart Litton was run out by a direct hit from KL Rahul, wickets fell regularly, and Bangladesh finished on 145 for 6. India won by 5 runs.</p>
 
 <h2 id="the-break">What targets were posted during the rain break?</h2>
-<p>While the covers were on, the targets for different lengths of chase were posted. Here they are next to our calculator's targets for the same overs, with Bangladesh 66 for 0 after 7 overs.</p>
+<p>While the covers were on, the targets for different lengths of chase were posted, for example in the Scroll.in live blog. Here they are next to our calculator's targets for the same overs, with Bangladesh 66 for 0 after 7 overs.</p>
 <div class="table-wrap">
 	<table class="data data--num">
 		<caption>Bangladesh's revised target by overs available</caption>
@@ -59,6 +58,7 @@ dlscalc_match_tail(
 	't20-world-cup-2022-india-bangladesh',
 	array(
 		array( 'cricket.com.au: Kohli stars as India hold off Bangladesh in last-over thriller', 'https://www.cricket.com.au/news/3319553/kohli-stars-as-india-hold-off-bangladesh-in-last-over-thriller' ),
+		array( 'Scroll.in: India vs Bangladesh as it happened (targets during the rain break)', 'https://scroll.in/field/1036437/icc-mens-t20-world-cup-2022-india-vs-bangladesh-live-score-updates-stats-and-more-can-rohit-sharma-and-co-return-to-winning-ways' ),
 		array( 'Wikipedia: 2022 ICC Men\'s T20 World Cup', 'https://en.wikipedia.org/wiki/2022_ICC_Men%27s_T20_World_Cup' ),
 	)
 );

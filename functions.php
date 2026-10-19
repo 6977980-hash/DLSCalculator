@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DLSCALC_VERSION', '0.8.0' );
+define( 'DLSCALC_VERSION', '0.9.0' );
 define( 'DLSCALC_DIR', get_stylesheet_directory() );
 define( 'DLSCALC_URI', get_stylesheet_directory_uri() );
 

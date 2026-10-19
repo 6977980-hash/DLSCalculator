@@ -49,9 +49,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h2 id="overs-balls">How do you convert overs to balls?</h2>
 <p>Multiply the whole overs by six and add the balls after the point: 12.4 overs is 12 × 6 + 4 = 76 balls. To go back, divide by six: 76 balls is 12 overs and 4 balls left over, or 12.4 overs. The converter above does both, and also gives the decimal overs used in run rate sums: 76 balls is 12.67 overs.</p>
+<p>The same ball counting sits behind a batter's figures and a bowler's: the <a href="<?php echo esc_url( dlscalc_page_url( 'strike-rate-calculator' ) ); ?>">strike rate calculator</a> works per 100 balls faced, and the <a href="<?php echo esc_url( dlscalc_page_url( 'bowling-average-calculator' ) ); ?>">bowling average and economy rate calculator</a> turns overs like 38.4 into balls before it divides.</p>
 
 <h2 id="nrr">How is run rate different from net run rate?</h2>
-<p>Run rate measures one innings. Net run rate measures a whole tournament: a team's runs per over across every match, minus its opponents' runs per over against it. Leagues use it to separate teams level on points, and the <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> works it out from your matches and shows the margin you need to move up the table.</p>
+<p>Run rate measures one innings. Net run rate measures a whole tournament: a team's runs per over across every match, minus its opponents' runs per over against it. Leagues use it to separate teams level on points, and the <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> works it out from your matches and shows the margin you need to move up the table. For the formula itself, see <a href="<?php echo esc_url( dlscalc_page_url( 'how-to-calculate-nrr' ) ); ?>">how to calculate NRR</a>.</p>
 
 <h2 id="faq">Run rate calculator FAQ</h2>
 <?php dlscalc_faq_html( 'run-rate-calculator' ); ?>

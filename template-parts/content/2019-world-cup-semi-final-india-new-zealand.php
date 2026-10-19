@@ -20,11 +20,11 @@ $dlscalc_reported = array(
 );
 ?>
 <h2 id="what-happened">What happened at Old Trafford in 2019?</h2>
-<p>India met New Zealand in the first semi-final of the 2019 World Cup at Old Trafford, Manchester, on 9 July. New Zealand won the toss and batted. At 2:01 pm rain stopped play with New Zealand on <strong>211 for 5 after 46.1 overs</strong>, Ross Taylor on 67, and 23 balls of their innings left.</p>
-<p>The rain did not stop. Overs would start to be lost from about 4:31 pm, and DLS targets for India were worked out and shared while fans waited. Play was finally called off for the day at 6:22 pm, and the match moved to the reserve day.</p>
+<p>India met New Zealand in the first semi-final of the 2019 World Cup at Old Trafford, Manchester, on 9 July. New Zealand won the toss and batted. In the afternoon rain stopped play with New Zealand on <strong>211 for 5 after 46.1 overs</strong>, Ross Taylor on 67, and 23 balls of their innings left.</p>
+<p>The rain did not stop. As the afternoon went on, DLS targets for India were worked out and shared while fans waited. Play was finally called off for the day in the evening, and the match moved to the reserve day.</p>
 
 <h2 id="targets">What DLS targets would India have faced?</h2>
-<p>If New Zealand had not batted again, India would have chased a revised target in fewer overs. The figures below were tweeted by statistician Mohandas Menon and reported by Indian media on the day. They are not official ICC figures, because no target was ever set. Next to them are the targets from our calculator, with New Zealand's innings ending at 211 for 5 in 46.1 overs.</p>
+<p>If New Zealand had not batted again, India would have chased a revised target in fewer overs. The figures below were reported by Indian media at the time, including the National Herald (linked under Sources). They are not official ICC figures, because no target was ever set. Next to them are the targets from our calculator, with New Zealand's innings ending at 211 for 5 in 46.1 overs.</p>
 <div class="table-wrap">
 	<table class="data data--num">
 		<caption>India's DLS target by overs available, if New Zealand's innings ended at 211 for 5</caption>
@@ -47,11 +47,11 @@ $dlscalc_reported = array(
 		</tbody>
 	</table>
 </div>
-<p>A 20-over chase was the shortest that could still give a result, since Team 2 must face at least 20 overs in a 50-over match. It had a cut-off time of 6:36 pm, and the umpires abandoned play for the day just before it.</p>
+<p>A 20-over chase was the shortest that could still give a result, since Team 2 must face at least 20 overs in a 50-over match. The umpires abandoned play for the day before even that chase could start.</p>
 
 <h2 id="why-differ">Why are our targets lower?</h2>
 <p>Our calculator gives New Zealand 87.7% of their resources: they lost the last 3.5 overs with 5 wickets in hand, which is worth 12.3%. A 20-over chase with 10 wickets is worth 56.6%, so the par is 211 × 56.6 ÷ 87.7 = 136, and the target 137.</p>
-<p>The reported figures are 5 to 12 runs higher, with the gap widest for the shortest chases. They would have come from the Professional Edition, the ICC software used in international matches. Its values are not published, so the gap cannot be traced step by step. What the numbers do show is that the two editions can differ by more than a few runs when Team 1's innings is cut short near the end. For a local match decided by the Standard Edition, our figures are the official ones.</p>
+<p>The reported figures are 5 to 12 runs higher, and the gap grows as the chase gets shorter: 5 runs at 46 overs, 12 at 25 overs and 11 at 20 overs. They would have come from the Professional Edition, the ICC software used in international matches. Its values are not published, so the gap cannot be traced step by step. What the numbers do show is that the two editions can differ by more than a few runs when Team 1's innings is cut short near the end. For a local match decided by the Standard Edition, our figures are the official ones.</p>
 
 <h2 id="reserve-day">What happened on the reserve day?</h2>
 <p>The match resumed on 10 July from exactly where it stopped, with no overs lost, so DLS was never needed. New Zealand added 28 more runs to finish on <strong>239 for 8 in 50 overs</strong>, and India chased the full 240.</p>
