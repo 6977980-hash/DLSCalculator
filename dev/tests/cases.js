@@ -193,4 +193,24 @@ cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20,7-150-20' }, expect: { err
 cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '181', r: '92', o: '12,4' }, expect: { big: NRRJS.runRate({ u: 'c', n: '20', t: '181', r: '92', o: '12.4' }).big } });
 cases.push({ fn: 'nrr.bowling', p: { o: '38,4', r: '212', k: '9' }, expect: { big: NRRJS.bowling({ o: '38.4', r: '212', k: '9' }).big } });
 
+// Audit F49, F50, F52, F58: messages that name the real cause.
+cases.push({ fn: 'calc', p: { n: '50', r: '250.5', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score must be a whole number, like 245.' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '99999', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score can be no more than 999.' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '1000', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score can be no more than 999.' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '1e3', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score must be a whole number, like 245.' } });
+cases.push({ fn: 't20', p: { n: '20', r: '160.5', l: '5' }, expect: { field: 'r', err: 'Team 1\'s score must be a whole number, like 245.' } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'c', e: '5000', q: '20' }, expect: { err: 'The score can be no more than 999.' } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'f', e: '', q: '20' }, expect: { err: 'Enter the score you expect to make.' } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '0', r: '92', o: '12' }, expect: { err: 'Enter the target, the runs needed to win.' } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '181', r: '92.5', o: '12' }, expect: { err: 'Runs scored must be a whole number, like 245.' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '6-52-1_10-40-3' }, expect: { err: 'Runs cannot go down: score entry 2 has 40, score entry 1 has 52.' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '6-52-3__10-60-1' }, expect: { err: 'Wickets cannot go down: score entry 3 has 1, score entry 1 has 3.' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '10-70-3_6-52-1' }, expect: { err: 'Score entries must be in order, with the overs going up.' } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '4', o: '4', k: 'f', e: '160', q: '20' }, expect: { big: 'Any win', note: 'Your opponent is Team D, so its net run rate changes too.' } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '4', v: '1', o: '2', k: 'f', e: '160', q: '20' }, expect: { big: 'Not on points', note: 'Assumes Team A does not play again before your match.' } });
+cases.push({ fn: 'nrr.convert', p: { v: '7.6', j: '-3' }, expect: { ov: '', ovErr: BALLS('Overs', '7.6'), bl: '', blErr: 'Balls cannot be negative.' } });
+cases.push({ fn: 'nrr.convert', p: { v: '-3', j: '7.5' }, expect: { ovErr: 'Overs cannot be negative.', blErr: 'Balls must be a whole number up to 9999, like 77.' } });
+cases.push({ fn: 'nrr.convert', p: { v: 'abc', j: '' }, expect: { ovErr: 'Write overs like 12.4, for 12 overs and 4 balls.', blErr: '' } });
+cases.push({ fn: 'nrr.convert', p: { v: '', j: '77' }, expect: { ovErr: '', bl: '12.5 overs', blErr: '' } });
+
 process.stdout.write(JSON.stringify(cases));

@@ -46,6 +46,7 @@
 .conv__pair { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; flex: 1 1 320px; }
 .conv__pair .fld { flex: 0 1 180px; }
 .conv__out { padding-bottom: 10px; font-size: 19px; font-weight: 700; }
+.conv__out.fld__err { font-size: 15px; font-weight: 600; }
 .live { min-width: 0; }
 .live th, .live td { padding: 6px 3px; }
 .live input { width: 58px; min-width: 0; }

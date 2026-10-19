@@ -103,6 +103,21 @@
 		return /^\d{1,4}$/.test(s) ? parseInt(s, 10) : NaN;
 	}
 
+	/**
+	 * Error for a runs box that is not a whole number from 0 to 999, naming the cause (audit F49):
+	 * negative, too big or not whole; `empty` for a blank box. Same in nrr-engine.js; PHP: dlscalc_dls_runs_err().
+	 */
+	function runsErr(raw, who, empty) {
+		var s = String(raw == null ? '' : raw).trim();
+		if (s === '' || (/^\d+$/.test(s) && parseInt(s, 10) <= 999)) {
+			return empty;
+		}
+		if (neg(s)) {
+			return who + ' cannot be negative.';
+		}
+		return /^\d+$/.test(s) ? who + ' can be no more than 999.' : who + ' must be a whole number, like 245.';
+	}
+
 	function r1(x) {
 		return Math.round(x * 10) / 10;
 	}
@@ -283,11 +298,8 @@
 	}
 
 	function check(S, G, raw) {
-		if (isNaN(S)) {
-			return fail(neg(raw) ? 'Team 1\'s score cannot be negative.' : 'Enter Team 1\'s final score.', 'r');
-		}
-		if (S > 999) {
-			return fail('Team 1\'s score looks too high. Enter runs only.', 'r');
+		if (isNaN(S) || S > 999) {
+			return fail(runsErr(raw, 'Team 1\'s score', 'Enter Team 1\'s final score.'), 'r');
 		}
 		if (!(G > 0 && G <= 500)) {
 			return fail('Enter a G50 value between 1 and 500, for example 245.', 'g');
@@ -393,7 +405,7 @@
 		if (base.err) {
 			return base;
 		}
-		var log = [], last = null, now = null;
+		var log = [], last = null, lastName = '', now = null;
 		var parts = (p.x == null || String(p.x).trim() === '') ? [] : String(p.x).split('_').slice(0, LIVE_MAX);
 		for (var i = 0; i < parts.length; i++) {
 			var x = parts[i].split('-'), at = balls(x[0]), runs = int(x[1]), w = int(x[2]), name = 'Score entry ' + (i + 1);
@@ -415,8 +427,11 @@
 			if (w > 10 || runs > 999) {
 				return { err: name + ': wickets must be 0 to 10 and runs no more than 999.' };
 			}
-			if (last && (at <= last.at || runs < last.runs || w < last.w)) {
+			if (last && at <= last.at) {
 				return { err: 'Score entries must be in order, with the overs going up.' };
+			}
+			if (last && (runs < last.runs || w < last.w)) {
+				return { err: (runs < last.runs ? 'Runs' : 'Wickets') + ' cannot go down: ' + name.toLowerCase() + ' has ' + (runs < last.runs ? runs : w) + ', ' + lastName.toLowerCase() + ' has ' + (runs < last.runs ? last.runs : last.w) + '.' };
 			}
 			var e = { at: at, runs: runs, w: w };
 			now = null;
@@ -435,6 +450,7 @@
 			e.diff = runs - e.par;
 			log.push(e);
 			last = e;
+			lastName = name;
 		}
 		base.log = log;
 		base.nowSteps = now ? now.steps.slice(-3) : [];
