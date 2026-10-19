@@ -103,7 +103,8 @@ function dlscalc_menu( $location, $label, $class ) {
  */
 function dlscalc_default_primary_links() {
 	$links = wp_list_pluck( dlscalc_tools(), 'label' );
-	$links['dls-method'] = 'Guides';
+	$links['dls-method']           = 'DLS Guide';
+	$links['how-to-calculate-nrr'] = 'NRR Guide';
 	return $links;
 }
 

@@ -107,5 +107,5 @@ dlscalc_par_sheet_head();
 	<?php get_template_part( 'template-parts/content/dls-target-calculator-t20' ); ?>
 </div>
 <?php
-dlscalc_tool_page_close( array( 'dls-calculator', 'dls-par-score-table', 'run-rate-calculator', 'dls-method' ) );
+dlscalc_tool_page_close( array( 'dls-calculator', 'dls-par-score-table', 'run-rate-calculator', 'net-run-rate-calculator', 'dls-method' ) );
 get_footer();

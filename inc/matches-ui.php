@@ -44,7 +44,18 @@ function dlscalc_match_guides() {
 			'related'   => array( 'dls-calculator', 'dls-target-calculator-t20', 'dls-method', 'live-dls-par-score' ),
 		),
 	);
+	// Each match page also links to the next two matches of the same format, so every match gets links from two others.
+	$by_format = array();
 	foreach ( dlscalc_matches() as $slug => $m ) {
+		$by_format[ $m['format'] ][] = $slug;
+	}
+	foreach ( dlscalc_matches() as $slug => $m ) {
+		$same = $by_format[ $m['format'] ];
+		$at   = array_search( $slug, $same, true );
+		$next = array();
+		for ( $i = 1; $i <= min( 2, count( $same ) - 1 ); $i++ ) {
+			$next[] = $same[ ( $at + $i ) % count( $same ) ];
+		}
 		$guides[ $slug ] = array(
 			'h1'        => $m['h1'],
 			'answer'    => $m['answer'],
@@ -54,7 +65,7 @@ function dlscalc_match_guides() {
 				'faq'          => 'FAQ',
 			),
 			'cta'       => array( 'dls-calculator', 'Rain in your own match?', 'Open the DLS Calculator' ),
-			'related'   => array( 'famous-dls-matches', 'dls-calculator', 't20' === $m['format'] ? 'dls-target-calculator-t20' : 'dls-par-score-table', 'dls-method' ),
+			'related'   => array_merge( array( 'famous-dls-matches', 'dls-calculator', 't20' === $m['format'] ? 'dls-target-calculator-t20' : 'dls-par-score-table', 'dls-method' ), $next ),
 		);
 	}
 	return $guides;
