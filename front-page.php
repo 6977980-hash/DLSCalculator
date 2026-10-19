@@ -91,7 +91,7 @@ get_header();
 		<div class="wrap feature-grid">
 			<div>
 				<h3>Standard Edition tables</h3>
-				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition: in T20s the official target is usually within 3 runs of ours, but high-scoring ODIs can differ by 10 to 20 runs or more.</p>
+				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition: in T20s the official target is usually within 3 runs of ours, but high-scoring ODIs can differ by up to about 23 runs.</p>
 			</div>
 			<div>
 				<h3>Fast on any phone</h3>

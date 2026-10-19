@@ -69,6 +69,8 @@ dlscalc_dls_scenarios_html( $dlscalc_in );
 					<?php dlscalc_dls_field_err( $dlscalc_r, 'g' ); ?>
 				</label>
 			</div>
+			<?php // Which G50 applies depends on the competition (audit F59). ?>
+			<p class="hint">G50 is set by the playing conditions of your competition. The ICC uses 245 for matches involving full members and between first-class teams, and 200 for women's, associate, Under-19 and Under-15 internationals; the ECB's 2026 methodology uses 245 for Under-19 internationals. Local leagues may set their own value.</p>
 		</div>
 
 		<div class="tool__group" role="group" aria-labelledby="g-t1">

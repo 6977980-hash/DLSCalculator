@@ -88,6 +88,7 @@ dlscalc_par_sheet_head();
 					</select>
 				</label>
 			</div>
+			<p class="hint">Use the G50 in your competition's playing conditions: the ICC sets 245 for full members and 200 for women's, associate and Under-19 internationals, while the ECB's 2026 methodology uses 245 for Under-19 internationals.</p>
 			<?php // The tracker has no Team 1 stoppages or penalty runs (audit F43), so say where those go. ?>
 			<p class="hint">The tracker assumes Team 1 batted its full overs and no penalty runs were awarded during the chase. If Team 1's innings was cut by rain, or Team 1 got penalty runs, use the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>.</p>
 		</div>
@@ -133,7 +134,7 @@ dlscalc_par_sheet_head();
 			<div class="stat"><span>Overs for Team 2</span><b data-out="t2overs"><?php echo esc_html( $dlscalc_err ? '–' : dlscalc_dls_overs( $dlscalc_r['allot'] ) ); ?></b></div>
 		</div>
 		<?php dlscalc_share_buttons( $dlscalc_share, dlscalc_dls_permalink( $dlscalc_slug, $dlscalc_in ) ); ?>
-		<p class="result__note">DLS Standard Edition, the ICC's published method. Rain during the chase changes the target: enter the stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>.</p>
+		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. Rain during the chase changes the target: enter the stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>.</p>
 	</aside>
 </div>
 

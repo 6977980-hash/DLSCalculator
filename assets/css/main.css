@@ -178,6 +178,7 @@ a:hover, a:focus { color: var(--green-dark); }
 .site-foot__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
 .foot-nav ul { gap: 8px 20px; }
 .foot-nav a { color: #c9d4cd; }
+.site-foot__note { flex-basis: 100%; margin: 0; font-size: 14px; }
 .foot-nav a:hover, .foot-nav a:focus { color: var(--gold); }
 
 /* Buttons */
