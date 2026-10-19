@@ -93,7 +93,7 @@ dlscalc_tool_page_open(
 <section class="block">
 	<div class="block__head">
 		<div>
-			<h2>T20 par score table</h2>
+			<h2>Par score for the rest of the chase</h2>
 			<?php $dlscalc_on = 'Par after each completed over of the chase, for 0 to 9 wickets down. If play ends for good, Team 2 wins when it is above par.'; ?>
 			<p class="hint" data-out="tablenote" data-on="<?php echo esc_attr( $dlscalc_on ); ?>" data-off="No overs left in the chase, so there is no par table."><?php echo esc_html( $dlscalc_ok && $dlscalc_r['rows'] ? $dlscalc_on : 'No overs left in the chase, so there is no par table.' ); ?></p>
 		</div>

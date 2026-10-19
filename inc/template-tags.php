@@ -205,6 +205,7 @@ function dlscalc_byline( $minutes = 0 ) {
  * Author box shown at the end of tools and guides.
  */
 function dlscalc_author_box() {
+	do_action( 'dlscalc_before_author_box' );
 	$author = dlscalc_author();
 	?>
 	<section class="author-box" aria-label="About the author">
