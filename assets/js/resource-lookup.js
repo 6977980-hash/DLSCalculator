@@ -1,6 +1,6 @@
 /*!
  * DLSCalc resource lookup on the DLS method guide: overs left and wickets lost to the resource
- * percentage, as the visitor types. Same text as dlscalc_dls_lookup() in inc/dls-ui.php.
+ * percentage, as the visitor types. Loaded with the engine when the form is first used. Same text as dlscalc_dls_lookup() in inc/dls-ui.php.
  */
 (function () {
 	'use strict';
@@ -45,4 +45,6 @@
 		e.preventDefault();
 		update();
 	});
+	// Loaded on the first focus, so the visitor may already have typed.
+	update();
 }());
