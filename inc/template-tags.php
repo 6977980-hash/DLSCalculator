@@ -115,6 +115,7 @@ function dlscalc_default_primary_links() {
 function dlscalc_default_footer_links() {
 	return array(
 		'about'                => 'About',
+		'dls-par-score-table'  => 'DLS par score table',
 		'dls-method'           => 'DLS method guide',
 		'how-to-calculate-nrr' => 'NRR guide',
 		'privacy-policy'       => 'Privacy Policy',
@@ -190,8 +191,8 @@ function dlscalc_byline() {
 		'<p class="byline">By <a href="%1$s">%2$s</a> · Last updated <time datetime="%3$s">%4$s</time></p>',
 		esc_url( dlscalc_page_url( 'about' ) ),
 		esc_html( $author['name'] ),
-		esc_attr( get_the_modified_date( 'c' ) ),
-		esc_html( get_the_modified_date( 'j F Y' ) )
+		esc_attr( dlscalc_updated_date( 'c' ) ),
+		esc_html( dlscalc_updated_date( 'j F Y' ) )
 	);
 }
 
@@ -209,5 +210,42 @@ function dlscalc_author_box() {
 			<p><?php echo esc_html( $author['bio'] ); ?></p>
 		</div>
 	</section>
+	<?php
+}
+
+/**
+ * Opening of a theme-built tool page: breadcrumbs, heading, byline and the lede.
+ * Pairs with dlscalc_tool_page_close().
+ *
+ * @param string $h1   Page heading.
+ * @param string $lede Short intro under the heading.
+ */
+function dlscalc_tool_page_open( $h1, $lede ) {
+	the_post();
+	?>
+	<div class="content-area" id="primary">
+		<main class="site-main tool-main" id="main">
+			<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+				<header class="entry-header">
+					<?php dlscalc_breadcrumbs(); ?>
+					<h1 class="entry-title"><?php echo esc_html( $h1 ); ?></h1>
+					<?php dlscalc_byline(); ?>
+				</header>
+				<p class="tool-lede"><?php echo esc_html( $lede ); ?></p>
+	<?php
+}
+
+/**
+ * Closing of a tool page: author box and related links.
+ *
+ * @param string[] $related Slugs to link to.
+ */
+function dlscalc_tool_page_close( $related ) {
+	dlscalc_author_box();
+	dlscalc_related_html( $related );
+	?>
+			</article>
+		</main>
+	</div>
 	<?php
 }

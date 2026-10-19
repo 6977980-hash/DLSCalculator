@@ -1,0 +1,482 @@
+<?php
+/**
+ * DLS engine in PHP: a line-for-line copy of assets/js/dls-engine.js, so tool pages render a real
+ * result, its working and the par tables in the HTML. Search engines and AI answer engines see
+ * the numbers without running JavaScript, and the calculators work with JavaScript switched off.
+ *
+ * @package DLSCalc
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+define( 'DLSCALC_STOPS_MAX', 10 );
+
+/**
+ * ICC DLS Standard Edition resource table, ball by ball, delta-encoded exactly as in the JS engine.
+ *
+ * @return int[][] Ten rows (wickets lost 0 to 9) of 301 values (balls left 0 to 300), in tenths of a percent.
+ */
+function dlscalc_dls_table() {
+	static $table = null;
+	if ( null !== $table ) {
+		return $table;
+	}
+	$rows  = array(
+		'666666666666566566566565656556556555565555555555555455554554554545454545454454445444445444444444444434444434434443434434343434334343343343334333334333333333333333333323333323332332332332332323232323232323223232232223223222232222322222222322222222222222122222222122222122221222122122212212122122121212',
+		'666666666656665665656565655655565555555555555554555455454545454544544544454444444444444444434443444343443434343434334334333433334333333333333333333233333233323323323233232323232323223223223223222322223222222232222222222222222122222221222212221222122122122122121221212121212121212121121211212112112112',
+		'666666666566656565656565556555555555555554554554545454545444544445444444444434444344434344343434343343343333433333334333233333333233323332332323323232323223232232232223222232222222322222222221222222221222212221222122122121221212212121212121121212112112112112112111211121111211111121111111112111111111',
+		'666666665665665655655655555555555545545545454544544445444444444434443443443434343433433343333333433323333333233323323323232323232232322232223222232222222222222222122222212221222122121221212212121212112121121211211211121112111121111121111111111211111111111101111111111101111110111101111011101110110111',
+		'666666656656556556555555555455454545454445444444444344434434343434333433333433332333333233233232323232322322322232222222222222222222122221221221221212212121211212112112112112111121111121111111111111111111111111110111111011110111101101110110110110110110101101010110101010101010101010101010010101001010',
+		'666665665655655555554554545454444444444443443434334333343333323333233233232322322322222322222222122222122122122121212121211211211211112111111211111111111111011111101111101110110111011011010110101101010101010101010100101010010100101001001001001001000100100010001001000010001000010000100001000010000010',
+		'666656565555555455445444444434434334333333333323323232322232222222222212221212212121121121121111121111111111110111111011101101110101101011010101010101001010010100100100100100100010001000100010000100001000010000001000000100000001000000001000000000010000000000000100000000000000000100000000000000000000',
+		'666565555454544444343433333333232322232222122212212121121112111111111101111011011011010101010101001010010010010001000100001000010000010000001000000000100000000000010000000000000000000100000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000',
+		'665555444434333323232221221212111121011110110110101001010010001000010000010000000100000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+		'654433322221111110101010001000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+	);
+	$table = array();
+	foreach ( $rows as $row ) {
+		$sum = 0;
+		$out = array( 0 );
+		$len = strlen( $row );
+		for ( $i = 0; $i < $len; $i++ ) {
+			$sum  += ord( $row[ $i ] ) - 48;
+			$out[] = $sum;
+		}
+		$table[] = $out;
+	}
+	return $table;
+}
+
+/**
+ * Resources left (percent) with this many balls left and wickets lost.
+ *
+ * @param int $balls_left Balls left.
+ * @param int $wkts       Wickets lost.
+ * @return float
+ */
+function dlscalc_dls_res( $balls_left, $wkts ) {
+	if ( $wkts >= 10 || $balls_left <= 0 ) {
+		return 0.0;
+	}
+	return dlscalc_dls_table()[ $wkts ][ min( 300, $balls_left ) ] / 10;
+}
+
+/**
+ * "32.4" (32 overs and 4 balls) to 196 balls. NAN if it is not a valid overs figure.
+ *
+ * @param mixed $s Overs as typed.
+ * @return float|int
+ */
+function dlscalc_dls_balls( $s ) {
+	$s = trim( (string) $s );
+	if ( ! preg_match( '/^\d{1,3}(\.\d)?$/', $s ) ) {
+		return NAN;
+	}
+	$p = explode( '.', $s );
+	$b = isset( $p[1] ) ? (int) $p[1] : 0;
+	return $b > 5 ? NAN : (int) $p[0] * 6 + $b;
+}
+
+/**
+ * 196 balls to "32.4".
+ *
+ * @param int $b Balls.
+ * @return string
+ */
+function dlscalc_dls_overs( $b ) {
+	$o = intdiv( (int) $b, 6 );
+	$r = (int) $b % 6;
+	return $r ? $o . '.' . $r : (string) $o;
+}
+
+/**
+ * Whole number from a form value, NAN if it is not one.
+ *
+ * @param mixed $s Value.
+ * @return float|int
+ */
+function dlscalc_dls_int( $s ) {
+	$s = trim( (string) $s );
+	return preg_match( '/^\d{1,4}$/', $s ) ? (int) $s : NAN;
+}
+
+/**
+ * Round to one decimal.
+ *
+ * @param float $x Value.
+ * @return float
+ */
+function dlscalc_dls_r1( $x ) {
+	return round( $x * 10 ) / 10;
+}
+
+/**
+ * Format with one decimal.
+ *
+ * @param float $x Value.
+ * @return string
+ */
+function dlscalc_dls_f1( $x ) {
+	return number_format( dlscalc_dls_r1( $x ), 1, '.', '' );
+}
+
+/**
+ * Round to two decimals the way the JS engine does (PHP's round() pre-rounds and can differ).
+ *
+ * @param float $x Value.
+ * @return float
+ */
+function dlscalc_dls_c2( $x ) {
+	return floor( $x * 100 + 0.5 ) / 100;
+}
+
+/**
+ * Format with two decimals.
+ *
+ * @param float $x Value.
+ * @return string
+ */
+function dlscalc_dls_f2( $x ) {
+	return number_format( dlscalc_dls_c2( $x ), 2, '.', '' );
+}
+
+/**
+ * Raw par: Team 1's score scaled to the resources Team 2 used.
+ *
+ * @param int   $s    Team 1 score.
+ * @param float $used Team 2 resources used.
+ * @param float $r1   Team 1 resources.
+ * @param float $g    G50.
+ * @return float
+ */
+function dlscalc_dls_scale( $s, $used, $r1, $g ) {
+	return $used <= $r1 ? $s * $used / $r1 : $s + $g * ( $used - $r1 ) / 100;
+}
+
+/**
+ * Par from a raw value, guarding against float noise just under a whole number.
+ *
+ * @param float $raw Raw par.
+ * @return int
+ */
+function dlscalc_dls_floor( $raw ) {
+	return (int) floor( $raw + 1e-9 );
+}
+
+/**
+ * Stoppages from a permalink value: "12-1-10_22-3-2" (overs bowled, wickets down, overs lost).
+ *
+ * @param mixed $str Value.
+ * @return array<int, array{at: float|int, w: float|int, lost: float|int}>
+ */
+function dlscalc_dls_parse_stops( $str ) {
+	if ( ! is_string( $str ) || '' === $str ) {
+		return array();
+	}
+	$out = array();
+	foreach ( array_slice( explode( '_', $str ), 0, DLSCALC_STOPS_MAX ) as $part ) {
+		$x     = explode( '-', $part );
+		$out[] = array(
+			'at'   => dlscalc_dls_balls( $x[0] ?? '' ),
+			'w'    => dlscalc_dls_int( $x[1] ?? '' ),
+			'lost' => dlscalc_dls_balls( $x[2] ?? '' ),
+		);
+	}
+	return $out;
+}
+
+/**
+ * Resources for one innings, with stoppages in order.
+ *
+ * @param int    $start_b Balls at the start of the innings.
+ * @param array  $stops   Stoppages.
+ * @param string $label   "Team 1" or "Team 2".
+ * @return array
+ */
+function dlscalc_dls_innings( $start_b, $stops, $label ) {
+	$allot = $start_b;
+	$r     = dlscalc_dls_res( $start_b, 0 );
+	$steps = array( $label . ' starts with ' . dlscalc_dls_overs( $start_b ) . ' overs and 10 wickets: ' . dlscalc_dls_f1( $r ) . '% of resources.' );
+	$count = count( $stops );
+	for ( $i = 0; $i < $count; $i++ ) {
+		$st   = $stops[ $i ];
+		$name = $label . ' stoppage ' . ( $i + 1 );
+		if ( is_nan( (float) $st['at'] ) || is_nan( (float) $st['w'] ) || is_nan( (float) $st['lost'] ) ) {
+			return array( 'err' => $name . ': fill in overs bowled, wickets down and overs lost (overs like 32.4).' );
+		}
+		if ( $i > 0 && ( $st['at'] < $stops[ $i - 1 ]['at'] || $st['w'] < $stops[ $i - 1 ]['w'] ) ) {
+			return array( 'err' => $label . ' stoppages must be entered in the order they happened.' );
+		}
+		$left = $allot - $st['at'];
+		if ( $st['at'] <= 0 || $left <= 0 ) {
+			return array( 'err' => $name . ' must come before the end of the innings (' . dlscalc_dls_overs( $allot ) . ' overs).' );
+		}
+		if ( $st['w'] > 9 ) {
+			return array( 'err' => $name . ': wickets down must be 0 to 9.' );
+		}
+		if ( $st['lost'] <= 0 || $st['lost'] > $left ) {
+			return array( 'err' => $name . ': overs lost must be more than 0 and no more than ' . dlscalc_dls_overs( $left ) . '.' );
+		}
+		$before = dlscalc_dls_res( $left, $st['w'] );
+		$after  = dlscalc_dls_res( $left - $st['lost'], $st['w'] );
+		$r     -= $before - $after;
+		$allot -= $st['lost'];
+		if ( $st['lost'] === $left ) {
+			$steps[] = $label . ' innings ended at ' . dlscalc_dls_overs( $st['at'] ) . ' overs, ' . $st['w'] . ' down, with ' . dlscalc_dls_overs( $left ) . ' overs left = ' . dlscalc_dls_f1( $before ) . '%. All of it is lost.';
+		} else {
+			$steps[] = $label . ' stoppage at ' . dlscalc_dls_overs( $st['at'] ) . ' overs, ' . $st['w'] . ' down: ' . dlscalc_dls_overs( $left ) . ' overs left = ' . dlscalc_dls_f1( $before ) . '%. After losing ' . dlscalc_dls_overs( $st['lost'] ) . ' overs, ' . dlscalc_dls_overs( $left - $st['lost'] ) . ' left = ' . dlscalc_dls_f1( $after ) . '%. Resources lost: ' . dlscalc_dls_f1( $before - $after ) . '%.';
+		}
+	}
+	$last = $count ? $stops[ $count - 1 ] : null;
+	return array(
+		'R'      => dlscalc_dls_r1( $r ),
+		'steps'  => $steps,
+		'allot'  => $allot,
+		'lastAt' => $last ? $last['at'] : 0,
+		'ended'  => $last && $last['at'] >= $allot,
+	);
+}
+
+/**
+ * Fewest balls Team 2 must face for a result: 20 overs in a 50-over match, 5 in a 20-over match.
+ *
+ * @param int $n Balls per side at the start.
+ * @return int
+ */
+function dlscalc_dls_min_balls( $n ) {
+	return 300 === $n ? 120 : ( 120 === $n ? 30 : 0 );
+}
+
+/**
+ * A whole match. Same input and output as match() in the JS engine.
+ *
+ * @param array $o Keys N, S, G, t1, M, t2 and optional note.
+ * @return array
+ */
+function dlscalc_dls_match( $o ) {
+	$a = dlscalc_dls_innings( $o['N'], $o['t1'], 'Team 1' );
+	if ( isset( $a['err'] ) ) {
+		return $a;
+	}
+	$b = dlscalc_dls_innings( $o['M'], $o['t2'], 'Team 2' );
+	if ( isset( $b['err'] ) ) {
+		return $b;
+	}
+	$raw     = dlscalc_dls_scale( $o['S'], $b['R'], $a['R'], $o['G'] );
+	$par     = dlscalc_dls_floor( $raw );
+	$formula = $b['R'] <= $a['R']
+		? 'R2 is not more than R1, so par = ' . $o['S'] . ' × ' . dlscalc_dls_f1( $b['R'] ) . ' ÷ ' . dlscalc_dls_f1( $a['R'] ) . ' = ' . dlscalc_dls_f2( $raw )
+		: 'R2 is more than R1, so par = ' . $o['S'] . ' + ' . dlscalc_dls_num( $o['G'] ) . ' × (' . dlscalc_dls_f1( $b['R'] ) . ' − ' . dlscalc_dls_f1( $a['R'] ) . ') ÷ 100 = ' . dlscalc_dls_f2( $raw );
+	$formula .= $b['ended']
+		? ', rounded down to ' . $par . '. Team 2 wins if they scored more than ' . $par . ' and the match is tied on ' . $par . '.'
+		: ', rounded down to ' . $par . '. Target = ' . $par . ' + 1 = ' . ( $par + 1 ) . '.';
+	$steps   = array_merge( $a['steps'], array( 'Team 1 resources, R1 = ' . dlscalc_dls_f1( $a['R'] ) . '%.' ) );
+	if ( ! empty( $o['note'] ) ) {
+		$steps[] = $o['note'];
+	}
+	$steps = array_merge( $steps, $b['steps'], array( 'Team 2 resources, R2 = ' . dlscalc_dls_f1( $b['R'] ) . '%.', $formula ) );
+
+	$min_b = dlscalc_dls_min_balls( $o['N'] );
+	$warn  = '';
+	if ( $min_b && ( $b['ended'] ? $b['lastAt'] : $b['allot'] ) < $min_b ) {
+		$warn = 'Team 2 ' . ( $b['ended'] ? 'faced' : 'can face' ) . ' fewer than ' . dlscalc_dls_overs( $min_b ) . ' overs, so under ICC rules there is no result unless the match was already decided.';
+	}
+	return array(
+		'N'      => $o['N'],
+		'S'      => $o['S'],
+		'G'      => $o['G'],
+		'M'      => $o['M'],
+		'R1'     => $a['R'],
+		'R2'     => $b['R'],
+		'raw'    => dlscalc_dls_c2( $raw ),
+		'par'    => $par,
+		'target' => $par + 1,
+		'allot'  => $b['allot'],
+		'lastAt' => $b['lastAt'],
+		'ended'  => $b['ended'],
+		'steps'  => $steps,
+		'warn'   => $warn,
+		'rows'   => dlscalc_dls_par_rows( $o['S'], $a['R'], $o['G'], $b ),
+	);
+}
+
+/**
+ * A number as JavaScript prints it: no trailing ".0" on whole numbers.
+ *
+ * @param float|int $x Value.
+ * @return string
+ */
+function dlscalc_dls_num( $x ) {
+	return floor( $x ) == $x ? (string) (int) $x : (string) $x; // phpcs:ignore Universal.Operators.StrictComparisons.LooseEqual -- int and float compare by value.
+}
+
+/**
+ * Par after each completed over left in the chase, for 0 to 9 wickets down.
+ *
+ * @param int   $s  Team 1 score.
+ * @param float $r1 Team 1 resources.
+ * @param float $g  G50.
+ * @param array $b  Team 2 innings.
+ * @return array<int, array{over: int, cells: int[]}>
+ */
+function dlscalc_dls_par_rows( $s, $r1, $g, $b ) {
+	$rows = array();
+	if ( $b['ended'] ) {
+		return $rows;
+	}
+	for ( $ov = max( 1, (int) ceil( $b['lastAt'] / 6 ) ); $ov * 6 < $b['allot']; $ov++ ) {
+		$cells = array();
+		for ( $w = 0; $w < 10; $w++ ) {
+			$cells[] = dlscalc_dls_floor( dlscalc_dls_scale( $s, dlscalc_dls_r1( $b['R'] - dlscalc_dls_res( $b['allot'] - $ov * 6, $w ) ), $r1, $g ) );
+		}
+		$rows[] = array(
+			'over'  => $ov,
+			'cells' => $cells,
+		);
+	}
+	return $rows;
+}
+
+/**
+ * Shared score and G50 checks.
+ *
+ * @param float|int $s Score.
+ * @param float     $g G50.
+ * @return string Error, or '' when fine.
+ */
+function dlscalc_dls_check( $s, $g ) {
+	if ( is_nan( (float) $s ) ) {
+		return 'Enter Team 1\'s final score.';
+	}
+	if ( $s > 999 ) {
+		return 'Team 1\'s score looks too high. Enter runs only.';
+	}
+	if ( ! ( $g > 0 && $g <= 500 ) ) {
+		return 'Enter a G50 value between 1 and 500, for example 245.';
+	}
+	return '';
+}
+
+/**
+ * Whether a form value is empty or missing.
+ *
+ * @param mixed $v Value.
+ * @return bool
+ */
+function dlscalc_dls_blank( $v ) {
+	return null === $v || '' === trim( (string) $v );
+}
+
+/**
+ * DLS Calculator page.
+ *
+ * @param array $p Keys n, r, g, c, a, b as strings (see calc() in the JS engine).
+ * @return array
+ */
+function dlscalc_dls_calc( $p ) {
+	$n = dlscalc_dls_balls( $p['n'] ?? '' );
+	$s = dlscalc_dls_int( $p['r'] ?? '' );
+	$g = preg_match( '/^\d{1,3}(\.\d{1,2})?$/', trim( (string) ( $p['g'] ?? '' ) ) ) ? (float) $p['g'] : NAN;
+	$m = dlscalc_dls_blank( $p['c'] ?? null ) ? $n : dlscalc_dls_balls( $p['c'] );
+	if ( is_nan( (float) $n ) || $n < 6 || $n > 300 ) {
+		return array( 'err' => 'Overs per side must be between 1 and 50.' );
+	}
+	$e = dlscalc_dls_check( $s, $g );
+	if ( $e ) {
+		return array( 'err' => $e );
+	}
+	if ( is_nan( (float) $m ) || $m < 1 || $m > $n ) {
+		return array( 'err' => 'Overs for Team 2 at the start of the chase must be between 0.1 and ' . dlscalc_dls_overs( $n ) . '.' );
+	}
+	return dlscalc_dls_match(
+		array(
+			'N'  => $n,
+			'S'  => $s,
+			'G'  => $g,
+			't1' => dlscalc_dls_parse_stops( $p['a'] ?? '' ),
+			'M'  => $m,
+			't2' => dlscalc_dls_parse_stops( $p['b'] ?? '' ),
+		)
+	);
+}
+
+/**
+ * T20 page.
+ *
+ * @param array $p Keys n, r, l, b as strings.
+ * @return array
+ */
+function dlscalc_dls_t20( $p ) {
+	$no = dlscalc_dls_int( $p['n'] ?? '' );
+	$s  = dlscalc_dls_int( $p['r'] ?? '' );
+	$l  = dlscalc_dls_int( $p['l'] ?? '' );
+	if ( is_nan( (float) $no ) || $no < 5 || $no > 20 ) {
+		return array( 'err' => 'Overs per side must be between 5 and 20.' );
+	}
+	$e = dlscalc_dls_check( $s, 245 );
+	if ( $e ) {
+		return array( 'err' => $e );
+	}
+	$l = is_nan( (float) $l ) ? 0 : min( $l, $no - 5 );
+	$r = dlscalc_dls_match(
+		array(
+			'N'    => $no * 6,
+			'S'    => $s,
+			'G'    => 245,
+			't1'   => array(),
+			'M'    => ( $no - $l ) * 6,
+			't2'   => dlscalc_dls_parse_stops( $p['b'] ?? '' ),
+			'note' => $l ? 'Rain cut ' . $l . ( 1 === $l ? ' over' : ' overs' ) . ' before the chase, so Team 2 starts with ' . ( $no - $l ) . ' overs.' : '',
+		)
+	);
+	if ( isset( $r['err'] ) ) {
+		return $r;
+	}
+	$r['No']   = $no;
+	$r['L']    = $l;
+	$r['rr']   = $r['ended'] ? '' : number_format( $r['target'] / ( $r['allot'] / 6 ), 2, '.', '' );
+	$r['bars'] = array();
+	for ( $mo = 5; $mo <= $no; $mo++ ) {
+		$r['bars'][] = array(
+			'overs'  => $mo,
+			'target' => dlscalc_dls_floor( dlscalc_dls_scale( $s, dlscalc_dls_res( $mo * 6, 0 ), $r['R1'], 245 ) ) + 1,
+		);
+	}
+	return $r;
+}
+
+/**
+ * Par score table page.
+ *
+ * @param array $p Keys o, r and optional c as strings.
+ * @return array
+ */
+function dlscalc_dls_par_table( $p ) {
+	$no = dlscalc_dls_int( $p['o'] ?? '' );
+	$s  = dlscalc_dls_int( $p['r'] ?? '' );
+	if ( is_nan( (float) $no ) || $no < 5 || $no > 50 ) {
+		return array( 'err' => 'Overs per side must be between 5 and 50.' );
+	}
+	$e = dlscalc_dls_check( $s, 245 );
+	if ( $e ) {
+		return array( 'err' => $e );
+	}
+	$m = dlscalc_dls_blank( $p['c'] ?? null ) ? $no * 6 : dlscalc_dls_balls( $p['c'] );
+	if ( is_nan( (float) $m ) || $m < 6 || $m > $no * 6 ) {
+		return array( 'err' => 'Overs for Team 2 must be between 1 and ' . $no . '.' );
+	}
+	$r       = dlscalc_dls_match(
+		array(
+			'N'  => $no * 6,
+			'S'  => $s,
+			'G'  => 245,
+			't1' => array(),
+			'M'  => $m,
+			't2' => array(),
+		)
+	);
+	$r['No'] = $no;
+	return $r;
+}

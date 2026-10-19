@@ -10,6 +10,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $dlscalc_author = dlscalc_author();
+$dlscalc_quick  = dlscalc_dls_calc(
+	array(
+		'n' => '20',
+		'r' => '168',
+		'g' => '245',
+		'c' => '15',
+	)
+);
 
 get_header();
 ?>
@@ -25,6 +33,33 @@ get_header();
 					<a class="btn btn--ghost" href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">Net Run Rate Calculator</a>
 				</div>
 			</div>
+			<form class="quick" method="get" action="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) . '#result' ); ?>" data-tool="quick" novalidate>
+				<h2>Quick DLS target</h2>
+				<div class="fields">
+					<label class="fld">Match overs
+						<select name="n">
+							<option value="20" selected>20 overs (T20)</option>
+							<option value="50">50 overs (ODI)</option>
+						</select>
+					</label>
+					<label class="fld">Team 1 score
+						<input type="number" inputmode="numeric" min="0" max="999" name="r" value="168" autocomplete="off">
+					</label>
+					<label class="fld">Overs for Team 2
+						<input type="text" inputmode="decimal" name="c" value="15" autocomplete="off">
+					</label>
+				</div>
+				<input type="hidden" name="g" value="245">
+				<div class="quick__out" aria-live="polite">
+					<div>
+						<div class="quick__label">Team 2 target</div>
+						<div class="quick__big" data-out="big"><?php echo (int) $dlscalc_quick['target']; ?></div>
+					</div>
+					<div class="quick__line" data-out="line"><?php echo esc_html( 'in ' . dlscalc_dls_overs( $dlscalc_quick['allot'] ) . ' overs (par ' . $dlscalc_quick['par'] . ')' ); ?></div>
+				</div>
+				<button type="submit" class="btn btn--green">See the full working</button>
+				<p class="quick__more">Rain in the middle of an innings? The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">full DLS calculator</a> handles every stoppage.</p>
+			</form>
 		</div>
 	</section>
 
@@ -40,6 +75,7 @@ get_header();
 					</a>
 				<?php endforeach; ?>
 			</div>
+			<p class="section__more">Need a sheet for the scorers? Print the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-par-score-table' ) ); ?>">DLS par score table</a> for any match from 5 to 50 overs.</p>
 		</div>
 	</section>
 
