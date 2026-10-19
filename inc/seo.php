@@ -137,6 +137,18 @@ add_filter(
 );
 
 /**
+ * Search engine ownership tags, on the home page only (that is where the verifiers look).
+ * Google Search Console token added 19 October 2026. Keep it: removing it unverifies the site.
+ */
+function dlscalc_head_verification() {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	echo '<meta name="google-site-verification" content="lOrnOPv4i22b1lzi2qlfnReUSTe7opBvyjy7X_pHxIc">' . "\n";
+}
+add_action( 'wp_head', 'dlscalc_head_verification', 2 );
+
+/**
  * Icons and web app manifest. WordPress's own Site Icon wins if one is set in the Customizer.
  */
 function dlscalc_head_icons() {
