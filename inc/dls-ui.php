@@ -28,6 +28,7 @@ function dlscalc_dls_tools() {
 				'a' => '',
 				'b' => '12-1-10',
 				'f' => '',
+				'k' => '',
 			),
 		),
 		'dls-target-calculator-t20' => array(
@@ -58,6 +59,52 @@ function dlscalc_dls_tools() {
 			),
 		),
 	);
+}
+
+/**
+ * Sample scenarios on the DLS Calculator (audit F21): each opens one of the ICC worked examples,
+ * whose results are in the test suite and the page's "ICC examples" table.
+ *
+ * @return array<string, array<string, string>> Button label => inputs.
+ */
+function dlscalc_dls_scenarios() {
+	return array(
+		'Rain before chase'  => array( 'n' => '45', 'r' => '212', 'g' => '245', 'c' => '35', 'f' => 'odi' ),
+		'Rain during chase'  => array( 'n' => '50', 'r' => '250', 'g' => '245', 'c' => '50', 'b' => '12-1-10', 'f' => 'odi' ),
+		'Team 1 interrupted' => array( 'n' => '50', 'r' => '180', 'g' => '245', 'c' => '40', 'a' => '20-3-10', 'f' => 'odi' ),
+		'Two stoppages'      => array( 'n' => '50', 'r' => '226', 'g' => '245', 'c' => '33', 'a' => '47.1-8-2.5', 'b' => '25-2-5', 'f' => 'odi' ),
+	);
+}
+
+/**
+ * Scenario buttons above the DLS Calculator. They are links to result permalinks, so they work
+ * without JavaScript; the one matching the inputs on screen is marked current.
+ *
+ * @param array $in Current inputs.
+ */
+function dlscalc_dls_scenarios_html( $in ) {
+	$keys = array( 'n', 'r', 'g', 'c', 'a', 'b', 'k' );
+	?>
+	<nav class="scenarios noprint" aria-labelledby="scenarios-title">
+		<p class="hint" id="scenarios-title">Try an ICC worked example:</p>
+		<div class="chips">
+			<?php
+			foreach ( dlscalc_dls_scenarios() as $label => $p ) {
+				$on = true;
+				foreach ( $keys as $key ) {
+					$on = $on && (string) ( $p[ $key ] ?? '' ) === (string) ( $in[ $key ] ?? '' );
+				}
+				printf(
+					'<a class="chip" rel="nofollow" href="%s" aria-current="%s">%s</a>',
+					esc_url( dlscalc_dls_permalink( 'dls-calculator', $p ) ),
+					$on ? 'true' : 'false',
+					esc_html( $label )
+				);
+			}
+			?>
+		</div>
+	</nav>
+	<?php
 }
 
 /**
@@ -133,7 +180,7 @@ function dlscalc_dls_inputs( $slug ) {
  * @return bool
  */
 function dlscalc_dls_has_params() {
-	foreach ( array( 'n', 'r', 'g', 'c', 'a', 'b', 'l', 'o', 'x', 'f', 'a_at', 'b_at', 'x_at' ) as $key ) {
+	foreach ( array( 'n', 'r', 'g', 'c', 'a', 'b', 'l', 'o', 'x', 'f', 'k', 'a_at', 'b_at', 'x_at' ) as $key ) {
 		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return true;
 		}
@@ -248,8 +295,9 @@ function dlscalc_dls_stop_fields( $stops ) {
  * @param string $key   "a" or "b".
  * @param string $value Stoppages string.
  * @param string $team  "Team 1", "Team 2" or "" for the T20 chase.
+ * @param array  $r     Engine result, to mark the field an error belongs to.
  */
-function dlscalc_dls_stop_rows( $key, $value, $team ) {
+function dlscalc_dls_stop_rows( $key, $value, $team, $r = array() ) {
 	$rows   = dlscalc_dls_stop_fields( $value );
 	$rows[] = array(
 		'at'    => '',
@@ -259,9 +307,33 @@ function dlscalc_dls_stop_rows( $key, $value, $team ) {
 	);
 	echo '<div class="stops" data-stops="' . esc_attr( $key ) . '" data-team="' . esc_attr( $team ) . '">';
 	foreach ( $rows as $i => $row ) {
-		dlscalc_dls_stop_row( $key, $i + 1, $row, $team );
+		dlscalc_dls_stop_row( $key, $i + 1, $row, $team, $r );
 	}
 	echo '</div>';
+}
+
+/**
+ * Attributes that mark an input as the one an error belongs to (audit F19). dls-tools.js keeps
+ * them in step as the visitor types.
+ *
+ * @param array  $r     Engine result.
+ * @param string $field Field name: "n", "c", "k" or a stoppage field like "b-2-at".
+ * @return string
+ */
+function dlscalc_dls_invalid( $r, $field ) {
+	return ( $r['field'] ?? '' ) === $field ? ' aria-invalid="true" aria-describedby="fe-' . esc_attr( $field ) . '"' : '';
+}
+
+/**
+ * The error message under the input it belongs to.
+ *
+ * @param array  $r     Engine result.
+ * @param string $field Field name.
+ */
+function dlscalc_dls_field_err( $r, $field ) {
+	if ( ( $r['field'] ?? '' ) === $field ) {
+		echo '<span class="fld__err" id="fe-' . esc_attr( $field ) . '">' . esc_html( $r['err'] ) . '</span>';
+	}
 }
 
 /**
@@ -271,19 +343,24 @@ function dlscalc_dls_stop_rows( $key, $value, $team ) {
  * @param int    $n    Row number.
  * @param array  $row  Values.
  * @param string $team Team label for the remove button.
+ * @param array  $r    Engine result.
  */
-function dlscalc_dls_stop_row( $key, $n, $row, $team ) {
+function dlscalc_dls_stop_row( $key, $n, $row, $team, $r = array() ) {
 	$label = trim( $team . ' stoppage' );
+	$f     = $key . '-' . $n . '-';
 	?>
 	<div class="stop<?php echo empty( $row['spare'] ) ? '' : ' stop--spare'; ?>">
 		<label class="fld"><span>Overs bowled at stoppage <span class="stop__n"><?php echo (int) $n; ?></span></span>
-			<input type="text" inputmode="decimal" name="<?php echo esc_attr( $key ); ?>_at[]" value="<?php echo esc_attr( $row['at'] ); ?>" placeholder="e.g. 32.4" data-f="at" autocomplete="off">
+			<input type="text" inputmode="decimal" name="<?php echo esc_attr( $key ); ?>_at[]" value="<?php echo esc_attr( $row['at'] ); ?>" placeholder="e.g. 32.4" data-f="at" autocomplete="off"<?php echo dlscalc_dls_invalid( $r, $f . 'at' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+			<?php dlscalc_dls_field_err( $r, $f . 'at' ); ?>
 		</label>
 		<label class="fld">Wickets down
-			<input type="number" inputmode="numeric" min="0" max="9" name="<?php echo esc_attr( $key ); ?>_w[]" value="<?php echo esc_attr( $row['w'] ); ?>" data-f="w" autocomplete="off">
+			<input type="number" inputmode="numeric" min="0" max="9" name="<?php echo esc_attr( $key ); ?>_w[]" value="<?php echo esc_attr( $row['w'] ); ?>" data-f="w" autocomplete="off"<?php echo dlscalc_dls_invalid( $r, $f . 'w' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+			<?php dlscalc_dls_field_err( $r, $f . 'w' ); ?>
 		</label>
 		<label class="fld">Overs lost
-			<input type="text" inputmode="decimal" name="<?php echo esc_attr( $key ); ?>_lost[]" value="<?php echo esc_attr( $row['lost'] ); ?>" placeholder="e.g. 10" data-f="lost" autocomplete="off">
+			<input type="text" inputmode="decimal" name="<?php echo esc_attr( $key ); ?>_lost[]" value="<?php echo esc_attr( $row['lost'] ); ?>" placeholder="e.g. 10" data-f="lost" autocomplete="off"<?php echo dlscalc_dls_invalid( $r, $f . 'lost' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+			<?php dlscalc_dls_field_err( $r, $f . 'lost' ); ?>
 		</label>
 		<button type="button" class="xbtn" aria-label="Remove <?php echo esc_attr( $label ); ?>" data-remove>×</button>
 	</div>
@@ -563,3 +640,79 @@ function dlscalc_par_sheet_foot() {
 	</div>
 	<?php
 }
+
+/**
+ * Resource lookup on /dls-method/ (audit F20): overs left (ball by ball) and wickets lost give the
+ * percentage from the ICC table. Inputs v and d come from the address, so it works without
+ * JavaScript; resource-lookup.js gives the same answer as the visitor types.
+ *
+ * @param string $v Overs left, e.g. "32.4".
+ * @param string $d Wickets lost, 0 to 9.
+ * @return array{err: string, pct: string, text: string}
+ */
+function dlscalc_dls_lookup( $v, $d ) {
+	$b = dlscalc_dls_balls( $v );
+	$w = dlscalc_dls_int( $d );
+	if ( is_nan( (float) $b ) ) {
+		return array(
+			'err'  => dlscalc_dls_blank( $v ) ? 'Enter the overs left, for example 32.4.' : dlscalc_dls_overs_help( 'Overs left', $v ),
+			'pct'  => '',
+			'text' => '',
+		);
+	}
+	if ( $b < 1 || $b > 300 || is_nan( (float) $w ) || $w > 9 ) {
+		return array(
+			'err'  => 'Overs left must be between 0.1 and 50, and wickets lost 0 to 9.',
+			'pct'  => '',
+			'text' => '',
+		);
+	}
+	return array(
+		'err'  => '',
+		'pct'  => dlscalc_dls_f1( dlscalc_dls_res( $b, $w ) ) . '%',
+		'text' => 'of resources left with ' . dlscalc_dls_overs( $b ) . ( 6 === $b ? ' over' : ' overs' ) . ' left and ' . $w . ( 1 === $w ? ' wicket' : ' wickets' ) . ' lost.',
+	);
+}
+
+/**
+ * The resource lookup form and its answer.
+ */
+function dlscalc_resource_lookup_html() {
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only lookup inputs.
+	$v = isset( $_GET['v'] ) && is_string( $_GET['v'] ) ? substr( sanitize_text_field( wp_unslash( $_GET['v'] ) ), 0, 8 ) : '20';
+	$d = isset( $_GET['d'] ) && is_string( $_GET['d'] ) ? substr( sanitize_text_field( wp_unslash( $_GET['d'] ) ), 0, 2 ) : '0';
+	// phpcs:enable
+	$r = dlscalc_dls_lookup( $v, $d );
+	?>
+	<form class="lookup noprint" method="get" action="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) . '#resource-lookup' ); ?>" data-lookup novalidate>
+		<label>Overs left
+			<input type="text" inputmode="decimal" name="v" value="<?php echo esc_attr( $v ); ?>" placeholder="e.g. 32.4" autocomplete="off"<?php echo $r['err'] ? ' aria-invalid="true"' : ''; ?>>
+		</label>
+		<label>Wickets lost
+			<select name="d">
+				<?php for ( $w = 0; $w < 10; $w++ ) : ?>
+					<option value="<?php echo (int) $w; ?>"<?php selected( $d, (string) $w ); ?>><?php echo (int) $w; ?></option>
+				<?php endfor; ?>
+			</select>
+		</label>
+		<button type="submit" class="btn btn--gold">Look up</button>
+		<p class="lookup__out" aria-live="polite"><span class="lookup__err" data-lk="err"<?php echo $r['err'] ? '' : ' hidden'; ?>><?php echo esc_html( $r['err'] ); ?></span><b data-lk="pct"><?php echo esc_html( $r['pct'] ); ?></b> <span data-lk="text"><?php echo esc_html( $r['text'] ); ?></span></p>
+	</form>
+	<?php
+}
+
+/**
+ * Engine and lookup script on /dls-method/, deferred.
+ */
+function dlscalc_lookup_scripts() {
+	if ( 'dls-method' !== dlscalc_current_slug() ) {
+		return;
+	}
+	$args = array(
+		'strategy'  => 'defer',
+		'in_footer' => true,
+	);
+	wp_enqueue_script( 'dlscalc-dls-engine', DLSCALC_URI . '/assets/js/dls-engine.js', array(), dlscalc_asset_version( 'assets/js/dls-engine.js' ), $args );
+	wp_enqueue_script( 'dlscalc-resource-lookup', DLSCALC_URI . '/assets/js/resource-lookup.js', array( 'dlscalc-dls-engine' ), dlscalc_asset_version( 'assets/js/resource-lookup.js' ), $args );
+}
+add_action( 'wp_enqueue_scripts', 'dlscalc_lookup_scripts', 100 );

@@ -77,7 +77,7 @@
 	// Inputs as permalink parameters, in a fixed order so links read the same every time.
 	var params = function () {
 		var p = {};
-		['n', 'r', 'g', 'c', 'l', 'o', 'f'].forEach(function (k) {
+		['n', 'r', 'g', 'c', 'l', 'o', 'f', 'k'].forEach(function (k) {
 			var el = form.elements[k];
 			if (el) {
 				p[k] = String(el.value).trim();
@@ -120,6 +120,50 @@
 			what + ' target: ' + r.target + ' in ' + DLS.overs(r.allot) + ' overs (par ' + r.par + '). Full working:';
 	};
 
+	// The input an error belongs to: "n", "c" and the like, or "b-2-at" for the second Team 2
+	// stoppage that has anything typed in it (blank rows are skipped, as in the permalink).
+	var fieldEl = function (field) {
+		var x = field.split('-');
+		if (x.length === 1) {
+			var el = form.elements[field];
+			return el && el.tagName ? el : null;
+		}
+		var rows = $$('.stop', $('[data-stops="' + x[0] + '"]') || form).filter(function (row) {
+			return $$('input', row).some(function (i) { return i.value.trim() !== ''; });
+		});
+		return rows[x[1] - 1] ? $('[data-f="' + x[2] + '"]', rows[x[1] - 1]) : null;
+	};
+
+	// Error message under the input it belongs to (audit F19); the result panel shows it too.
+	var markField = function (r) {
+		$$('[aria-invalid]', form).forEach(function (el) {
+			el.removeAttribute('aria-invalid');
+			el.removeAttribute('aria-describedby');
+		});
+		$$('.fld__err', form).forEach(function (el) { el.parentNode.removeChild(el); });
+		var el = r.err && r.field ? fieldEl(r.field) : null;
+		if (!el || el.offsetParent === null) {
+			return;
+		}
+		var msg = document.createElement('span');
+		msg.className = 'fld__err';
+		msg.id = 'fe-' + r.field;
+		msg.textContent = r.err;
+		el.parentNode.appendChild(msg);
+		el.setAttribute('aria-invalid', 'true');
+		el.setAttribute('aria-describedby', msg.id);
+	};
+
+	// Scenario buttons: mark the one whose inputs are on screen.
+	var scenarios = $$('.scenarios .chip');
+	var markScenario = function (p) {
+		scenarios.forEach(function (chip) {
+			var q = new URLSearchParams(chip.getAttribute('href').split('?')[1] || '');
+			var on = ['n', 'r', 'g', 'c', 'a', 'b', 'k'].every(function (k) { return (q.get(k) || '') === (p[k] || ''); });
+			chip.setAttribute('aria-current', on ? 'true' : 'false');
+		});
+	};
+
 	var first = true;
 	function update() {
 		var p = params();
@@ -136,6 +180,8 @@
 
 		var r = engine[tool](p);
 		var err = r.err || '';
+		markField(r);
+		markScenario(p);
 		text('err', err);
 		show(out('err'), !!err);
 		text('warn', err ? '' : r.warn);

@@ -88,7 +88,10 @@ $dlscalc_head .= '</tr></thead>';
 	</tbody>
 </table>
 </div>
-<p>Need a value part-way through an over, like 32.4 overs? The <a href="<?php echo esc_url( $dlscalc_calc ); ?>">DLS calculator</a> reads the full ball-by-ball table and shows every value it looks up. For par scores over by over, see the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-par-score-table' ) ); ?>">DLS par score table</a>.</p>
+<h3 id="resource-lookup">Look up the resources for any ball</h3>
+<p>Need a value part-way through an over, like 32.4 overs left? Enter the overs left and the wickets lost to read the full ball-by-ball table.</p>
+<?php dlscalc_resource_lookup_html(); ?>
+<p>The <a href="<?php echo esc_url( $dlscalc_calc ); ?>">DLS calculator</a> reads the same table and shows every value it looks up. For par scores over by over, see the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-par-score-table' ) ); ?>">DLS par score table</a>.</p>
 
 <h2 id="examples">How is a DLS target calculated? Worked examples</h2>
 <p>These examples come from the ICC playing conditions. Each one shows a different part of the method, and the DLS calculator gives the same answers for all of them.</p>

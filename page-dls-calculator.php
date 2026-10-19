@@ -32,6 +32,7 @@ dlscalc_tool_page_open(
 	'Work out the Duckworth-Lewis-Stern target for any rain-affected match, with as many stoppages as you need in either innings. Every result shows its full working, using the ICC Standard Edition table.'
 );
 dlscalc_par_sheet_head();
+dlscalc_dls_scenarios_html( $dlscalc_in );
 ?>
 <div class="tool">
 	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="calc" novalidate>
@@ -46,10 +47,12 @@ dlscalc_par_sheet_head();
 					</select>
 				</label>
 				<label class="fld">Overs per side at start
-					<input type="text" inputmode="decimal" name="n" value="<?php echo esc_attr( $dlscalc_n ); ?>" autocomplete="off">
+					<input type="text" inputmode="decimal" name="n" value="<?php echo esc_attr( $dlscalc_n ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'n' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+					<?php dlscalc_dls_field_err( $dlscalc_r, 'n' ); ?>
 				</label>
 				<label class="fld">Team 1 final score
-					<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
+					<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'r' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+					<?php dlscalc_dls_field_err( $dlscalc_r, 'r' ); ?>
 				</label>
 			</div>
 			<p class="hint">Match shortened before it began? Keep the format and type the overs it started with, such as 40 for an ODI. The format sets the minimum overs for a result: 20 in an ODI, 5 in a T20.</p>
@@ -62,7 +65,8 @@ dlscalc_par_sheet_head();
 					</select>
 				</label>
 				<label class="fld fld--narrow" data-gwrap<?php echo 'custom' === $dlscalc_gsel ? '' : ' hidden'; ?>>Custom G50
-					<input type="text" inputmode="decimal" name="g" value="<?php echo esc_attr( $dlscalc_g ); ?>" autocomplete="off">
+					<input type="text" inputmode="decimal" name="g" value="<?php echo esc_attr( $dlscalc_g ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'g' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+					<?php dlscalc_dls_field_err( $dlscalc_r, 'g' ); ?>
 				</label>
 			</div>
 		</div>
@@ -70,17 +74,23 @@ dlscalc_par_sheet_head();
 		<div class="tool__group" role="group" aria-labelledby="g-t1">
 			<h2 id="g-t1">Team 1 stoppages</h2>
 			<p class="hint">Add one row per stoppage. If rain ended the innings, enter all the overs that were left as overs lost. Write overs as 32.4 for 32 overs and 4 balls.</p>
-			<?php dlscalc_dls_stop_rows( 'a', $dlscalc_in['a'], 'Team 1' ); ?>
+			<?php dlscalc_dls_stop_rows( 'a', $dlscalc_in['a'], 'Team 1', $dlscalc_r ); ?>
 			<div><button type="button" class="btn btn--line" data-add>+ Add Team 1 stoppage</button></div>
 		</div>
 
 		<div class="tool__group" role="group" aria-labelledby="g-t2">
 			<h2 id="g-t2">Team 2 innings</h2>
 			<label class="fld fld--narrow">Overs for Team 2 at start of innings
-				<input type="text" inputmode="decimal" name="c" value="<?php echo esc_attr( $dlscalc_in['c'] ); ?>" placeholder="<?php echo esc_attr( $dlscalc_n ); ?>" autocomplete="off">
+				<input type="text" inputmode="decimal" name="c" value="<?php echo esc_attr( $dlscalc_in['c'] ); ?>" placeholder="<?php echo esc_attr( $dlscalc_n ); ?>" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'c' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+				<?php dlscalc_dls_field_err( $dlscalc_r, 'c' ); ?>
 			</label>
-			<?php dlscalc_dls_stop_rows( 'b', $dlscalc_in['b'], 'Team 2' ); ?>
+			<?php dlscalc_dls_stop_rows( 'b', $dlscalc_in['b'], 'Team 2', $dlscalc_r ); ?>
 			<div><button type="button" class="btn btn--line" data-add>+ Add Team 2 stoppage</button></div>
+			<label class="fld fld--narrow">Penalty runs to Team 1 during the chase (optional)
+				<input type="number" inputmode="numeric" min="0" max="99" name="k" value="<?php echo esc_attr( $dlscalc_in['k'] ); ?>" placeholder="0" autocomplete="off"<?php echo dlscalc_dls_invalid( $dlscalc_r, 'k' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>>
+				<?php dlscalc_dls_field_err( $dlscalc_r, 'k' ); ?>
+			</label>
+			<p class="hint">Penalty runs given to the fielding side while Team 2 bats raise the target and every par score by the same number (ICC DLS rules, section 6). Penalty runs Team 1 earned while batting are part of its score, and penalty runs to Team 2 go on Team 2's score without changing the target.</p>
 		</div>
 		<div data-submit><button type="submit" class="btn btn--green">Calculate</button></div>
 	</form>

@@ -93,6 +93,34 @@ function dlscalc_dls_overs( $b ) {
 }
 
 /**
+ * Error for an overs figure that dlscalc_dls_balls() could not read. See oversHelp() in the JS engine.
+ *
+ * @param string $label Field name for the message.
+ * @param mixed  $s     Overs as typed.
+ * @return string
+ */
+function dlscalc_dls_overs_help( $label, $s ) {
+	if ( preg_match( '/^(\d{1,3})\.(\d)$/', trim( (string) $s ), $m ) ) {
+		return $label . ': ' . $m[0] . ' is not valid. Balls after the dot go from 0 to 5, so after ' . $m[1] . '.5 comes ' . ( (int) $m[1] + 1 ) . '.';
+	}
+	return $label . ': write overs as 32.4 for 32 overs and 4 balls.';
+}
+
+/**
+ * An error result, with the input it belongs to. See fail() in the JS engine.
+ *
+ * @param string $err   Message.
+ * @param string $field Form field name, or "b-2-at" for a stoppage field.
+ * @return array{err: string, field: string}
+ */
+function dlscalc_dls_fail( $err, $field ) {
+	return array(
+		'err'   => $err,
+		'field' => $field,
+	);
+}
+
+/**
  * Whole number from a form value, NAN if it is not one.
  *
  * @param mixed $s Value.
@@ -180,9 +208,11 @@ function dlscalc_dls_parse_stops( $str ) {
 	foreach ( array_slice( explode( '_', $str ), 0, DLSCALC_STOPS_MAX ) as $part ) {
 		$x     = explode( '-', $part );
 		$out[] = array(
-			'at'   => dlscalc_dls_balls( $x[0] ?? '' ),
-			'w'    => dlscalc_dls_int( $x[1] ?? '' ),
-			'lost' => dlscalc_dls_balls( $x[2] ?? '' ),
+			'at'    => dlscalc_dls_balls( $x[0] ?? '' ),
+			'w'     => dlscalc_dls_int( $x[1] ?? '' ),
+			'lost'  => dlscalc_dls_balls( $x[2] ?? '' ),
+			'atS'   => $x[0] ?? '',
+			'lostS' => $x[2] ?? '',
 		);
 	}
 	return $out;
@@ -194,9 +224,10 @@ function dlscalc_dls_parse_stops( $str ) {
  * @param int    $start_b Balls at the start of the innings.
  * @param array  $stops   Stoppages.
  * @param string $label   "Team 1" or "Team 2".
+ * @param string $key     "a" or "b", for the field an error belongs to.
  * @return array
  */
-function dlscalc_dls_innings( $start_b, $stops, $label ) {
+function dlscalc_dls_innings( $start_b, $stops, $label, $key ) {
 	$allot = $start_b;
 	$r     = dlscalc_dls_res( $start_b, 0 );
 	$steps = array( $label . ' starts with ' . dlscalc_dls_overs( $start_b ) . ' overs and 10 wickets: ' . dlscalc_dls_f1( $r ) . '% of resources.' );
@@ -204,21 +235,28 @@ function dlscalc_dls_innings( $start_b, $stops, $label ) {
 	for ( $i = 0; $i < $count; $i++ ) {
 		$st   = $stops[ $i ];
 		$name = $label . ' stoppage ' . ( $i + 1 );
+		$f    = $key . '-' . ( $i + 1 ) . '-';
+		if ( is_nan( (float) $st['at'] ) && ! dlscalc_dls_blank( $st['atS'] ?? '' ) ) {
+			return dlscalc_dls_fail( dlscalc_dls_overs_help( $name . ', overs bowled', $st['atS'] ), $f . 'at' );
+		}
+		if ( is_nan( (float) $st['lost'] ) && ! dlscalc_dls_blank( $st['lostS'] ?? '' ) ) {
+			return dlscalc_dls_fail( dlscalc_dls_overs_help( $name . ', overs lost', $st['lostS'] ), $f . 'lost' );
+		}
 		if ( is_nan( (float) $st['at'] ) || is_nan( (float) $st['w'] ) || is_nan( (float) $st['lost'] ) ) {
-			return array( 'err' => $name . ': fill in overs bowled, wickets down and overs lost (overs like 32.4).' );
+			return dlscalc_dls_fail( $name . ': fill in overs bowled, wickets down and overs lost (overs like 32.4).', $f . ( is_nan( (float) $st['at'] ) ? 'at' : ( is_nan( (float) $st['w'] ) ? 'w' : 'lost' ) ) );
 		}
 		if ( $i > 0 && ( $st['at'] < $stops[ $i - 1 ]['at'] || $st['w'] < $stops[ $i - 1 ]['w'] ) ) {
-			return array( 'err' => $label . ' stoppages must be entered in the order they happened.' );
+			return dlscalc_dls_fail( $label . ' stoppages must be entered in the order they happened.', $f . ( $st['at'] < $stops[ $i - 1 ]['at'] ? 'at' : 'w' ) );
 		}
 		$left = $allot - $st['at'];
 		if ( $st['at'] <= 0 || $left <= 0 ) {
-			return array( 'err' => $name . ' must come before the end of the innings (' . dlscalc_dls_overs( $allot ) . ' overs).' );
+			return dlscalc_dls_fail( $name . ' must come before the end of the innings (' . dlscalc_dls_overs( $allot ) . ' overs).', $f . 'at' );
 		}
 		if ( $st['w'] > 9 ) {
-			return array( 'err' => $name . ': wickets down must be 0 to 9.' );
+			return dlscalc_dls_fail( $name . ': wickets down must be 0 to 9.', $f . 'w' );
 		}
 		if ( $st['lost'] <= 0 || $st['lost'] > $left ) {
-			return array( 'err' => $name . ': overs lost must be more than 0 and no more than ' . dlscalc_dls_overs( $left ) . '.' );
+			return dlscalc_dls_fail( $name . ': overs lost must be more than 0 and no more than ' . dlscalc_dls_overs( $left ) . '.', $f . 'lost' );
 		}
 		$before = dlscalc_dls_res( $left, $st['w'] );
 		$after  = dlscalc_dls_res( $left - $st['lost'], $st['w'] );
@@ -260,31 +298,37 @@ function dlscalc_dls_min_balls( $n, $f = '' ) {
 /**
  * A whole match. Same input and output as match() in the JS engine.
  *
- * @param array $o Keys N, S, G, t1, M, t2 and optional note.
+ * @param array $o Keys N, S, G, t1, M, t2 and optional note, F and P (penalty runs to Team 1 during the chase).
  * @return array
  */
 function dlscalc_dls_match( $o ) {
-	$a = dlscalc_dls_innings( $o['N'], $o['t1'], 'Team 1' );
+	$a = dlscalc_dls_innings( $o['N'], $o['t1'], 'Team 1', 'a' );
 	if ( isset( $a['err'] ) ) {
 		return $a;
 	}
-	$b = dlscalc_dls_innings( $o['M'], $o['t2'], 'Team 2' );
+	$b = dlscalc_dls_innings( $o['M'], $o['t2'], 'Team 2', 'b' );
 	if ( isset( $b['err'] ) ) {
 		return $b;
 	}
-	$raw     = dlscalc_dls_scale( $o['S'], $b['R'], $a['R'], $o['G'] );
-	$par     = dlscalc_dls_floor( $raw );
-	$formula = $b['R'] <= $a['R']
+	$pen      = (int) ( $o['P'] ?? 0 );
+	$raw      = dlscalc_dls_scale( $o['S'], $b['R'], $a['R'], $o['G'] );
+	$base     = dlscalc_dls_floor( $raw );
+	$par      = $base + $pen;
+	$formula  = $b['R'] <= $a['R']
 		? 'R2 is not more than R1, so par = ' . $o['S'] . ' × ' . dlscalc_dls_f1( $b['R'] ) . ' ÷ ' . dlscalc_dls_f1( $a['R'] ) . ' = ' . dlscalc_dls_f2( $raw )
 		: 'R2 is more than R1, so par = ' . $o['S'] . ' + ' . dlscalc_dls_num( $o['G'] ) . ' × (' . dlscalc_dls_f1( $b['R'] ) . ' − ' . dlscalc_dls_f1( $a['R'] ) . ') ÷ 100 = ' . dlscalc_dls_f2( $raw );
-	$formula .= $b['ended']
-		? ', rounded down to ' . $par . '. Team 2 wins if they scored more than ' . $par . ' and the match is tied on ' . $par . '.'
-		: ', rounded down to ' . $par . '. Target = ' . $par . ' + 1 = ' . ( $par + 1 ) . '.';
-	$steps   = array_merge( $a['steps'], array( 'Team 1 resources, R1 = ' . dlscalc_dls_f1( $a['R'] ) . '%.' ) );
+	$result   = $b['ended']
+		? 'Team 2 wins if they scored more than ' . $par . ' and the match is tied on ' . $par . '.'
+		: 'Target = ' . $par . ' + 1 = ' . ( $par + 1 ) . '.';
+	$formula .= ', rounded down to ' . $base . '.' . ( $pen ? '' : ' ' . $result );
+	$steps    = array_merge( $a['steps'], array( 'Team 1 resources, R1 = ' . dlscalc_dls_f1( $a['R'] ) . '%.' ) );
 	if ( ! empty( $o['note'] ) ) {
 		$steps[] = $o['note'];
 	}
 	$steps = array_merge( $steps, $b['steps'], array( 'Team 2 resources, R2 = ' . dlscalc_dls_f1( $b['R'] ) . '%.', $formula ) );
+	if ( $pen ) {
+		$steps[] = 'Team 1 was awarded ' . $pen . ' penalty ' . ( 1 === $pen ? 'run' : 'runs' ) . ' during the chase, so the par score and every par in the table go up by ' . $pen . ' (ICC DLS rules, section 6.2): par = ' . $base . ' + ' . $pen . ' = ' . $par . '. ' . $result;
+	}
 
 	$min_b = dlscalc_dls_min_balls( $o['N'], $o['F'] ?? '' );
 	$warn  = '';
@@ -307,7 +351,7 @@ function dlscalc_dls_match( $o ) {
 		'ended'  => $b['ended'],
 		'steps'  => $steps,
 		'warn'   => $warn,
-		'rows'   => dlscalc_dls_par_rows( $o['S'], $a['R'], $o['G'], $b ),
+		'rows'   => dlscalc_dls_par_rows( $o['S'], $a['R'], $o['G'], $b, $pen ),
 	);
 }
 
@@ -328,9 +372,10 @@ function dlscalc_dls_num( $x ) {
  * @param float $r1 Team 1 resources.
  * @param float $g  G50.
  * @param array $b  Team 2 innings.
+ * @param int   $p  Penalty runs to Team 1 during the chase, added to every par.
  * @return array<int, array{over: int, cells: int[]}>
  */
-function dlscalc_dls_par_rows( $s, $r1, $g, $b ) {
+function dlscalc_dls_par_rows( $s, $r1, $g, $b, $p = 0 ) {
 	$rows = array();
 	if ( $b['ended'] ) {
 		return $rows;
@@ -338,7 +383,7 @@ function dlscalc_dls_par_rows( $s, $r1, $g, $b ) {
 	for ( $ov = max( 1, (int) ceil( $b['lastAt'] / 6 ) ); $ov * 6 < $b['allot']; $ov++ ) {
 		$cells = array();
 		for ( $w = 0; $w < 10; $w++ ) {
-			$cells[] = dlscalc_dls_floor( dlscalc_dls_scale( $s, dlscalc_dls_r1( $b['R'] - dlscalc_dls_res( $b['allot'] - $ov * 6, $w ) ), $r1, $g ) );
+			$cells[] = dlscalc_dls_floor( dlscalc_dls_scale( $s, dlscalc_dls_r1( $b['R'] - dlscalc_dls_res( $b['allot'] - $ov * 6, $w ) ), $r1, $g ) ) + $p;
 		}
 		$rows[] = array(
 			'over'  => $ov,
@@ -353,19 +398,19 @@ function dlscalc_dls_par_rows( $s, $r1, $g, $b ) {
  *
  * @param float|int $s Score.
  * @param float     $g G50.
- * @return string Error, or '' when fine.
+ * @return array|null Error result, or null when fine.
  */
 function dlscalc_dls_check( $s, $g ) {
 	if ( is_nan( (float) $s ) ) {
-		return 'Enter Team 1\'s final score.';
+		return dlscalc_dls_fail( 'Enter Team 1\'s final score.', 'r' );
 	}
 	if ( $s > 999 ) {
-		return 'Team 1\'s score looks too high. Enter runs only.';
+		return dlscalc_dls_fail( 'Team 1\'s score looks too high. Enter runs only.', 'r' );
 	}
 	if ( ! ( $g > 0 && $g <= 500 ) ) {
-		return 'Enter a G50 value between 1 and 500, for example 245.';
+		return dlscalc_dls_fail( 'Enter a G50 value between 1 and 500, for example 245.', 'g' );
 	}
-	return '';
+	return null;
 }
 
 /**
@@ -381,23 +426,33 @@ function dlscalc_dls_blank( $v ) {
 /**
  * DLS Calculator page.
  *
- * @param array $p Keys n, r, g, c, a, b, f as strings (see calc() in the JS engine).
+ * @param array $p Keys n, r, g, c, a, b, f, k as strings (see calc() in the JS engine).
  * @return array
  */
 function dlscalc_dls_calc( $p ) {
-	$n = dlscalc_dls_balls( $p['n'] ?? '' );
-	$s = dlscalc_dls_int( $p['r'] ?? '' );
-	$g = preg_match( '/^\d{1,3}(\.\d{1,2})?$/', trim( (string) ( $p['g'] ?? '' ) ) ) ? (float) $p['g'] : NAN;
-	$m = dlscalc_dls_blank( $p['c'] ?? null ) ? $n : dlscalc_dls_balls( $p['c'] );
+	$n   = dlscalc_dls_balls( $p['n'] ?? '' );
+	$s   = dlscalc_dls_int( $p['r'] ?? '' );
+	$pen = dlscalc_dls_blank( $p['k'] ?? null ) ? 0 : dlscalc_dls_int( $p['k'] );
+	$g   = preg_match( '/^\d{1,3}(\.\d{1,2})?$/', trim( (string) ( $p['g'] ?? '' ) ) ) ? (float) $p['g'] : NAN;
+	$m   = dlscalc_dls_blank( $p['c'] ?? null ) ? $n : dlscalc_dls_balls( $p['c'] );
+	if ( is_nan( (float) $n ) && ! dlscalc_dls_blank( $p['n'] ?? null ) ) {
+		return dlscalc_dls_fail( dlscalc_dls_overs_help( 'Overs per side', $p['n'] ), 'n' );
+	}
 	if ( is_nan( (float) $n ) || $n < 6 || $n > 300 ) {
-		return array( 'err' => 'Overs per side must be between 1 and 50.' );
+		return dlscalc_dls_fail( 'Overs per side must be between 1 and 50.', 'n' );
 	}
 	$e = dlscalc_dls_check( $s, $g );
 	if ( $e ) {
-		return array( 'err' => $e );
+		return $e;
 	}
-	if ( is_nan( (float) $m ) || $m < 1 || $m > $n ) {
-		return array( 'err' => 'Overs for Team 2 at the start of the chase must be between 0.1 and ' . dlscalc_dls_overs( $n ) . '.' );
+	if ( is_nan( (float) $m ) ) {
+		return dlscalc_dls_fail( dlscalc_dls_overs_help( 'Overs for Team 2 at the start of the chase', $p['c'] ), 'c' );
+	}
+	if ( $m < 1 || $m > $n ) {
+		return dlscalc_dls_fail( 'Overs for Team 2 at the start of the chase must be between 0.1 and ' . dlscalc_dls_overs( $n ) . '.', 'c' );
+	}
+	if ( is_nan( (float) $pen ) || $pen > 99 ) {
+		return dlscalc_dls_fail( 'Penalty runs must be a whole number from 0 to 99.', 'k' );
 	}
 	return dlscalc_dls_match(
 		array(
@@ -408,6 +463,7 @@ function dlscalc_dls_calc( $p ) {
 			'M'  => $m,
 			't2' => dlscalc_dls_parse_stops( $p['b'] ?? '' ),
 			'F'  => in_array( $p['f'] ?? '', array( 'odi', 't20', 't10', 'custom' ), true ) ? $p['f'] : '',
+			'P'  => $pen,
 		)
 	);
 }
@@ -423,11 +479,11 @@ function dlscalc_dls_t20( $p ) {
 	$s  = dlscalc_dls_int( $p['r'] ?? '' );
 	$l  = dlscalc_dls_int( $p['l'] ?? '' );
 	if ( is_nan( (float) $no ) || $no < 5 || $no > 20 ) {
-		return array( 'err' => 'Overs per side must be between 5 and 20.' );
+		return dlscalc_dls_fail( 'Overs per side must be between 5 and 20.', 'n' );
 	}
 	$e = dlscalc_dls_check( $s, 245 );
 	if ( $e ) {
-		return array( 'err' => $e );
+		return $e;
 	}
 	$l = is_nan( (float) $l ) ? 0 : min( $l, $no - 5 );
 	$r = dlscalc_dls_match(
@@ -468,15 +524,18 @@ function dlscalc_dls_par_table( $p ) {
 	$no = dlscalc_dls_int( $p['o'] ?? '' );
 	$s  = dlscalc_dls_int( $p['r'] ?? '' );
 	if ( is_nan( (float) $no ) || $no < 5 || $no > 50 ) {
-		return array( 'err' => 'Overs per side must be between 5 and 50.' );
+		return dlscalc_dls_fail( 'Overs per side must be between 5 and 50.', 'o' );
 	}
 	$e = dlscalc_dls_check( $s, 245 );
 	if ( $e ) {
-		return array( 'err' => $e );
+		return $e;
 	}
 	$m = dlscalc_dls_blank( $p['c'] ?? null ) ? $no * 6 : dlscalc_dls_balls( $p['c'] );
-	if ( is_nan( (float) $m ) || $m < 6 || $m > $no * 6 ) {
-		return array( 'err' => 'Overs for Team 2 must be between 1 and ' . $no . '.' );
+	if ( is_nan( (float) $m ) ) {
+		return dlscalc_dls_fail( dlscalc_dls_overs_help( 'Overs for Team 2', $p['c'] ), 'c' );
+	}
+	if ( $m < 6 || $m > $no * 6 ) {
+		return dlscalc_dls_fail( 'Overs for Team 2 must be between 1 and ' . $no . '.', 'c' );
 	}
 	$r       = dlscalc_dls_match(
 		array(
@@ -523,6 +582,9 @@ function dlscalc_dls_live( $p ) {
 		$name = 'Score entry ' . ( $i + 1 );
 		if ( '' === implode( '', $x ) ) {
 			continue;
+		}
+		if ( is_nan( (float) $at ) && ! dlscalc_dls_blank( $x[0] ?? '' ) ) {
+			return array( 'err' => dlscalc_dls_overs_help( $name, $x[0] ) );
 		}
 		if ( is_nan( (float) $at ) || is_nan( (float) $runs ) || is_nan( (float) $w ) ) {
 			return array( 'err' => $name . ': fill in overs, runs and wickets (overs like 12.3).' );

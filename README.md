@@ -26,7 +26,8 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `inc/seo.php` | Titles, meta descriptions, Open Graph and Twitter cards, icons, base schema, robots.txt, sitemap trimming, thin-archive redirects |
 | `inc/template-tags.php` | Logo, menus with built-in fallbacks, breadcrumbs, author details and box, tool page wrapper |
 | `inc/dls.php` | DLS engine in PHP, a line-for-line copy of `assets/js/dls-engine.js`, so tool pages print real results without JavaScript |
-| `inc/dls-ui.php` | DLS tool pages: inputs from the URL (result permalinks), result panel, working, par tables, script and style loading |
+| `inc/dls-ui.php` | DLS tool pages: inputs from the URL (result permalinks), result panel, field errors, scenario buttons (ICC examples), working, par tables, script and style loading; the resource lookup on `/dls-method/` |
+| `inc/security.php` | Hides the REST users endpoints from visitors, removes the author from oEmbed, turns off XML-RPC, one login error for wrong username or password, and sends security headers (HSTS, nosniff, Referrer-Policy, frame protection, Permissions-Policy) on every page except the `/embed/dls/` widget |
 | `inc/nrr.php` | NRR engine in PHP (NRR across matches, points table, qualification solver, run rate), a line-for-line copy of `assets/js/nrr-engine.js` |
 | `inc/nrr-ui.php` | NRR and run rate pages: inputs from the URL and no-JS forms, match and team rows, standings, script loading |
 | `inc/content.php` | FAQs (also used for FAQPage schema), sources, related links and content dates |
@@ -47,6 +48,7 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `assets/css/nrr.css` | NRR, run rate and live tracker styles, printed inline only on those pages |
 | `assets/js/dls-engine.js` | DLS engine: ICC Standard Edition table (delta-encoded), targets, par scores, par tables |
 | `assets/js/dls-tools.js` | Live results, stoppage rows, permalinks and sharing on the DLS pages and the home quick box |
+| `assets/js/resource-lookup.js` | Resource lookup on `/dls-method/` (overs left and wickets lost to resources %) |
 | `assets/js/live-par.js` | Live DLS par tracker: score rows, par per entry, saved on the device |
 | `assets/js/nrr-engine.js` | NRR engine: NRR with the all-out and no-result rules, points table, qualification solver, run rate |
 | `assets/js/nrr-tools.js` | Live results, match and team rows, saved points table, permalinks and sharing on the NRR and run rate pages |
@@ -73,8 +75,9 @@ Lighthouse (mobile, local test server): Performance 99 to 100, Accessibility 100
 
 Every tool keeps its inputs in the address, so a shared link opens the same result:
 
-- DLS Calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, `f` format (`odi`, `t20`, `t10` or `custom`; sets the minimum overs for a result, ODI 20 and T20 5; without it a 50-over match counts as ODI and a 20-over match as T20). Example: `/dls-calculator/?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2`.
+- DLS Calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, `f` format (`odi`, `t20`, `t10` or `custom`; sets the minimum overs for a result, ODI 20 and T20 5; without it a 50-over match counts as ODI and a 20-over match as T20), `k` penalty runs awarded to Team 1 during the chase (raise the target and every par, ICC DLS section 6.2). Errors name their field (`field` in the engine result: `n`, `c`, `k` or a stoppage field like `b-2-at`). Example: `/dls-calculator/?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2`.
 - T20: `n`, `r`, `l` overs lost before the chase, `b`.
+- Resource lookup on `/dls-method/`: `v` overs left, `d` wickets lost.
 - Par score table: `o` overs per side, `r`, and optional `c`.
 - Live DLS par: `n`, `r`, `g`, `c`, and `x` the score log as `overs-runs-wickets` joined with `_`.
 - Net run rate: `q` overs per side and `x` matches as `scored-overs-conceded-overs`, with `a` after overs for an all-out innings, an optional fifth field for the overs per side when rain cut that match (`143-15-120-12a-15`; an all-out side counts those overs) and `-n` on the end for a no result. Qualification scenario: `u=t` opens it, `t` the points table (teams joined with `_`, fields with `~`: name, played, won, points, runs for, overs faced, runs against, overs bowled), `y` your team, `v` team to pass, `o` next opponent (`0` = not in the table), `k` `f` bat first or `c` chase, `e` score, `h` overs per side, `d` points for a win.
