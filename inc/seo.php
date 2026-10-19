@@ -41,6 +41,10 @@ function dlscalc_seo_pages() {
 			'title'       => 'DLS Target Calculator T20: Rain Target & Par Table | DLSCalc',
 			'description' => 'DLS target calculator for T20 matches. Enter the score and overs lost to get the revised target, par score and an over-by-over par table for every wicket.',
 		),
+		'dls-par-score-table'       => array(
+			'title'       => 'DLS Par Score Calculator & Table (5 to 50 Overs) | DLSCalc',
+			'description' => 'DLS par score for every over and wicket of the chase. Pick 5 to 50 overs, enter Team 1\'s score and print the par table for the scorers. ICC Standard Edition.',
+		),
 		'net-run-rate-calculator'   => array(
 			'title'       => 'Net Run Rate Calculator (NRR Calculator Cricket) | DLSCalc',
 			'description' => 'Calculate net run rate across every match, with the all-out rule built in. Then see the win margin or chase overs your team needs to pass a rival. Free.',
@@ -166,7 +170,7 @@ function dlscalc_head_meta() {
 		array( 'name', 'twitter:image:alt', $seo['title'] ),
 	);
 	if ( is_singular() ) {
-		$tags[] = array( 'property', 'article:modified_time', get_the_modified_date( 'c' ) );
+		$tags[] = array( 'property', 'article:modified_time', dlscalc_updated_date( 'c' ) );
 	}
 	foreach ( $tags as $tag ) {
 		printf( '<meta %s="%s" content="%s">' . "\n", $tag[0], esc_attr( $tag[1] ), esc_attr( $tag[2] ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- attribute name is a fixed string.
@@ -253,9 +257,10 @@ function dlscalc_head_schema() {
 			'description'  => $seo['description'],
 			'isPartOf'     => array( '@id' => $home . '#website' ),
 			'breadcrumb'   => array( '@id' => get_permalink() . '#breadcrumb' ),
-			'dateModified' => get_the_modified_date( 'c' ),
+			'dateModified' => dlscalc_updated_date( 'c' ),
 			'inLanguage'   => 'en',
 		);
+		$graph   = array_merge( $graph, dlscalc_tool_schema( $seo ) );
 	}
 
 	echo '<script type="application/ld+json">' . wp_json_encode(
@@ -267,6 +272,63 @@ function dlscalc_head_schema() {
 	) . "</script>\n";
 }
 add_action( 'wp_head', 'dlscalc_head_schema', 30 );
+
+/**
+ * WebApplication and FAQPage nodes for tool pages.
+ *
+ * @param array $seo Current page SEO data.
+ * @return array[]
+ */
+function dlscalc_tool_schema( $seo ) {
+	$slug  = dlscalc_current_slug();
+	$home  = home_url( '/' );
+	$url   = get_permalink();
+	$nodes = array();
+	if ( isset( dlscalc_dls_tools()[ $slug ] ) ) {
+		$nodes[] = array(
+			'@type'               => 'WebApplication',
+			'@id'                 => $url . '#app',
+			'name'                => get_the_title(),
+			'url'                 => $url,
+			'description'         => $seo['description'],
+			'applicationCategory' => 'SportsApplication',
+			'operatingSystem'     => 'Any',
+			'browserRequirements' => 'Requires a modern web browser',
+			'isAccessibleForFree' => true,
+			'inLanguage'          => 'en',
+			'offers'              => array(
+				'@type'         => 'Offer',
+				'price'         => '0',
+				'priceCurrency' => 'USD',
+			),
+			'author'              => array( '@id' => $home . '#author' ),
+			'publisher'           => array( '@id' => $home . '#organization' ),
+			'isPartOf'            => array( '@id' => $url . '#webpage' ),
+		);
+	}
+	$faqs = dlscalc_faqs( $slug );
+	if ( $faqs ) {
+		$nodes[] = array(
+			'@type'      => 'FAQPage',
+			'@id'        => $url . '#faq',
+			'isPartOf'   => array( '@id' => $url . '#webpage' ),
+			'mainEntity' => array_map(
+				function ( $faq ) {
+					return array(
+						'@type'          => 'Question',
+						'name'           => $faq[0],
+						'acceptedAnswer' => array(
+							'@type' => 'Answer',
+							'text'  => wp_strip_all_tags( $faq[1] ),
+						),
+					);
+				},
+				$faqs
+			),
+		);
+	}
+	return $nodes;
+}
 
 /**
  * robots.txt: welcome search and AI answer crawlers, keep admin out, point to the sitemap.

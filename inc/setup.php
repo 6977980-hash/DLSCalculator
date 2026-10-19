@@ -42,17 +42,28 @@ function dlscalc_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'dlscalc_enqueue_assets', 50 );
 
 /**
- * Print the theme stylesheet inline. Font URLs are rewritten to absolute theme URLs.
+ * Print a theme stylesheet inline, minified. Font URLs are rewritten to absolute theme URLs.
+ *
+ * @param string $relative Path relative to the theme folder.
+ * @param string $id       Style element id.
  */
-function dlscalc_inline_styles() {
-	$css = file_get_contents( DLSCALC_DIR . '/assets/css/main.css' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local theme file.
+function dlscalc_print_inline_css( $relative, $id ) {
+	$css = file_get_contents( DLSCALC_DIR . '/' . $relative ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local theme file.
 	if ( false === $css ) {
 		return;
 	}
 	$css = str_replace( '../fonts/', DLSCALC_URI . '/assets/fonts/', $css );
 	$css = preg_replace( '#/\*.*?\*/#s', '', $css );
 	$css = preg_replace( '/\s+/', ' ', $css );
-	echo '<style id="dlscalc-css">' . trim( $css ) . "</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme's own stylesheet.
+	$css = preg_replace( '/\s*([{};:,>])\s*/', '$1', $css );
+	echo '<style id="' . esc_attr( $id ) . '">' . trim( $css ) . "</style>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- theme's own stylesheet.
+}
+
+/**
+ * Print the main stylesheet inline.
+ */
+function dlscalc_inline_styles() {
+	dlscalc_print_inline_css( 'assets/css/main.css', 'dlscalc-css' );
 }
 add_action( 'wp_head', 'dlscalc_inline_styles', 5 );
 

@@ -22,6 +22,7 @@ const pages = {
   default: ['Free cricket calculators', 'Rain stopped play? Get the DLS target in seconds.', 'DLS targets, par scores and net run rate'],
   'dls-calculator': ['DLS Calculator', 'DLS Calculator: revised target and par score', 'ICC Standard Edition · multiple interruptions · full working'],
   'dls-target-calculator-t20': ['T20', 'DLS Target Calculator for T20 matches', 'Rain-reduced targets and an over-by-over par table'],
+  'dls-par-score-table': ['DLS Par Score', 'DLS par score table and calculator', 'Par for every over and wicket, 5 to 50 overs'],
   'net-run-rate-calculator': ['Net Run Rate', 'Net Run Rate Calculator (NRR)', 'Your NRR and the margin you need to qualify'],
   'run-rate-calculator': ['Run Rate', 'Run Rate Calculator: current and required', 'CRR, RRR, runs per ball and projected score'],
   'dls-method': ['Guide', 'The DLS method explained', 'Resource table, formula and ICC worked examples'],
