@@ -21,9 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>That is the flaw the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>">DLS method</a> fixes. DLS treats overs and wickets together as resources, so taking 12 balls away from a team with four wickets left takes away a fair share of what it could still score.</p>
 
 <h2 id="why-famous">Why did this match change cricket?</h2>
-<p>The 1992 semi-final is the reason the Duckworth-Lewis method exists. Frank Duckworth and Tony Lewis started work on a fairer system after it, and the ICC first used their method in 1997. It became Duckworth-Lewis-Stern in 2014 and is still the ICC's rain rule today.</p>
+<p>The 1992 semi-final is the reason the Duckworth-Lewis method exists. Frank Duckworth and Tony Lewis started work on a fairer system after it. Their method was first used in international cricket in 1997, and the ICC formally adopted it in 1999. It became Duckworth-Lewis-Stern in 2014 and is still the ICC's rain rule today.</p>
 <p>It also shows why rain rules matter most in close finishes. A target that is slightly off in the 20th over hardly matters; a target that is wrong with one ball left decides a World Cup semi-final.</p>
-<p>Below we enter the same match into our DLS calculator. Under DLS, South Africa would have needed 4 off the last ball to win and 3 to tie: still unlikely, but a real chance with a boundary.</p>
+<p>Below we enter the same match into our DLS calculator. With both innings treated as 45 overs, South Africa would have needed 4 off the last ball to win and 3 to tie. The D/L figure usually quoted, on Wikipedia's page about the method, is a target of 236: 5 to win and 4 to tie. Treat both as estimates. England's innings was cut to 45 overs while it was under way, and a real D/L calculation would have counted that interruption, which can only be approximated now. What is certain is that South Africa would have needed a boundary, not 21 off one ball.</p>
 <?php
 dlscalc_match_tail(
 	'1992-world-cup-semi-final-england-south-africa',

@@ -35,7 +35,7 @@ $dlscalc_head .= '</tr></thead>';
 <h2 id="full-form">What is the full form of DLS in cricket?</h2>
 <p>DLS stands for <strong>Duckworth-Lewis-Stern</strong>, named after the three statisticians behind it. Frank Duckworth and Tony Lewis created the Duckworth-Lewis (D/L) method in the 1990s, and Professor Steven Stern later updated it for modern scoring. It has been called Duckworth-Lewis-Stern since 2014.</p>
 <p>The method was a response to the rain rules that came before it. The best-known failure was the <a href="<?php echo esc_url( dlscalc_page_url( '1992-world-cup-semi-final-england-south-africa' ) ); ?>">1992 World Cup semi-final</a> in Sydney: South Africa needed 22 runs from 13 balls when rain came, and the "most productive overs" rule then in use left them needing 21 from one ball. Simply scaling the target by run rate was no better, because it ignored wickets. Duckworth and Lewis set out to build a rule that treated both teams fairly.</p>
-<p>D/L was first used in international cricket in 1997 and the ICC made it the standard method soon after. A <em>Professional Edition</em> for international matches followed in the early 2000s. When Stern took over the research, the formula was tuned so that targets in high-scoring modern matches, especially big totals and T20s, better match how teams actually bat. Today one version of DLS is used for every limited-overs format, from 50-over internationals to T20 leagues and local matches.</p>
+<p>D/L was first used in international cricket on 1 January 1997, and the ICC formally adopted it in 1999. A <em>Professional Edition</em> has been used in all international one-day matches since early 2004. When Stern took over the research, the formula was tuned so that targets in high-scoring modern matches, especially big totals and T20s, better match how teams actually bat. Today the same DLS method sets targets in every limited-overs format, from 50-over internationals to T20 leagues and local matches, through one of its two editions (see <a href="#editions">Standard and Professional Edition</a>).</p>
 
 <h2 id="resources">How does the DLS method work?</h2>
 <p>DLS treats a team's batting as two <strong>resources</strong>: the overs it has left and the wickets it has in hand. A full 50-over innings with all 10 wickets is 100% of resources. When rain takes overs away, a team loses part of its resources, and its target is scaled to the resources it actually had.</p>
@@ -55,7 +55,7 @@ $dlscalc_head .= '</tr></thead>';
 <p class="formula">If R2 ≤ R1: par score = S × R2 ÷ R1</p>
 <p class="formula">If R2 &gt; R1: par score = S + G50 × (R2 − R1) ÷ 100</p>
 <p>The target is the par score rounded down, plus one run. If Team 2 finishes exactly on the par score, the match is tied.</p>
-<p>The first formula is used most of the time: rain hits the chase, Team 2 gets fewer resources, and Team 1's score is scaled down. The second formula applies when Team 1's own innings was cut short, so Team 2 has more resources. Scaling up would reward a big score too much, so instead each extra 1% of resources is worth a fixed number of runs, based on <strong>G50</strong>, the average score in a 50-over innings. The ICC sets G50 at 245 for men's internationals and first-class teams and at 200 for women's, associate and Under-19 matches; the ECB's 2026 methodology lists 245 for Under-19 internationals, so check your competition's rules.</p>
+<p>The first formula is used most of the time: rain hits the chase, Team 2 gets fewer resources, and Team 1's score is scaled down. The second formula applies when Team 1's own innings was cut short, so Team 2 has more resources. Scaling up would reward a big score too much, so instead each extra 1% of resources is worth a fixed number of runs, based on <strong>G50</strong>, the average score in a 50-over innings. The ICC sets G50 at 245 for matches involving full-member nations and between first-class teams, and 200 for women's internationals, Under-19 and Under-15 internationals and matches between associate members; the ECB's 2026 methodology lists 245 for Under-19 internationals, so check your competition's rules.</p>
 <p>To find a team's resources after a stoppage, read the table at the moment play stopped, then read it again for the overs left after the restart, with the same wickets down. The difference is the resources lost. Add up the losses for every stoppage in an innings and take them away from the resources the innings started with.</p>
 
 <h2 id="resource-table">DLS resource table (Standard Edition)</h2>
@@ -110,7 +110,7 @@ $dlscalc_head .= '</tr></thead>';
 <h2 id="minimum-overs">What is the minimum number of overs for a DLS result?</h2>
 <p>For a match to have a result, Team 2 must be able to face at least <strong>20 overs in a 50-over match</strong> and <strong>5 overs in a 20-over match</strong>, unless the result is already decided. Other formats, such as T10 or local 8 and 12-over matches, set their own minimum in their playing conditions.</p>
 <p>Some knockout matches ask for more. At the ICC Men's T20 World Cup, the semi-finals and the final need at least 10 overs a side for a result, double the usual T20 minimum. Always check the playing conditions of the event.</p>
-<p>If play is abandoned after the minimum has been reached, the par score at that moment decides the match. Team 2 wins if its score is above par, loses if it is below, and the match is tied if it is exactly on par. If the minimum has not been reached, the match is a no result, unless Team 2 has already passed the target or been bowled out.</p>
+<p>If play is abandoned after the minimum has been reached, the par score at that moment decides the match. Team 2 wins if its score is above par, loses if it is below, and the match is tied if it is exactly on par. If the minimum has not been reached, the match is a no result, unless Team 2 has already passed the target or been bowled out. A result decided on par counts in the points table too, and the <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> shows how to enter it.</p>
 <p>The match officials decide how many overs each side gets after a stoppage, using the time lost and the playing conditions. DLS only sets the target for the overs they decide.</p>
 
 <h2 id="dl-vs-dls">What is the difference between the D/L and DLS methods?</h2>
@@ -124,18 +124,18 @@ $dlscalc_head .= '</tr></thead>';
 		<tr><th scope="row">Built by</th><td>Frank Duckworth and Tony Lewis</td><td>Updated by Steven Stern</td></tr>
 		<tr><th scope="row">Resources</th><td>Overs left and wickets in hand</td><td>Overs left and wickets in hand</td></tr>
 		<tr><th scope="row">Scoring data</th><td>Based on older, lower-scoring matches</td><td>Retuned for modern scoring rates and big totals</td></tr>
-		<tr><th scope="row">Editions</th><td>Standard and Professional</td><td>Standard and Professional</td></tr>
+		<tr><th scope="row">Editions</th><td>Standard from 1997, Professional from 2004</td><td>Standard and Professional</td></tr>
 	</tbody>
 </table>
 </div>
 <p>In everyday use the two give very similar targets in low and medium-scoring matches. The gap shows in high-scoring games, where the older method could leave a chasing side a target that was too easy or too hard.</p>
 
 <h2 id="editions">What is the difference between the Standard and Professional Edition?</h2>
-<p>The <strong>Standard Edition</strong> uses the published resource table and the formulas above, so anyone can work out a target with a pencil. The <strong>Professional Edition</strong> runs on ICC software, adjusts the resources for how high the scoring is in that match, and is not published. International matches and major leagues use the Professional Edition; the Standard Edition is the official method when the software is not available, and it is what local leagues and school cricket use.</p>
+<p>The <strong>Standard Edition</strong> uses the published resource table and the formulas above, so anyone can work out a target with a pencil. The <strong>Professional Edition</strong> runs on ICC software, adjusts the resources for how high the scoring is in that match, and is not published. International matches and major leagues use the Professional Edition. The ICC names the Standard Edition only as the fallback when the software is not available, but because it needs no software it is what most local leagues and schools can use; their own playing conditions say which edition applies.</p>
 <p>The two usually agree or are within a few runs. They drift apart mainly when Team 1 makes a very large score. If you are checking an international target, expect the official figure to differ slightly from a Standard Edition calculation.</p>
 
 <h2 id="criticism">Is the DLS method fair?</h2>
-<p>DLS is far fairer than the rules it replaced, because it is the only common method that counts wickets as well as overs. But no rain rule is perfect, and three criticisms come up often.</p>
+<p>DLS is far fairer than the rules it replaced, such as average run rate and most productive overs, because it counts wickets as well as overs. But no rain rule is perfect, and three criticisms come up often.</p>
 <ul>
 	<li><strong>It can feel unfair to the side batting when rain arrives.</strong> A team that loses wickets just before a stoppage sees its position fall sharply, even if it was scoring quickly.</li>
 	<li><strong>T20 chases are hard to model.</strong> In a short chase, teams with wickets in hand attack from the first ball, and critics argue the method can favour the chasing side in some situations.</li>

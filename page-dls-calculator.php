@@ -59,8 +59,8 @@ dlscalc_dls_scenarios_html( $dlscalc_in );
 			<div class="fields">
 				<label class="fld fld--wide">G50 (used when Team 2 has more resources)
 					<select data-gsel>
-						<option value="245"<?php selected( $dlscalc_gsel, '245' ); ?>>245: men's internationals and first-class</option>
-						<option value="200"<?php selected( $dlscalc_gsel, '200' ); ?>>200: women's, associate and U19 (ICC)</option>
+						<option value="245"<?php selected( $dlscalc_gsel, '245' ); ?>>245: full members and first-class</option>
+						<option value="200"<?php selected( $dlscalc_gsel, '200' ); ?>>200: women's, associate, U19 and U15</option>
 						<option value="custom"<?php selected( $dlscalc_gsel, 'custom' ); ?>>Custom value</option>
 					</select>
 				</label>

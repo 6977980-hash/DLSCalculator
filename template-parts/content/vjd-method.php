@@ -47,8 +47,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>The older Duckworth-Lewis (D/L) method was the one VJD was first compared with. The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>">DLS method guide</a> explains how D/L became DLS in 2014 and how resources work.</p>
 
 <h2 id="where-used">Where is the VJD method used?</h2>
-<p>The BCCI has used VJD in Indian domestic cricket since 2007, after Sunil Gavaskar recommended it. Match reports show it still deciding domestic matches: the 2021-22 Vijay Hazare Trophy final, a Vijay Hazare Trophy quarter-final in January 2026, and BCCI age-group T20 matches in October 2026. It has also been used in some Indian T20 leagues.</p>
-<p>The IPL and all international matches use DLS, because they follow ICC playing conditions. Reports in 2010 said VJD would be used in the IPL, but that never happened.</p>
+<p>The BCCI has used VJD in Indian domestic cricket since 2007, after Sunil Gavaskar recommended it. Match reports show it still deciding domestic matches: the 2021-22 Vijay Hazare Trophy final and a Vijay Hazare Trophy quarter-final in January 2026.</p>
+<p>International matches use DLS under the ICC playing conditions, and the IPL uses DLS under its own playing conditions. Reports in 2010 said VJD would be used in the IPL, but that never happened.</p>
 
 <h2 id="famous-matches">Which matches were decided by the VJD method?</h2>
 <ul>

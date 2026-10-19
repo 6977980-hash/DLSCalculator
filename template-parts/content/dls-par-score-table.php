@@ -63,7 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h2 id="par-vs-target">How is the par score different from the target?</h2>
 <p>The target is a single number for the whole chase: the par score for Team 2's full overs, plus one. The par score changes after every over and every wicket. It only decides the match if play cannot continue, and it is what a captain checks when dark clouds come over.</p>
-<p>When overs are lost during the chase, the target changes as well. Enter the stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a> or, for a 20-over match, in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-target-calculator-t20' ) ); ?>">T20 target calculator</a>, which give the new target and a fresh par table for the overs that are left.</p>
+<p>When overs are lost during the chase, the target changes as well. Enter the stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a> or, for a 20-over match, in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-target-calculator-t20' ) ); ?>">T20 target calculator</a>, which give the new target and a fresh par table for the overs that are left. Once a rain-hit match has a result, the <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> shows how to enter it in the points table.</p>
 
 <h2 id="before-the-match">Why print a par table before the match?</h2>
 <p>Rain rarely waits for anyone to find a phone. Organisers and scorers who print the par sheet before the first ball can tell both captains where they stand the moment the umpires take the players off. It also settles arguments, because everyone is reading the same published ICC numbers.</p>

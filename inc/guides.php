@@ -46,7 +46,6 @@ function dlscalc_guides() {
 				'formula'       => 'Net run rate formula',
 				'step-by-step'  => 'Step by step',
 				'example'       => 'Two-match example',
-				'overs'         => 'Converting overs',
 				'special-cases' => 'All out, DLS and no result',
 				'tournament'    => 'NRR in a points table',
 				'improve'       => 'How to improve NRR',

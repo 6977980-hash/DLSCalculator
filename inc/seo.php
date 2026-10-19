@@ -31,10 +31,10 @@ function dlscalc_seo_pages() {
 	return array(
 		'home'                       => array(
 			'title'       => 'DLSCalc: Free Cricket Calculators for Rain Targets, NRR & Run Rate',
-			'description' => 'Free DLS calculator for revised targets and par scores in T20, ODI and local matches, plus a net run rate calculator with qualification scenarios. Works on any phone.',
+			'description' => 'Free DLS calculator for rain targets and par scores in T20, ODI and local matches, plus a net run rate calculator with qualification scenarios.',
 		),
 		'dls-calculator'             => array(
-			'title'       => 'DLS Calculator: Revised Target for Rain-Hit Matches (ICC) | DLSCalc',
+			'title'       => 'DLS Calculator: Revised Target for Rain-Hit Matches | DLSCalc',
 			'description' => 'Work out the DLS revised target and par score for any rain-hit match. Uses the ICC Standard Edition table, handles several interruptions and shows every step.',
 		),
 		'dls-target-calculator-t20'  => array(
@@ -58,8 +58,8 @@ function dlscalc_seo_pages() {
 			'description' => 'Current run rate, required run rate, runs needed per ball and projected score for any cricket innings. Overs counted in balls, so 12.4 overs is handled correctly.',
 		),
 		'strike-rate-calculator'     => array(
-			'title'       => 'Strike Rate Calculator Cricket & Batting Average Calculator',
-			'description' => 'Free cricket strike rate and batting average calculator. Enter runs, balls, innings and not outs for one innings or a season, plus boundary figures and target strike rate.',
+			'title'       => 'Strike Rate & Batting Average Calculator (Cricket) | DLSCalc',
+			'description' => 'Strike rate and batting average calculator for cricket. Enter runs, balls, innings and not outs for one innings or a season, plus boundaries and a target rate.',
 		),
 		'bowling-average-calculator' => array(
 			'title'       => 'Bowling Average & Economy Rate Calculator (Cricket) | DLSCalc',
@@ -250,13 +250,14 @@ function dlscalc_head_schema() {
 			'sameAs'   => dlscalc_same_as( 'organization' ),
 		),
 		array(
-			'@type'       => 'Person',
-			'@id'         => $home . '#author',
-			'name'        => $author['name'],
-			'jobTitle'    => $author['role'],
-			'description' => $author['bio'],
-			'url'         => dlscalc_page_url( 'about' ),
-			'sameAs'      => dlscalc_same_as( 'person' ),
+			'@type'         => 'Person',
+			'@id'           => $home . '#author',
+			'name'          => $author['name'],
+			'alternateName' => $author['alternate'],
+			'jobTitle'      => $author['role'],
+			'description'   => $author['bio'],
+			'url'           => dlscalc_page_url( 'about' ),
+			'sameAs'        => dlscalc_same_as( 'person' ),
 		),
 		array(
 			'@type'         => 'WebSite',

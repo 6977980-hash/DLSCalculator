@@ -50,6 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <h2 id="interruptions">What if rain has already interrupted the match?</h2>
 <p>If overs were lost before Team 2 started, enter its reduced overs in the match section. In the same 20-over match, a chase cut to 15 overs has a target of 128, and the par after 5 overs at 1 down is 38 instead of 35.</p>
 <p>If rain stops the chase and play then resumes with fewer overs, the target itself changes. Work out the new target in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a>, which also gives the par table for the overs left. The tracker here covers a chase with no interruption once it has started, which is when most of the "are we ahead?" questions come.</p>
+<p>When the par decides the match, it also sets the figures for the points table: Team 1 is credited with Team 2's par score off the overs Team 2 faced. Enter them in the <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> to see what the result does to your NRR.</p>
 
 <h2 id="faq">Live DLS par score FAQ</h2>
 <?php dlscalc_faq_html( 'live-dls-par-score' ); ?>

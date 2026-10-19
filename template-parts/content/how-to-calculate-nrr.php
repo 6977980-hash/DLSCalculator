@@ -32,9 +32,10 @@ $dlscalc_nrr = dlscalc_page_url( 'net-run-rate-calculator' );
 	<li>Do the same for runs conceded and overs bowled, again using the full quota for any side you bowled out. This is your run rate against.</li>
 	<li>Subtract the run rate against from the run rate for. The answer is your NRR.</li>
 </ol>
+<p>The digit after the point in overs is balls, not tenths, so 17.3 overs is 17.5 in the formula. Working in balls avoids the most common NRR mistake: runs ÷ balls × 6 gives the run rate per over. To check a value, use the overs converter on the <a href="<?php echo esc_url( dlscalc_page_url( 'run-rate-calculator' ) ); ?>">run rate calculator</a>.</p>
 
 <h2 id="example">NRR example over two matches</h2>
-<p>Here is a team that has played two 20-over matches. It won the first. In the second it was bowled out in 17.3 overs and lost by one run, as the opponents chased 121 in 18.2 overs.</p>
+<p>Here is a team that has played two 20-over matches. It won the first. In the second it was bowled out for 120 in 17.3 overs, and the opponents chased down 121 in 18.2 overs to win.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="NRR example">
 <table class="data data--num">
 	<caption>Example: two 20-over matches</caption>
@@ -48,23 +49,6 @@ $dlscalc_nrr = dlscalc_page_url( 'net-run-rate-calculator' );
 </div>
 <p>Run rate for = 288 ÷ 40 = 7.200. Run rate against = 272 ÷ 38.333 = 7.096. <strong>NRR = 7.200 − 7.096 = +0.104.</strong></p>
 <p>Notice that the bowled-out innings counts as 20 overs, not 17.3. That lowers the team's run rate for, which is the penalty for being bowled out. The opponents' chase counts as the 18.2 overs they actually needed, because they were not bowled out.</p>
-
-<h2 id="overs">How do you convert overs for NRR?</h2>
-<p>Divide the balls by six. An over has six balls, so the digit after the point is never a decimal fraction. Getting this wrong is the most common NRR mistake.</p>
-<div class="table-wrap" tabindex="0" role="region" aria-label="Overs to decimal">
-<table class="data data--num">
-	<caption>Overs as written and as used in the NRR formula</caption>
-	<thead><tr><th scope="col">Overs written</th><th scope="col">Balls</th><th scope="col">Overs as a number</th></tr></thead>
-	<tbody>
-		<tr><th scope="row">17.1</th><td>103</td><td>17.167</td></tr>
-		<tr><th scope="row">17.2</th><td>104</td><td>17.333</td></tr>
-		<tr><th scope="row">17.3</th><td>105</td><td>17.5</td></tr>
-		<tr><th scope="row">17.4</th><td>106</td><td>17.667</td></tr>
-		<tr><th scope="row">17.5</th><td>107</td><td>17.833</td></tr>
-	</tbody>
-</table>
-</div>
-<p>A simpler way is to work in balls and convert at the end: runs ÷ balls × 6 gives the run rate per over. The <a href="<?php echo esc_url( dlscalc_page_url( 'run-rate-calculator' ) ); ?>">run rate calculator</a> has an overs and balls converter if you want to check a value.</p>
 
 <h2 id="special-cases">How is NRR calculated when a team is all out, in DLS matches and in no-results?</h2>
 <ul>

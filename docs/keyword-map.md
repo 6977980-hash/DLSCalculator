@@ -1,6 +1,6 @@
 # Keyword map (one owner page per keyword)
 
-Check this file before writing a new page, a title, an H1 or a new H2 section. Updated 19 October 2026 (stats pages added, audit F16).
+Check this file before writing a new page, a title, an H1 or a new H2 section. Updated 19 October 2026 (audit 2 phase 2: F26, F35, F44).
 Volumes are Google Keyword Planner averages per month, Oct 2025 to Sep 2026 (global / Pakistan + India + Bangladesh), from `/mnt/project-files/keywords/`.
 
 ## Rules
@@ -51,5 +51,9 @@ None left from the keyword research. The stats keywords got their pages in audit
 - `/dls-calculator/` title and H1 said "Par Score", the par table's keyword. Now "DLS Calculator: Revised Target for Rain-Hit Matches".
 - `/dls-target-calculator-t20/` had an H2 "T20 par score table". Now "Par score for the rest of the chase", the same wording as the DLS calculator.
 - Audit F10 (19 Oct): `/dls-calculator/` H2 "Par score table for the rest of the chase" is now "Par score for the rest of the chase", and the T20 title "Rain Target & Par Table" is now "DLS Target Calculator T20: Rain Target & Par Score". "Par table" / "par score table" stay with `/dls-par-score-table/` only.
+
+- Audit 2 F26 (19 Oct): `/dls-calculator/` title drops "(ICC)", because the site is not an ICC product: now "DLS Calculator: Revised Target for Rain-Hit Matches | DLSCalc".
+- Audit 2 F35 (19 Oct): four H2s answered another page's question and are now one or two sentences plus a link to the owner: `/dls-calculator/` "What is the DLS target when rain interrupts the chase?" and "How is a match decided if it cannot be finished?" (owner `/dls-method/`), `/net-run-rate-calculator/` "How do rain and DLS matches count in NRR?" (owner `/how-to-calculate-nrr/`), `/how-to-calculate-nrr/` "How do you convert overs for NRR?" (owner `/run-rate-calculator/`).
+- Audit 2 F44 (19 Oct): strike rate title is now "Strike Rate & Batting Average Calculator (Cricket) | DLSCalc"; home, famous matches hub and strike rate descriptions cut to under 160 characters.
 
 Checked and left as they are: the NRR calculator only summarises the formula and links to `/how-to-calculate-nrr/`; tool pages link to `/dls-method/` for the method; the run rate page's "How is run rate different from net run rate?" is a short contrast with a link.
