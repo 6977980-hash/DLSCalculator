@@ -88,6 +88,7 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 	.xbtn { margin-left: auto; }
 }
 
+.embed-code { width: 100%; margin: 4px 0 12px; padding: 10px 12px; font: 13px/1.5 ui-monospace, monospace; color: var(--ink); background: #efebe0; border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
 .sheet { display: none; }
 
 @media print {

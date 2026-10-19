@@ -32,6 +32,7 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `inc/content.php` | FAQs (also used for FAQPage schema), sources, related links and content dates |
 | `inc/guides.php` | Guides (`dlscalc_guides()`: heading, answer box, contents, call to action), Article schema, trust page layout, contact email |
 | `page-guide.php` | Shared template for the guides (`/dls-method/`, `/how-to-calculate-nrr/`, `/vjd-method/`) and the famous matches pages; articles in `template-parts/content/<slug>.php` |
+| `inc/embed.php`, `template-parts/embed-dls.php`, `assets/js/embed.js` | Embeddable DLS widget at `/embed/dls/` (standalone, noindex, works without JS) and the "Add this DLS calculator to your website" box with the embed code on `/dls-calculator/`. The code puts the credit link in the host page, outside the iframe |
 | `inc/matches.php` | Famous rain-hit matches: facts, the DLS Calculator inputs for each and the official target to compare with |
 | `inc/matches-ui.php` | `/famous-dls-matches/` hub and the match pages under it: URLs, SEO data, FAQs, the recalculation box and the accuracy table |
 | `page-about.php`, `page-contact.php`, `page-privacy-policy.php` | Trust pages, written in the theme |
