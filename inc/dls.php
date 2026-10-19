@@ -227,6 +227,7 @@ function dlscalc_dls_floor( $raw ) {
 
 /**
  * Stoppages from a permalink value: "12-1-10_22-3-2" (overs bowled, wickets down, overs lost).
+ * Empty parts are skipped; see parseStops() in the JS engine.
  *
  * @param mixed $str Value.
  * @return array<int, array{at: float|int, w: float|int, lost: float|int}>
@@ -236,7 +237,14 @@ function dlscalc_dls_parse_stops( $str ) {
 		return array();
 	}
 	$out = array();
-	foreach ( array_slice( explode( '_', $str ), 0, DLSCALC_STOPS_MAX ) as $part ) {
+	// Empty parts ("12-1-10_", "__") are skipped, as the form skips blank rows (audit F70).
+	$parts = array_filter(
+		explode( '_', $str ),
+		function ( $part ) {
+			return '' !== trim( str_replace( '-', '', $part ) );
+		}
+	);
+	foreach ( array_slice( $parts, 0, DLSCALC_STOPS_MAX ) as $part ) {
 		$x     = explode( '-', $part );
 		$out[] = array(
 			'at'    => dlscalc_dls_balls( $x[0] ?? '' ),
@@ -474,6 +482,17 @@ function dlscalc_dls_neg( $v ) {
 }
 
 /**
+ * Whether a runs box holds a scorecard score with wickets ("98/6", "98-6"), which a number box
+ * used to turn into 986 (audit F66). As score() in the JS engines; also used by inc/nrr.php.
+ *
+ * @param mixed $v Value.
+ * @return bool
+ */
+function dlscalc_dls_score( $v ) {
+	return (bool) preg_match( '/^\s*\d{1,3}\s*[\/\-−]\s*\d{1,2}\s*$/u', (string) $v );
+}
+
+/**
  * Error for a runs box that is not a whole number from 0 to 999, naming the cause (audit F49).
  * As runsErr() in the JS engines; also used by inc/nrr.php.
  *
@@ -486,6 +505,9 @@ function dlscalc_dls_runs_err( $raw, $who, $empty ) {
 	$s = trim( (string) $raw );
 	if ( '' === $s || ( preg_match( '/^\d+$/', $s ) && (int) $s <= 999 ) ) {
 		return $empty;
+	}
+	if ( dlscalc_dls_score( $s ) ) {
+		return $who . ': enter runs only, without wickets (98, not 98/6).';
 	}
 	if ( dlscalc_dls_neg( $s ) ) {
 		return $who . ' cannot be negative.';
@@ -661,6 +683,9 @@ function dlscalc_dls_live( $p ) {
 		}
 		if ( is_nan( (float) $at ) && ! dlscalc_dls_blank( $x[0] ?? '' ) ) {
 			return array( 'err' => dlscalc_dls_overs_help( $name, $x[0] ) );
+		}
+		if ( dlscalc_dls_score( $x[1] ?? '' ) ) {
+			return array( 'err' => $name . ': enter runs only, without wickets (98, not 98/6).' );
 		}
 		if ( is_nan( (float) $at ) || is_nan( (float) $runs ) || is_nan( (float) $w ) ) {
 			return array( 'err' => $name . ': fill in overs, runs and wickets (overs like 12.3).' );

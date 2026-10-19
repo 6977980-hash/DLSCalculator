@@ -141,6 +141,10 @@ function dlscalc_dls_stops_from_rows( $key, $fields = array( 'at', 'w', 'lost' )
 	$parts = array();
 	foreach ( array_slice( $at, 0, 'x' === $key ? DLSCALC_LIVE_MAX : DLSCALC_STOPS_MAX ) as $i => $value ) {
 		$row = array( trim( $value ), trim( $cols[0][ $i ] ?? '' ), trim( $cols[1][ $i ] ?? '' ) );
+		if ( 'x' === $key ) {
+			// "-" and "_" separate fields and entries, so a typed "24-1" travels as "24−1" (as live-par.js does).
+			$row = str_replace( array( '-', '_' ), array( '−', '' ), $row );
+		}
 		if ( '' === implode( '', $row ) ) {
 			continue;
 		}
@@ -169,8 +173,10 @@ function dlscalc_dls_inputs( $slug ) {
 			$in[ $key ] = $rows;
 		} elseif ( isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$in[ $key ] = substr( sanitize_text_field( wp_unslash( $_GET[ $key ] ) ), 0, 120 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		} elseif ( in_array( $key, array( 'a', 'b', 'c', 'x' ), true ) ) {
-			// A permalink without stoppages (or score entries) means there were none.
+		} elseif ( 'g' !== $key ) {
+			// A link means only what it carries (audit F69): without stoppages, score entries, overs
+			// lost or penalty runs there were none, and a missing score or overs per side is an error
+			// rather than the sample figure. Only G50 keeps its usual 245.
 			$in[ $key ] = '';
 		}
 	}
@@ -278,7 +284,7 @@ add_action( 'wp_head', 'dlscalc_dls_styles', 6 );
 function dlscalc_dls_stop_fields( $stops ) {
 	$out = array();
 	foreach ( explode( '_', $stops ) as $part ) {
-		if ( '' === $part ) {
+		if ( '' === trim( str_replace( '-', '', $part ) ) ) {
 			continue;
 		}
 		$x     = explode( '-', $part );

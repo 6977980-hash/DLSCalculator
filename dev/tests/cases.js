@@ -222,4 +222,28 @@ cases.push({ fn: 'nrr.convert', p: { v: '-3', j: '7.5' }, expect: { ovErr: 'Over
 cases.push({ fn: 'nrr.convert', p: { v: 'abc', j: '' }, expect: { ovErr: 'Write overs like 12.4, for 12 overs and 4 balls.', blErr: '' } });
 cases.push({ fn: 'nrr.convert', p: { v: '', j: '77' }, expect: { ovErr: '', bl: '12.5 overs', blErr: '' } });
 
+// Audit F66: a scorecard score with wickets ("98/6") is an error, not 986. Audit F70: empty
+// stoppage parts in a link are skipped, as blank form rows are.
+const WK = ': enter runs only, without wickets (98, not 98/6).';
+cases.push({ fn: 'calc', p: { n: '50', r: '98/6', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score' + WK } });
+cases.push({ fn: 'calc', p: { n: '50', r: '98-6', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score' + WK } });
+cases.push({ fn: 't20', p: { n: '20', r: '78 / 10', l: '5' }, expect: { field: 'r', err: 'Team 1\'s score' + WK } });
+cases.push({ fn: 'parTable', p: { o: '20', r: '98/6' }, expect: { field: 'r', err: 'Team 1\'s score' + WK } });
+cases.push({ fn: 'live', p: { n: '20', r: '98/6', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score' + WK } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '3-24/1-1' }, expect: { err: 'Score entry 1' + WK } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '2-15-0_3-24−1-1' }, expect: { err: 'Score entry 2' + WK } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20-15/2-20' }, expect: { err: 'Match 1' + WK } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20-150-20_98−6-20-140-20' }, expect: { err: 'Match 2' + WK } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '181', r: '92/3', o: '12' }, expect: { err: 'Runs scored' + WK } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '181/4', r: '92', o: '12' }, expect: { err: 'The target' + WK } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'c', e: '160/7', q: '20' }, expect: { err: 'The score' + WK } });
+cases.push({ fn: 'nrr.solve', p: { t: T4.replace('580', '580/9'), y: '3', v: '1', o: '0', k: 'c', e: '160', q: '20' }, expect: { err: 'Team C in the points table' + WK } });
+cases.push({ fn: 'nrr.batting', p: { r: '98/6', b: '60' }, expect: { field: 'r', err: 'Enter runs only, without wickets (98, not 98/6).' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '10', r: '3/24', k: '3' }, expect: { field: 'r', err: 'Enter runs only, without wickets (98, not 98/6).' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_' }, expect: { R2: 86.8, target: 218 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '_12-1-10' }, expect: { R2: 86.8, target: 218 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10__22-3-2' }, expect: { R2: 83.2, target: 209 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_--_22-3-2' }, expect: { R2: 83.2, target: 209 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_22.9-3-2_' }, expect: { field: 'b-2-at' } });
+
 process.stdout.write(JSON.stringify(cases));

@@ -47,12 +47,12 @@ dlscalc_tool_page_open(
 				<input type="number" inputmode="numeric" min="1" max="50" name="n" value="<?php echo esc_attr( $dlscalc_in['n'] ); ?>" autocomplete="off">
 			</label>
 			<label class="fld" data-target<?php echo $dlscalc_chase ? '' : ' hidden'; ?>>Target
-				<input type="number" inputmode="numeric" min="1" max="999" name="t" value="<?php echo esc_attr( $dlscalc_in['t'] ); ?>" autocomplete="off">
+				<input type="text" inputmode="numeric" name="t" value="<?php echo esc_attr( $dlscalc_in['t'] ); ?>" autocomplete="off">
 			</label>
 		</div>
 		<div class="fields">
 			<label class="fld">Runs scored so far
-				<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
+				<input type="text" inputmode="numeric" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
 			</label>
 			<label class="fld">Overs bowled so far
 				<input type="text" inputmode="decimal" name="o" value="<?php echo esc_attr( $dlscalc_in['o'] ); ?>" placeholder="e.g. 12.4" autocomplete="off">

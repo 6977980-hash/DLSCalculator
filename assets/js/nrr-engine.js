@@ -60,6 +60,14 @@
 	}
 
 	/**
+	 * Whether a runs box holds a scorecard score with wickets ("98/6", "98-6"), which a number box
+	 * used to turn into 986 (audit F66). Same in dls-engine.js; PHP: dlscalc_dls_score().
+	 */
+	function score(v) {
+		return /^\s*\d{1,3}\s*[\/\-−]\s*\d{1,2}\s*$/.test(String(v == null ? '' : v));
+	}
+
+	/**
 	 * Error for a runs box that is not a whole number from 0 to 999, naming the cause (audit F49):
 	 * negative, too big or not whole; `empty` for a blank box. As runsErr() in dls-engine.js; PHP: dlscalc_dls_runs_err().
 	 */
@@ -67,6 +75,9 @@
 		var s = String(raw == null ? '' : raw).trim();
 		if (s === '' || (/^\d+$/.test(s) && parseInt(s, 10) <= 999)) {
 			return empty;
+		}
+		if (score(s)) {
+			return who + ': enter runs only, without wickets (98, not 98/6).';
 		}
 		if (neg(s)) {
 			return who + ' cannot be negative.';
@@ -172,6 +183,9 @@
 			var a = side(x[0], x[1], mq), d = side(x[2], x[3], mq);
 			if (neg(x[0]) || neg(x[2])) {
 				return { err: name + ': runs cannot be negative.' };
+			}
+			if (score(x[0]) || score(x[2])) {
+				return { err: name + ': enter runs only, without wickets (98, not 98/6).' };
 			}
 			if (isNaN(a.runs) || isNaN(d.runs) || a.runs > 999 || d.runs > 999) {
 				return { err: name + ': enter runs scored and runs conceded.' };
@@ -283,7 +297,9 @@
 			return res;
 		}
 		if (!me.ok || !rv.ok) {
-			res.err = 'Fill in runs and overs for ' + (me.ok ? rv.name : me.name) + ' in the points table.';
+			var bad = me.ok ? rv : me;
+			res.err = score(bad.raw.rf) || score(bad.raw.ra) ? bad.name + ' in the points table: enter runs only, without wickets (98, not 98/6).' :
+				'Fill in runs and overs for ' + bad.name + ' in the points table.';
 			return res;
 		}
 		if (isNaN(O) || O === Y || O > teams.length) {
@@ -504,7 +520,7 @@
 		var R = count(p.r), B = count(p.b), I = blank(p.i) ? null : count(p.i), O = blank(p.o) ? 0 : count(p.o);
 		var F = blank(p.f) ? 0 : count(p.f), X = blank(p.x) ? 0 : count(p.x), G = blank(p.g) ? null : count(p.g);
 		if (isNaN(R)) {
-			return { err: neg(p.r) ? 'Runs cannot be negative.' : 'Enter the runs scored.', field: 'r' };
+			return { err: neg(p.r) ? 'Runs cannot be negative.' : (score(p.r) ? 'Enter runs only, without wickets (98, not 98/6).' : 'Enter the runs scored.'), field: 'r' };
 		}
 		if (isNaN(B) || B < 1) {
 			return { err: 'Enter the balls faced, at least 1.', field: 'b' };
@@ -565,7 +581,7 @@
 			return { err: oversErr('Overs bowled', p.o, 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.'), field: 'o' };
 		}
 		if (isNaN(R)) {
-			return { err: neg(p.r) ? 'Runs cannot be negative.' : 'Enter the runs conceded.', field: 'r' };
+			return { err: neg(p.r) ? 'Runs cannot be negative.' : (score(p.r) ? 'Enter runs only, without wickets (98, not 98/6).' : 'Enter the runs conceded.'), field: 'r' };
 		}
 		if (isNaN(K) || K > B) {
 			return { err: 'Wickets must be a whole number, no more than the balls bowled.', field: 'k' };

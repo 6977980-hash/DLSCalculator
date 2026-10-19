@@ -30,6 +30,25 @@
 		}).join('&');
 		out('full').href = full + '?' + q;
 	}
+	// The format fills in its usual overs, unless a rain-shortened start is already typed (a 40-over
+	// ODI keeps 40), and Team 2's overs follow the overs per side while they still match, as on the
+	// full calculator; otherwise ODI with 20 overs gave a 20-over target (audit F71).
+	var usual = { odi: '50', t20: '20', t20ko: '20', t10: '10' }, lastN = form.n.value.trim();
+	var carry = function (to) {
+		var c = form.c.value.trim();
+		if (c === '' || c === lastN) {
+			form.c.value = c === '' ? '' : to;
+		}
+		lastN = to;
+	};
+	form.f.addEventListener('change', function () {
+		var to = usual[form.f.value], now = form.n.value.trim();
+		if (to && ['', '50', '20', '10'].indexOf(now) > -1) {
+			form.n.value = to;
+			carry(to);
+		}
+	});
+	form.n.addEventListener('input', function () { carry(form.n.value.trim()); });
 	form.addEventListener('input', update);
 	form.addEventListener('change', update);
 	form.addEventListener('submit', function (e) { e.preventDefault(); update(); });

@@ -43,7 +43,7 @@ get_header();
 						</select>
 					</label>
 					<label class="fld">Team 1 score
-						<input type="number" inputmode="numeric" min="0" max="999" name="r" value="168" autocomplete="off">
+						<input type="text" inputmode="numeric" name="r" value="168" autocomplete="off">
 					</label>
 					<label class="fld">Overs for Team 2
 						<input type="text" inputmode="decimal" name="c" value="15" autocomplete="off">

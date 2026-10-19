@@ -104,6 +104,14 @@
 	}
 
 	/**
+	 * Whether a runs box holds a scorecard score with wickets ("98/6", "98-6"), which a number box
+	 * used to turn into 986 (audit F66). Same in nrr-engine.js; PHP: dlscalc_dls_score().
+	 */
+	function score(v) {
+		return /^\s*\d{1,3}\s*[\/\-−]\s*\d{1,2}\s*$/.test(String(v == null ? '' : v));
+	}
+
+	/**
 	 * Error for a runs box that is not a whole number from 0 to 999, naming the cause (audit F49):
 	 * negative, too big or not whole; `empty` for a blank box. Same in nrr-engine.js; PHP: dlscalc_dls_runs_err().
 	 */
@@ -111,6 +119,9 @@
 		var s = String(raw == null ? '' : raw).trim();
 		if (s === '' || (/^\d+$/.test(s) && parseInt(s, 10) <= 999)) {
 			return empty;
+		}
+		if (score(s)) {
+			return who + ': enter runs only, without wickets (98, not 98/6).';
 		}
 		if (neg(s)) {
 			return who + ' cannot be negative.';
@@ -161,12 +172,17 @@
 		return Math.floor(raw + 1e-9);
 	}
 
-	/** Stoppages from a permalink value: "12-1-10_22-3-2" (overs bowled, wickets down, overs lost). */
+	/**
+	 * Stoppages from a permalink value: "12-1-10_22-3-2" (overs bowled, wickets down, overs lost).
+	 * Empty parts ("12-1-10_", "__") are skipped, as the form skips blank rows (audit F70).
+	 */
 	function parseStops(str) {
 		if (!str) {
 			return [];
 		}
-		return String(str).split('_').slice(0, STOPS_MAX).map(function (part) {
+		return String(str).split('_').filter(function (part) {
+			return part.replace(/-/g, '').trim() !== '';
+		}).slice(0, STOPS_MAX).map(function (part) {
 			var x = part.split('-');
 			return { at: balls(x[0]), w: int(x[1]), lost: balls(x[2]), atS: x[0] || '', lostS: x[2] || '' };
 		});
@@ -415,6 +431,9 @@
 			}
 			if (isNaN(at) && !blank(x[0])) {
 				return { err: oversHelp(name, x[0]) };
+			}
+			if (score(x[1])) {
+				return { err: name + ': enter runs only, without wickets (98, not 98/6).' };
 			}
 			if (isNaN(at) || isNaN(runs) || isNaN(w)) {
 				return { err: name + ': fill in overs, runs and wickets (overs like 12.3).' };

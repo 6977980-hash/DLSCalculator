@@ -21,8 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * z tie-break ("w": wins before net run rate, as at ICC events; empty: net run rate) for the scenario. Run rate page: u "c" chasing or "f" batting first, n overs per side, t target,
  * r runs so far, o overs bowled. Strike rate page: r runs, b balls faced, i innings, o not outs,
  * f fours, x sixes, g target strike rate. Bowling page: o overs, r runs conceded, k wickets,
- * d dot balls. The stats pages have optional fields, so "blank" makes a link leave out what it
- * does not carry instead of filling in the sample figures.
+ * d dot balls. On the run rate and stats pages "blank" makes a link leave out what it does not
+ * carry instead of filling in the sample figures, so a run rate link without a target is an error,
+ * not a chase of 181 (audit F69).
  *
  * @return array<string, array{tool: string, blank?: bool, defaults: array<string, string>}>
  */
@@ -47,6 +48,7 @@ function dlscalc_nrr_tools() {
 		),
 		'run-rate-calculator'        => array(
 			'tool'     => 'runRate',
+			'blank'    => true,
 			'defaults' => array(
 				'u' => 'c',
 				'n' => '20',
@@ -186,7 +188,14 @@ function dlscalc_nrr_inputs( $slug ) {
 	if ( ! dlscalc_nrr_has_params() ) {
 		return $in;
 	}
-	if ( ! empty( $tool['blank'] ) ) {
+	// Only a link with this tool's own inputs; the overs converter on the run rate page has its own.
+	$own = array_filter(
+		array_keys( $in ),
+		function ( $key ) {
+			return null !== dlscalc_nrr_get( $key );
+		}
+	);
+	if ( ! empty( $tool['blank'] ) && $own ) {
 		$in = array_fill_keys( array_keys( $in ), '' );
 	}
 	$rows = array(
@@ -336,7 +345,7 @@ function dlscalc_nrr_match_row( $i, $row ) {
 		<legend>Match <span class="mrow__n"><?php echo (int) $i + 1; ?></span></legend>
 		<div class="mrow__side">
 			<label class="fld">Runs scored
-				<input type="number" inputmode="numeric" min="0" max="999" name="x_rf[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['rf'] ); ?>" data-f="rf" autocomplete="off">
+				<input type="text" inputmode="numeric" name="x_rf[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['rf'] ); ?>" data-f="rf" autocomplete="off">
 			</label>
 			<label class="fld">Overs faced
 				<input type="text" inputmode="decimal" name="x_of[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['of'] ); ?>" placeholder="e.g. 19.4" data-f="of" autocomplete="off">
@@ -344,7 +353,7 @@ function dlscalc_nrr_match_row( $i, $row ) {
 		</div>
 		<div class="mrow__side">
 			<label class="fld">Runs conceded
-				<input type="number" inputmode="numeric" min="0" max="999" name="x_ra[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['ra'] ); ?>" data-f="ra" autocomplete="off">
+				<input type="text" inputmode="numeric" name="x_ra[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['ra'] ); ?>" data-f="ra" autocomplete="off">
 			</label>
 			<label class="fld">Overs bowled
 				<input type="text" inputmode="decimal" name="x_oa[<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $row['oa'] ); ?>" placeholder="e.g. 20" data-f="oa" autocomplete="off">
@@ -394,7 +403,7 @@ function dlscalc_nrr_team_rows( $teams ) {
 					<tr class="trow<?php echo empty( $team['spare'] ) ? '' : ' trow--spare'; ?>">
 						<td class="ptable__name"><input type="text" name="t_n[]" value="<?php echo esc_attr( $team['name'] ); ?>" aria-label="Team name" data-f="n" maxlength="30" autocomplete="off"></td>
 						<?php foreach ( $cols as $key => $col ) : ?>
-							<td><input type="<?php echo 'numeric' === $col[1] ? 'number' : 'text'; ?>" inputmode="<?php echo esc_attr( $col[1] ); ?>" name="t_<?php echo esc_attr( $key ); ?>[]" value="<?php echo esc_attr( $team['raw'][ $key ] ); ?>" aria-label="<?php echo esc_attr( $col[0] ); ?>" data-f="<?php echo esc_attr( $key ); ?>" autocomplete="off"></td>
+							<td><input type="<?php echo 'numeric' === $col[1] && ! in_array( $key, array( 'rf', 'ra' ), true ) ? 'number' : 'text'; ?>" inputmode="<?php echo esc_attr( $col[1] ); ?>" name="t_<?php echo esc_attr( $key ); ?>[]" value="<?php echo esc_attr( $team['raw'][ $key ] ); ?>" aria-label="<?php echo esc_attr( $col[0] ); ?>" data-f="<?php echo esc_attr( $key ); ?>" autocomplete="off"></td>
 						<?php endforeach; ?>
 						<td class="ptable__nrr" data-nrr><?php echo esc_html( $team['nrr'] ); ?></td>
 						<td><button type="button" class="xbtn" aria-label="Remove team" data-remove>×</button></td>

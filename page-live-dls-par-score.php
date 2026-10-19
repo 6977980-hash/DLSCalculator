@@ -77,7 +77,7 @@ dlscalc_par_sheet_head();
 					<input type="text" inputmode="decimal" name="n" value="<?php echo esc_attr( $dlscalc_in['n'] ); ?>" autocomplete="off">
 				</label>
 				<label class="fld">Team 1 final score
-					<input type="number" inputmode="numeric" min="0" max="999" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
+					<input type="text" inputmode="numeric" name="r" value="<?php echo esc_attr( $dlscalc_in['r'] ); ?>" autocomplete="off">
 				</label>
 				<label class="fld">Overs for Team 2 (if cut before the chase)
 					<input type="text" inputmode="decimal" name="c" value="<?php echo esc_attr( $dlscalc_in['c'] ); ?>" placeholder="Same as Team 1" autocomplete="off">
@@ -105,7 +105,7 @@ dlscalc_par_sheet_head();
 							<?php $dlscalc_st = $dlscalc_row['e'] ? dlscalc_live_status( $dlscalc_row['e'] ) : array( '', '', '' ); ?>
 							<tr class="lrow<?php echo empty( $dlscalc_row['spare'] ) ? '' : ' lrow--spare'; ?>">
 								<td><input type="text" inputmode="decimal" name="x_at[]" value="<?php echo esc_attr( $dlscalc_row['at'] ); ?>" aria-label="Overs bowled" data-f="at" autocomplete="off"></td>
-								<td><input type="number" inputmode="numeric" min="0" max="999" name="x_r[]" value="<?php echo esc_attr( $dlscalc_row['r'] ); ?>" aria-label="Team 2 runs" data-f="r" autocomplete="off"></td>
+								<td><input type="text" inputmode="numeric" name="x_r[]" value="<?php echo esc_attr( $dlscalc_row['r'] ); ?>" aria-label="Team 2 runs" data-f="r" autocomplete="off"></td>
 								<td><input type="number" inputmode="numeric" min="0" max="10" name="x_w[]" value="<?php echo esc_attr( $dlscalc_row['w'] ); ?>" aria-label="Wickets down" data-f="w" autocomplete="off"></td>
 								<td class="live__par" data-par><?php echo $dlscalc_row['e'] ? (int) $dlscalc_row['e']['par'] : ''; ?></td>
 								<td><span class="pill<?php echo $dlscalc_st[1] ? ' pill--' . esc_attr( $dlscalc_st[1] ) : ''; ?>" data-status title="<?php echo esc_attr( $dlscalc_st[0] ); ?>"><?php echo esc_html( $dlscalc_st[2] ); ?></span></td>
@@ -117,6 +117,10 @@ dlscalc_par_sheet_head();
 			</div>
 			<div class="btn-row">
 				<button type="button" class="btn btn--green js-only" data-add>+ Add next over</button>
+			</div>
+			<?php // Clearing and removing can be undone, and the clear button sits well away from "Add next over" (audit F68). ?>
+			<p class="alert alert--soft undo" role="status" data-undo hidden><span data-undo-msg></span> <button type="button" class="btn btn--line" data-undo-btn>Undo</button></p>
+			<div class="btn-row btn-row--apart">
 				<button type="button" class="btn btn--line js-only" data-reset>Start a new match</button>
 			</div>
 		</div>

@@ -39,7 +39,8 @@
 	AddOutputFilterByType DEFLATE text/css application/javascript image/svg+xml application/manifest+json
 </IfModule>
 
-# Theme source files are not meant to be opened directly.
-<FilesMatch "\.(md|mjs)$">
+# Theme source files are not meant to be opened directly, and no PDF is part of the theme (audit F91:
+# print-test output was once committed here).
+<FilesMatch "\.(md|mjs|pdf)$">
 	Require all denied
 </FilesMatch>

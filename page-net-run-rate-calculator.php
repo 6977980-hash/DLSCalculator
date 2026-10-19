@@ -106,7 +106,7 @@ dlscalc_tool_page_open(
 				</fieldset>
 				<div class="fields">
 					<label class="fld"><span data-out="elabel"><?php echo 'c' === $dlscalc_in['k'] ? 'Opponent\'s score to chase' : 'Your expected score'; ?></span>
-						<input type="number" inputmode="numeric" min="0" max="999" name="e" value="<?php echo esc_attr( $dlscalc_in['e'] ); ?>" autocomplete="off">
+						<input type="text" inputmode="numeric" name="e" value="<?php echo esc_attr( $dlscalc_in['e'] ); ?>" autocomplete="off">
 					</label>
 					<label class="fld">Overs per side
 						<input type="number" inputmode="numeric" min="1" max="50" name="h" value="<?php echo esc_attr( $dlscalc_in['h'] ); ?>" autocomplete="off">

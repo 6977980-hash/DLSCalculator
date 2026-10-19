@@ -153,6 +153,9 @@ function dlscalc_nrr_calc( $p ) {
 		if ( dlscalc_dls_neg( $x[0] ?? '' ) || dlscalc_dls_neg( $x[2] ?? '' ) ) {
 			return array( 'err' => $name . ': runs cannot be negative.' );
 		}
+		if ( dlscalc_dls_score( $x[0] ?? '' ) || dlscalc_dls_score( $x[2] ?? '' ) ) {
+			return array( 'err' => $name . ': enter runs only, without wickets (98, not 98/6).' );
+		}
 		if ( is_nan( (float) $a['runs'] ) || is_nan( (float) $d['runs'] ) || $a['runs'] > 999 || $d['runs'] > 999 ) {
 			return array( 'err' => $name . ': enter runs scored and runs conceded.' );
 		}
@@ -324,7 +327,9 @@ function dlscalc_nrr_solve( $p ) {
 		return $res;
 	}
 	if ( ! $me['ok'] || ! $rv['ok'] ) {
-		$res['err'] = 'Fill in runs and overs for ' . ( $me['ok'] ? $rv['name'] : $me['name'] ) . ' in the points table.';
+		$bad        = $me['ok'] ? $rv : $me;
+		$res['err'] = dlscalc_dls_score( $bad['raw']['rf'] ) || dlscalc_dls_score( $bad['raw']['ra'] ) ? $bad['name'] . ' in the points table: enter runs only, without wickets (98, not 98/6).' :
+			'Fill in runs and overs for ' . $bad['name'] . ' in the points table.';
 		return $res;
 	}
 	if ( is_nan( (float) $o ) || $o === $y || $o > count( $teams ) ) {
@@ -607,7 +612,7 @@ function dlscalc_nrr_batting( $p ) {
 	};
 	if ( $na( $r ) ) {
 		return array(
-			'err'   => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs cannot be negative.' : 'Enter the runs scored.',
+			'err'   => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs cannot be negative.' : ( dlscalc_dls_score( $p['r'] ?? '' ) ? 'Enter runs only, without wickets (98, not 98/6).' : 'Enter the runs scored.' ),
 			'field' => 'r',
 		);
 	}
@@ -710,7 +715,7 @@ function dlscalc_nrr_bowling( $p ) {
 	}
 	if ( $na( $r ) ) {
 		return array(
-			'err'   => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs cannot be negative.' : 'Enter the runs conceded.',
+			'err'   => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs cannot be negative.' : ( dlscalc_dls_score( $p['r'] ?? '' ) ? 'Enter runs only, without wickets (98, not 98/6).' : 'Enter the runs conceded.' ),
 			'field' => 'r',
 		);
 	}

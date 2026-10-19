@@ -30,13 +30,14 @@
 
 	// A result link opened with no signal gets the page the service worker saved without inputs
 	// (data-plain), so fill the form from the address first, the way the server reads the link
-	// online: stoppages and Team 2's overs left out of a link mean none (audit F46).
+	// online (audit F46): a link means only what it carries, so anything left out is blank (no
+	// stoppages, no overs lost, a missing score is an error) and only G50 keeps its 245 (audit F69).
 	if (form.hasAttribute('data-plain') && window.URLSearchParams) {
 		var linkQ = new URLSearchParams(location.search);
 		var linkKeys = ['n', 'r', 'g', 'c', 'l', 'o', 'f', 'k', 'a', 'b'];
 		if (linkKeys.some(function (k) { return linkQ.has(k); })) {
 			linkKeys.forEach(function (k) {
-				var v = linkQ.has(k) ? linkQ.get(k).trim().slice(0, 120) : (['a', 'b', 'c', 'f'].indexOf(k) > -1 ? '' : null);
+				var v = linkQ.has(k) ? linkQ.get(k).trim().slice(0, 120) : (k === 'g' ? null : (k === 'l' ? '0' : ''));
 				var box = $('[data-stops="' + k + '"]', form), el = form.elements[k];
 				if (v === null) {
 					return;
@@ -44,7 +45,7 @@
 				if (box) {
 					var spare = $('.stop--spare', box);
 					$$('.stop:not(.stop--spare)', box).forEach(function (row) { box.removeChild(row); });
-					v.split('_').filter(Boolean).forEach(function (part) {
+					v.split('_').filter(function (part) { return part.replace(/-/g, '').trim() !== ''; }).forEach(function (part) {
 						var row = spare.cloneNode(true), x = part.split('-');
 						row.classList.remove('stop--spare');
 						['at', 'w', 'lost'].forEach(function (f, i) { $('[data-f="' + f + '"]', row).value = x[i] || ''; });

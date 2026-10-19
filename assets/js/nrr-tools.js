@@ -173,8 +173,18 @@
 
 	function nrrPage(calcForm, tableForm) {
 		var KEY = 'dlscalc-nrr';
-		// A return visit with no inputs in the address opens the table saved on this device.
-		if (!location.search) {
+		// A return visit with no inputs in the address opens the table saved on this device. Only the
+		// page's own keys count: fbclid, utm_source and the like from a shared link do not (audit F67).
+		var own = ['u', 'q', 'x', 't', 'y', 'v', 'o', 'k', 'e', 'h', 'd', 'z', 'x_rf[]', 't_n[]'];
+		var inLink = location.search.replace(/^\?/, '').split('&').map(function (kv) {
+			var k = kv.split('=')[0];
+			try {
+				return decodeURIComponent(k);
+			} catch (e) {
+				return k;
+			}
+		});
+		if (!own.some(function (k) { return inLink.indexOf(k) > -1; })) {
 			var saved = store.get(KEY);
 			if (saved) {
 				location.replace(location.pathname + '?' + saved + location.hash);
@@ -267,6 +277,37 @@
 			});
 		}
 
+		// On a phone the result sits below all the match rows, so typing changes nothing on screen. A
+		// slim bar at the bottom repeats the answer of the open tab while its result is below the
+		// screen, as on the DLS pages (audit F73, the F51 bar).
+		var panels = { c: document.getElementById('nrr-result'), t: document.getElementById('scenario-result') }, bar = null, below = {};
+		var placeBar = function () {
+			var panel = panels[tab], prev = panel && panel.previousElementSibling;
+			if (!bar) {
+				return;
+			}
+			// Only when the result is stacked under the inputs (phones), not beside them (wide screens).
+			var stacked = !!prev && panel.getBoundingClientRect().top >= prev.getBoundingClientRect().bottom - 1;
+			bar.hidden = !(below[tab] && stacked);
+			bar.href = '#' + panel.id;
+			document.documentElement.classList.toggle('has-stick', !bar.hidden);
+		};
+		if (panels.c && panels.t && window.IntersectionObserver) {
+			bar = document.createElement('a');
+			bar.className = 'stick noprint';
+			bar.hidden = true;
+			document.body.appendChild(bar);
+			var io = new IntersectionObserver(function (entries) {
+				entries.forEach(function (e) {
+					below[e.target === panels.c ? 'c' : 't'] = !e.isIntersecting && e.boundingClientRect.top > 0;
+				});
+				placeBar();
+			});
+			io.observe(panels.c);
+			io.observe(panels.t);
+			window.addEventListener('resize', placeBar);
+		}
+
 		var first = true;
 		function update() {
 			var p = params();
@@ -302,6 +343,13 @@
 			text('sline', s.err ? 'Check the points table and the next match.' : s.line);
 			text('snote', s.err ? '' : s.note);
 			out('ssteps').innerHTML = stepsHtml(s);
+			if (bar) {
+				var more = '</span><span class="stick__more">See working ↓</span>';
+				bar.innerHTML = tab === 'c' ?
+					(c.err ? '<span>Check the inputs</span><span class="stick__more">See why ↓</span>' : '<span>Net run rate <b>' + esc(c.nrr) + '</b>' + more) :
+					(s.err ? '<span>Check the inputs</span><span class="stick__more">See why ↓</span>' : '<span>' + esc(s.big) + more);
+				placeBar();
+			}
 
 			// Result permalink and the copy kept on this device.
 			var q = query(p);
@@ -355,7 +403,8 @@
 	function runRatePage(form, conv) {
 		var got = linked(form, ['u', 'n', 't', 'r', 'o']);
 		if (got) {
-			['u', 'n', 't', 'r', 'o'].forEach(function (k) { setField(form, k, got(k)); });
+			// Fields left out of a link are blank, as on the server, so a link without the target is an error, not 181 (audit F69).
+			['u', 'n', 't', 'r', 'o'].forEach(function (k) { setField(form, k, got(k) === null ? '' : got(k)); });
 		}
 		var params = function () {
 			var u = $('[name="u"]:checked', form);
