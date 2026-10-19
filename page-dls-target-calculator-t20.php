@@ -24,6 +24,7 @@ dlscalc_tool_page_open(
 	'DLS Target Calculator T20',
 	'Rain in a T20? Slide the overs lost and watch the revised target change. Add any stoppage during the chase and get the par score for every over and wicket.'
 );
+dlscalc_par_sheet_head();
 ?>
 <div class="tool">
 	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="t20" novalidate>
@@ -61,7 +62,7 @@ dlscalc_tool_page_open(
 	?>
 </div>
 
-<section class="panel block">
+<section class="panel block noprint">
 	<h2>Target for every chase length</h2>
 	<p class="hint">If no more overs are lost once the chase starts. The gold bar is the current setting.</p>
 	<div class="chart" role="img" aria-label="<?php echo esc_attr( 'Bar chart of the Team 2 target for chases of 5 to ' . $dlscalc_no . ' overs' ); ?>">
@@ -100,6 +101,7 @@ dlscalc_tool_page_open(
 	</div>
 	<?php dlscalc_dls_par_table_html( $dlscalc_r, 'T20 DLS par score by completed overs and wickets down' ); ?>
 </section>
+<?php dlscalc_par_sheet_foot(); ?>
 
 <div class="entry-content tool-prose">
 	<?php get_template_part( 'template-parts/content/dls-target-calculator-t20' ); ?>

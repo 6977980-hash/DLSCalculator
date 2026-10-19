@@ -49,6 +49,7 @@ dlscalc_tool_page_open(
 	'Live DLS Par Score: Who Is Ahead If Rain Stops Play?',
 	'Enter the chasing side\'s score after each over and see the DLS par score at that point, so you always know who is ahead if rain stops the match. Built for scorers and captains during a live game.'
 );
+dlscalc_par_sheet_head();
 ?>
 <div class="tool">
 	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="live" novalidate>
@@ -138,10 +139,11 @@ dlscalc_tool_page_open(
 			<?php $dlscalc_on = 'Par after each completed over of the chase, for 0 to 9 wickets down. Print it as a backup for the scorers.'; ?>
 			<p class="hint" data-out="tablenote" data-on="<?php echo esc_attr( $dlscalc_on ); ?>" data-off="Fix the inputs above to see the par table."><?php echo esc_html( $dlscalc_err ? 'Fix the inputs above to see the par table.' : $dlscalc_on ); ?></p>
 		</div>
-		<button type="button" class="btn btn--line noprint js-only" data-print>Print par table</button>
+		<button type="button" class="btn btn--line noprint js-only" data-print>Print par sheet</button>
 	</div>
 	<?php dlscalc_dls_par_table_html( $dlscalc_r, 'DLS par score by completed overs and wickets down' ); ?>
 </section>
+<?php dlscalc_par_sheet_foot(); ?>
 
 <div class="entry-content tool-prose">
 	<?php get_template_part( 'template-parts/content/live-dls-par-score' ); ?>

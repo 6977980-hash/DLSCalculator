@@ -249,6 +249,10 @@
 	$$('[data-print]').forEach(function (print) {
 		print.addEventListener('click', function () { window.print(); });
 	});
+	// The printed par sheet ends with the link that reopens this result.
+	window.addEventListener('beforeprint', function () {
+		$$('[data-sheet-url]').forEach(function (el) { el.textContent = location.href.replace(/#.*$/, ''); });
+	});
 
 	update();
 	first = false;

@@ -19,6 +19,7 @@ dlscalc_tool_page_open(
 	'DLS Par Score Table and Calculator',
 	'Choose the overs per side and Team 1\'s score to get the DLS par score after every over of the chase, for 0 to 9 wickets down. Print it before the match and the scorers are ready for rain.'
 );
+dlscalc_par_sheet_head();
 ?>
 <div class="tool">
 	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="parTable" novalidate>
@@ -63,10 +64,11 @@ dlscalc_tool_page_open(
 			<?php $dlscalc_on = 'Par after each completed over, for 0 to 9 wickets down. If play ends for good, Team 2 wins when it is above par and the match is tied on par.'; ?>
 			<p class="hint" data-out="tablenote" data-on="<?php echo esc_attr( $dlscalc_on ); ?>" data-off="Fix the inputs above to see the par table."><?php echo esc_html( empty( $dlscalc_r['err'] ) ? $dlscalc_on : 'Fix the inputs above to see the par table.' ); ?></p>
 		</div>
-		<button type="button" class="btn btn--line noprint js-only" data-print>Print par table</button>
+		<button type="button" class="btn btn--line noprint js-only" data-print>Print par sheet</button>
 	</div>
 	<?php dlscalc_dls_par_table_html( $dlscalc_r, 'DLS par score by completed overs and wickets down' ); ?>
 </section>
+<?php dlscalc_par_sheet_foot(); ?>
 
 <section class="panel block">
 	<h2>How the par scores were worked out</h2>

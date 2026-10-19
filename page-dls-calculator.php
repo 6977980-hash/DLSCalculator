@@ -23,6 +23,7 @@ dlscalc_tool_page_open(
 	'DLS Calculator: Revised Target for Rain-Hit Matches',
 	'Work out the Duckworth-Lewis-Stern target for any rain-affected match, with as many stoppages as you need in either innings. Every result shows its full working, using the ICC Standard Edition table.'
 );
+dlscalc_par_sheet_head();
 ?>
 <div class="tool">
 	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="calc" novalidate>
@@ -105,6 +106,7 @@ dlscalc_tool_page_open(
 	</div>
 	<?php dlscalc_dls_par_table_html( $dlscalc_r, 'DLS par score for Team 2 by completed overs and wickets down' ); ?>
 </section>
+<?php dlscalc_par_sheet_foot(); ?>
 
 <div class="entry-content tool-prose">
 	<?php get_template_part( 'template-parts/content/dls-calculator' ); ?>
