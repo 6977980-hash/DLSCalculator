@@ -439,11 +439,8 @@ function dlscalc_dls_par_rows( $s, $r1, $g, $b, $p = 0 ) {
  * @return array|null Error result, or null when fine.
  */
 function dlscalc_dls_check( $s, $g, $raw = '' ) {
-	if ( is_nan( (float) $s ) ) {
-		return dlscalc_dls_fail( dlscalc_dls_neg( $raw ) ? 'Team 1\'s score cannot be negative.' : 'Enter Team 1\'s final score.', 'r' );
-	}
-	if ( $s > 999 ) {
-		return dlscalc_dls_fail( 'Team 1\'s score looks too high. Enter runs only.', 'r' );
+	if ( is_nan( (float) $s ) || $s > 999 ) {
+		return dlscalc_dls_fail( dlscalc_dls_runs_err( $raw, 'Team 1\'s score', 'Enter Team 1\'s final score.' ), 'r' );
 	}
 	if ( ! ( $g > 0 && $g <= 500 ) ) {
 		return dlscalc_dls_fail( 'Enter a G50 value between 1 and 500, for example 245.', 'g' );
@@ -469,6 +466,26 @@ function dlscalc_dls_blank( $v ) {
  */
 function dlscalc_dls_neg( $v ) {
 	return (bool) preg_match( '/^\s*[-−]\s*\d/u', (string) $v );
+}
+
+/**
+ * Error for a runs box that is not a whole number from 0 to 999, naming the cause (audit F49).
+ * As runsErr() in the JS engines; also used by inc/nrr.php.
+ *
+ * @param mixed  $raw   Value as typed.
+ * @param string $who   Field name for the message, like "Team 1's score".
+ * @param string $empty Message for a blank box.
+ * @return string
+ */
+function dlscalc_dls_runs_err( $raw, $who, $empty ) {
+	$s = trim( (string) $raw );
+	if ( '' === $s || ( preg_match( '/^\d+$/', $s ) && (int) $s <= 999 ) ) {
+		return $empty;
+	}
+	if ( dlscalc_dls_neg( $s ) ) {
+		return $who . ' cannot be negative.';
+	}
+	return preg_match( '/^\d+$/', $s ) ? $who . ' can be no more than 999.' : $who . ' must be a whole number, like 245.';
 }
 
 /**
@@ -623,9 +640,10 @@ function dlscalc_dls_live( $p ) {
 	if ( isset( $base['err'] ) ) {
 		return $base;
 	}
-	$log   = array();
-	$last  = null;
-	$now   = null;
+	$log       = array();
+	$last      = null;
+	$last_name = '';
+	$now       = null;
 	$parts = dlscalc_dls_blank( $p['x'] ?? '' ) ? array() : array_slice( explode( '_', (string) $p['x'] ), 0, DLSCALC_LIVE_MAX );
 	foreach ( $parts as $i => $part ) {
 		$x    = explode( '-', $part );
@@ -651,8 +669,12 @@ function dlscalc_dls_live( $p ) {
 		if ( $w > 10 || $runs > 999 ) {
 			return array( 'err' => $name . ': wickets must be 0 to 10 and runs no more than 999.' );
 		}
-		if ( $last && ( $at <= $last['at'] || $runs < $last['runs'] || $w < $last['w'] ) ) {
+		if ( $last && $at <= $last['at'] ) {
 			return array( 'err' => 'Score entries must be in order, with the overs going up.' );
+		}
+		if ( $last && ( $runs < $last['runs'] || $w < $last['w'] ) ) {
+			$down = $runs < $last['runs'];
+			return array( 'err' => ( $down ? 'Runs' : 'Wickets' ) . ' cannot go down: ' . strtolower( $name ) . ' has ' . ( $down ? $runs : $w ) . ', ' . strtolower( $last_name ) . ' has ' . ( $down ? $last['runs'] : $last['w'] ) . '.' );
 		}
 		$e   = array(
 			'at'   => $at,
@@ -691,6 +713,7 @@ function dlscalc_dls_live( $p ) {
 		$e['diff'] = $runs - $e['par'];
 		$log[]     = $e;
 		$last      = $e;
+		$last_name = $name;
 	}
 	$base['log']      = $log;
 	$base['nowSteps'] = $now ? array_slice( $now['steps'], -3 ) : array();

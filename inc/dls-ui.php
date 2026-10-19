@@ -402,7 +402,7 @@ function dlscalc_dls_result_panel( $r, $slug, $in, $stats ) {
 			<button type="button" class="btn btn--ghost js-only" data-copy>Copy link</button>
 			<button type="button" class="btn btn--ghost js-only" data-print>Print par sheet</button>
 		</div>
-		<p class="result__note">DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ by a few runs.</p>
+		<p class="result__note">DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ: usually by 3 runs or fewer in T20s, more in high-scoring ODIs.</p>
 	</aside>
 	<?php
 }

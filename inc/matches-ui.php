@@ -100,7 +100,7 @@ function dlscalc_match_faqs( $slug ) {
 		$method = esc_url( dlscalc_page_url( 'dls-method' ) );
 		return array(
 			array( 'What is the most controversial rain rule match?', 'The 1992 World Cup semi-final between England and South Africa in Sydney. The old "most productive overs" rule turned South Africa\'s 22 needed off 13 balls into 21 off 1 ball after a 12-minute shower. That match is the reason the Duckworth-Lewis method was invented.' ),
-			array( 'Why does your target sometimes differ from the official one?', 'International matches and big leagues use the DLS Professional Edition, which runs on ICC software that is not published. Our calculator uses the published Standard Edition table, the ICC\'s official fallback. The two agree closely in most chases and drift apart when Team 1 makes a big score or the first innings is cut short.' ),
+			array( 'Why does your target sometimes differ from the official one?', 'International matches and big leagues use the DLS Professional Edition, which runs on ICC software that is not published. Our calculator uses the published Standard Edition table, the ICC\'s official fallback. In 32 recent matches every T20 figure was within 3 runs, while ODIs differed by up to 23 runs when Team 1 made a big score or a long innings was cut short.' ),
 			array( 'Was DLS used in the 2019 World Cup semi-final?', 'No. Rain stopped New Zealand on 211 for 5 after 46.1 overs, but the match finished on the reserve day with no overs lost, so India chased the full 240. DLS targets were only worked out in case more rain came.' ),
 			array( 'Has a team ever lost because it misread the DLS par score?', 'Yes. At the 2003 World Cup South Africa thought 229 after 45 overs would win against Sri Lanka, but 229 was the par score, which only tied the match. The tie knocked the hosts out of their own World Cup.' ),
 			array( 'Where can I learn how the targets are worked out?', 'Our <a href="' . $method . '">DLS method guide</a> explains resources, the formula, the resource table and the ICC worked examples step by step.' ),
@@ -257,7 +257,7 @@ function dlscalc_match_cards() {
 function dlscalc_match_tail( $slug, $sources ) {
 	echo '<h2 id="recalculated">What does our DLS calculator give for this match?</h2>';
 	dlscalc_match_box( $slug );
-	echo '<p>Our calculator uses the published ICC Standard Edition table. International matches and big franchise leagues use the Professional Edition, which runs on ICC software and is not published, so a gap of a few runs is normal. The <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '#accuracy">famous matches page</a> compares every match side by side.</p>';
+	echo '<p>Our calculator uses the published ICC Standard Edition table. International matches and big franchise leagues use the Professional Edition, which runs on ICC software and is not published, so a gap of up to 3 runs is normal in T20s, and high-scoring ODIs can differ by 10 runs or more. The <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '#accuracy">famous matches page</a> compares every match side by side.</p>';
 	echo '<h2 id="faq">FAQ</h2>';
 	dlscalc_faq_html( $slug );
 	echo '<h2 id="sources">Sources</h2>';

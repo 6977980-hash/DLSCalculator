@@ -70,7 +70,7 @@ function dlscalc_llms_txt() {
 		'- DLS results use the ICC Standard Edition resource table from the ICC playing conditions, ball by ball, with any number of interruptions in either innings. G50 is 245 for matches involving ICC full members or between first-class teams and 200 for women\'s, U19, U15 and associate matches (ICC); a custom value can be entered.',
 		'- Net run rate follows ICC playing conditions (clause 16.10.2): a side that is all out counts the full quota of overs it was entitled to in that match (the reduced overs if rain cut it); no-results are left out.',
 		'- Written and checked by ' . $author['name'] . ', a cricketer and tournament organiser. The calculators run in the browser; no sign-up, no app.',
-		'- International matches and the major T20 leagues use the DLS Professional Edition (ICC software, formulas not published), so official targets there can differ by a few runs. The ICC names the Standard Edition as the fallback when the software is unavailable; club, school and tournament cricket usually uses it because it needs no software.',
+		'- International matches and the major T20 leagues use the DLS Professional Edition (ICC software, formulas not published), so official targets there can differ: in 32 recent matches T20 figures were all within 3 runs, ODIs up to 23 runs apart after 300-plus first innings or long rain cuts. The ICC names the Standard Edition as the fallback when the software is unavailable; club, school and tournament cricket usually uses it because it needs no software.',
 		'',
 		'## How to link to a result',
 		'',

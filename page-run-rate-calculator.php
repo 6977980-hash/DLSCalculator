@@ -87,13 +87,13 @@ dlscalc_tool_page_open(
 			<label class="fld">Overs
 				<input type="text" inputmode="decimal" name="v" value="<?php echo esc_attr( $dlscalc_conv['v'] ); ?>" autocomplete="off">
 			</label>
-			<output class="conv__out" data-out="ov"><?php echo esc_html( $dlscalc_cv['ov'] ? '= ' . $dlscalc_cv['ov'] : '= ?' ); ?></output>
+			<output class="conv__out<?php echo $dlscalc_cv['ovErr'] ? ' fld__err' : ''; ?>" data-out="ov"><?php echo esc_html( $dlscalc_cv['ov'] ? '= ' . $dlscalc_cv['ov'] : ( $dlscalc_cv['ovErr'] ? $dlscalc_cv['ovErr'] : '= ?' ) ); ?></output>
 		</div>
 		<div class="conv__pair">
 			<label class="fld">Balls
 				<input type="number" inputmode="numeric" min="0" name="j" value="<?php echo esc_attr( $dlscalc_conv['j'] ); ?>" autocomplete="off">
 			</label>
-			<output class="conv__out" data-out="bl"><?php echo esc_html( $dlscalc_cv['bl'] ? '= ' . $dlscalc_cv['bl'] : '= ?' ); ?></output>
+			<output class="conv__out<?php echo $dlscalc_cv['blErr'] ? ' fld__err' : ''; ?>" data-out="bl"><?php echo esc_html( $dlscalc_cv['bl'] ? '= ' . $dlscalc_cv['bl'] : ( $dlscalc_cv['blErr'] ? $dlscalc_cv['blErr'] : '= ?' ) ); ?></output>
 		</div>
 	</form>
 </section>

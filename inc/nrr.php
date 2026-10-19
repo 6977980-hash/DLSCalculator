@@ -331,7 +331,7 @@ function dlscalc_nrr_solve( $p ) {
 		return $res;
 	}
 	if ( is_nan( (float) $e ) || $e > 999 ) {
-		$res['err'] = dlscalc_dls_neg( $p['e'] ?? '' ) ? 'The score cannot be negative.' : ( 'f' === $bat ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.' );
+		$res['err'] = dlscalc_dls_runs_err( $p['e'] ?? '', 'The score', 'f' === $bat ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.' );
 		return $res;
 	}
 	if ( is_nan( (float) $d ) || $d > 10 ) {
@@ -350,13 +350,15 @@ function dlscalc_nrr_solve( $p ) {
 	$res['rv']   = $rv['name'];
 	$res['vs']   = $vs;
 	$res['bat']  = $bat;
-	$res['note'] = ( $z ? 'Level on points: most wins, then net run rate. ' : 'Level on points: net run rate decides. ' )
-		. ( $vs ? 'Your opponent is ' . $rv['name'] . ', so its net run rate changes too.' : 'Assumes ' . $rv['name'] . ' does not play again before your match.' );
+	$assume      = $vs ? 'Your opponent is ' . $rv['name'] . ', so its net run rate changes too.' : 'Assumes ' . $rv['name'] . ' does not play again before your match.';
+	$res['note'] = ( $z ? 'Level on points: most wins, then net run rate. ' : 'Level on points: net run rate decides. ' ) . $assume;
 
 	if ( null !== $me['pts'] && null !== $rv['pts'] ) {
 		$after   = $me['pts'] + $d;
 		$steps[] = 'Points: a win takes ' . $me['name'] . ' from ' . $me['pts'] . ' to ' . $after . '; ' . $rv['name'] . ' has ' . $rv['pts'] . '.';
 		if ( $after !== $rv['pts'] ) {
+			// Points decide, so the tie-break rule does not apply (audit F52).
+			$res['note']  = $assume;
 			$res['kind']  = $after > $rv['pts'] ? 'points' : 'short';
 			$res['big']   = $after > $rv['pts'] ? 'Any win' : 'Not on points';
 			$res['line']  = $after > $rv['pts']
@@ -473,10 +475,10 @@ function dlscalc_nrr_run_rate( $p ) {
 	$n = $nn * 6;
 	$t = dlscalc_dls_int( $p['t'] ?? '' );
 	if ( $chase && ( is_nan( (float) $t ) || $t < 1 || $t > 999 ) ) {
-		return array( 'err' => dlscalc_dls_neg( $p['t'] ?? '' ) ? 'The target cannot be negative.' : 'Enter the target, the runs needed to win.' );
+		return array( 'err' => dlscalc_dls_runs_err( $p['t'] ?? '', 'The target', 'Enter the target, the runs needed to win.' ) );
 	}
 	if ( is_nan( (float) $r ) || $r > 999 ) {
-		return array( 'err' => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs scored cannot be negative.' : 'Enter the runs scored so far.' );
+		return array( 'err' => dlscalc_dls_runs_err( $p['r'] ?? '', 'Runs scored', 'Enter the runs scored so far.' ) );
 	}
 	if ( is_nan( (float) $b ) ) {
 		return array( 'err' => dlscalc_nrr_overs_err( 'Overs bowled so far', $p['o'] ?? '', 'Enter the overs bowled so far, like 12.4 for 12 overs and 4 balls.' ) );
@@ -745,13 +747,16 @@ function dlscalc_nrr_bowling( $p ) {
  * Overs and balls converter.
  *
  * @param array $p Inputs: v overs, j balls.
- * @return array{ov: string, bl: string}
+ * @return array{ov: string, bl: string, ovErr: string, blErr: string}
  */
 function dlscalc_nrr_convert( $p ) {
 	$b = dlscalc_dls_balls( $p['v'] ?? '' );
 	$n = dlscalc_dls_int( $p['j'] ?? '' );
 	return array(
-		'ov' => is_nan( (float) $b ) ? '' : $b . ( 1 === $b ? ' ball' : ' balls' ) . ' (' . dlscalc_fxq( $b, 6, 2 ) . ' overs in decimal)',
-		'bl' => is_nan( (float) $n ) ? '' : dlscalc_dls_overs( $n ) . ' overs',
+		'ov'    => is_nan( (float) $b ) ? '' : $b . ( 1 === $b ? ' ball' : ' balls' ) . ' (' . dlscalc_fxq( $b, 6, 2 ) . ' overs in decimal)',
+		'bl'    => is_nan( (float) $n ) ? '' : dlscalc_dls_overs( $n ) . ' overs',
+		// Why a typed value gives no answer (audit F58); blank boxes have none.
+		'ovErr' => ! is_nan( (float) $b ) || dlscalc_dls_blank( $p['v'] ?? '' ) ? '' : ( dlscalc_dls_neg( $p['v'] ?? '' ) ? 'Overs cannot be negative.' : dlscalc_nrr_overs_err( 'Overs', $p['v'] ?? '', 'Write overs like 12.4, for 12 overs and 4 balls.' ) ),
+		'blErr' => ! is_nan( (float) $n ) || dlscalc_dls_blank( $p['j'] ?? '' ) ? '' : ( dlscalc_dls_neg( $p['j'] ?? '' ) ? 'Balls cannot be negative.' : 'Balls must be a whole number up to 9999, like 77.' ),
 	);
 }

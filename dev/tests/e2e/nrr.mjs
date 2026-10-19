@@ -83,7 +83,6 @@ export default [
 	},
 	{
 		name: 'qualification scenario: note matches the answer when points decide',
-		known: 'F52',
 		run: async ({ ctx, base }) => {
 			const page = await open(ctx, base + '/net-run-rate-calculator/?u=t&y=3&v=4&o=4');
 			const o = await outs(page);
@@ -108,6 +107,10 @@ export default [
 			eq((await outs(page)).big, NRR.runRate({ u: 'f', n: '20', r: '92', o: '12.4' }).big, 'projected score');
 			await page.fill('#conv input[name=v]', '12.4');
 			ok(/76 balls/.test(await page.locator('#conv output').first().innerText()), 'overs to balls');
+			await page.fill('#conv input[name=v]', '7.6');
+			eq(await page.locator('#conv output').first().innerText(), NRR.convert({ v: '7.6' }).ovErr, 'message for 7.6 overs');
+			await page.fill('#conv input[name=j]', '-3');
+			eq(await page.locator('#conv output').last().innerText(), 'Balls cannot be negative.', 'message for -3 balls');
 			page.noErrors();
 		}
 	},

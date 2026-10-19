@@ -396,8 +396,10 @@
 		if (conv) {
 			var convert = function () {
 				var c = NRR.convert({ v: conv.elements.v.value, j: conv.elements.j.value });
-				text('ov', c.ov ? '= ' + c.ov : '= ?');
-				text('bl', c.bl ? '= ' + c.bl : '= ?');
+				text('ov', c.ov ? '= ' + c.ov : c.ovErr || '= ?');
+				text('bl', c.bl ? '= ' + c.bl : c.blErr || '= ?');
+				out('ov').classList.toggle('fld__err', !!c.ovErr);
+				out('bl').classList.toggle('fld__err', !!c.blErr);
 			};
 			conv.addEventListener('input', convert);
 			conv.addEventListener('submit', function (e) {

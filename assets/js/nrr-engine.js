@@ -60,6 +60,21 @@
 	}
 
 	/**
+	 * Error for a runs box that is not a whole number from 0 to 999, naming the cause (audit F49):
+	 * negative, too big or not whole; `empty` for a blank box. As runsErr() in dls-engine.js; PHP: dlscalc_dls_runs_err().
+	 */
+	function runsErr(raw, who, empty) {
+		var s = String(raw == null ? '' : raw).trim();
+		if (s === '' || (/^\d+$/.test(s) && parseInt(s, 10) <= 999)) {
+			return empty;
+		}
+		if (neg(s)) {
+			return who + ' cannot be negative.';
+		}
+		return /^\d+$/.test(s) ? who + ' can be no more than 999.' : who + ' must be a whole number, like 245.';
+	}
+
+	/**
 	 * Error for an overs figure with more than 5 balls after the dot ("20.7"), naming the field and
 	 * the 0-to-5 rule (audit F39); any other bad figure gets the fallback message. As oversHelp() in
 	 * dls-engine.js; PHP: dlscalc_nrr_overs_err().
@@ -278,7 +293,7 @@
 			return res;
 		}
 		if (isNaN(E) || E > 999) {
-			res.err = neg(p.e) ? 'The score cannot be negative.' : (bat === 'f' ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.');
+			res.err = runsErr(p.e, 'The score', bat === 'f' ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.');
 			return res;
 		}
 		if (isNaN(D) || D > 10) {
@@ -294,13 +309,15 @@
 		res.rv = rv.name;
 		res.vs = vs;
 		res.bat = bat;
-		res.note = (Z ? 'Level on points: most wins, then net run rate. ' : 'Level on points: net run rate decides. ') +
-			(vs ? 'Your opponent is ' + rv.name + ', so its net run rate changes too.' : 'Assumes ' + rv.name + ' does not play again before your match.');
+		var assume = vs ? 'Your opponent is ' + rv.name + ', so its net run rate changes too.' : 'Assumes ' + rv.name + ' does not play again before your match.';
+		res.note = (Z ? 'Level on points: most wins, then net run rate. ' : 'Level on points: net run rate decides. ') + assume;
 
 		if (me.pts !== null && rv.pts !== null) {
 			var after = me.pts + D;
 			steps.push('Points: a win takes ' + me.name + ' from ' + me.pts + ' to ' + after + '; ' + rv.name + ' has ' + rv.pts + '.');
 			if (after !== rv.pts) {
+				// Points decide, so the tie-break rule does not apply (audit F52).
+				res.note = assume;
 				res.kind = after > rv.pts ? 'points' : 'short';
 				res.big = after > rv.pts ? 'Any win' : 'Not on points';
 				res.line = after > rv.pts ?
@@ -410,10 +427,10 @@
 		}
 		var N = Nn * 6, T = int(p.t);
 		if (chase && (isNaN(T) || T < 1 || T > 999)) {
-			return { err: neg(p.t) ? 'The target cannot be negative.' : 'Enter the target, the runs needed to win.' };
+			return { err: runsErr(p.t, 'The target', 'Enter the target, the runs needed to win.') };
 		}
 		if (isNaN(R) || R > 999) {
-			return { err: neg(p.r) ? 'Runs scored cannot be negative.' : 'Enter the runs scored so far.' };
+			return { err: runsErr(p.r, 'Runs scored', 'Enter the runs scored so far.') };
 		}
 		if (isNaN(B)) {
 			return { err: oversErr('Overs bowled so far', p.o, 'Enter the overs bowled so far, like 12.4 for 12 overs and 4 balls.') };
@@ -574,7 +591,10 @@
 		var b = balls(p.v), n = int(p.j);
 		return {
 			ov: isNaN(b) ? '' : b + (b === 1 ? ' ball' : ' balls') + ' (' + fxq(b, 6, 2) + ' overs in decimal)',
-			bl: isNaN(n) ? '' : overs(n) + ' overs'
+			bl: isNaN(n) ? '' : overs(n) + ' overs',
+			// Why a typed value gives no answer (audit F58); blank boxes have none.
+			ovErr: !isNaN(b) || blank(p.v) ? '' : (neg(p.v) ? 'Overs cannot be negative.' : oversErr('Overs', p.v, 'Write overs like 12.4, for 12 overs and 4 balls.')),
+			blErr: !isNaN(n) || blank(p.j) ? '' : (neg(p.j) ? 'Balls cannot be negative.' : 'Balls must be a whole number up to 9999, like 77.')
 		};
 	}
 

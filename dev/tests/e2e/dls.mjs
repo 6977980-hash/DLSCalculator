@@ -137,13 +137,12 @@ export default [
 	},
 	{
 		name: 'dls calculator: clear messages for a decimal or huge score',
-		known: 'F49',
 		run: async ({ ctx, base }) => {
 			const page = await open(ctx, base + '/dls-calculator/');
 			for (const v of ['250.5', '99999']) {
 				await page.fill(`${form} [name=r]`, v);
-				const err = (await outs(page)).err;
-				ok(!/^Enter Team 1's final score/.test(err), `r=${v} says "${err}", which reads as if the field were empty`);
+				eq((await outs(page)).err, DLS.calc({ n: '50', r: v, g: '245' }).err, `message for r=${v}`);
+				ok(!/^Enter Team 1's final score/.test((await outs(page)).err), `r=${v} reads as if the field were empty`);
 			}
 		}
 	},
@@ -250,11 +249,9 @@ export default [
 	},
 	{
 		name: 'live tracker: runs or wickets going down get their own message',
-		known: 'F50',
 		run: async ({ ctx, base }) => {
 			const page = await open(ctx, base + '/live-dls-par-score/?n=20&r=160&g=245&f=t20&x=6-52-1_10-40-3');
-			const err = (await outs(page)).err;
-			ok(err && !/overs going up/.test(err), 'runs dropping from 52 to 40 says: ' + err);
+			eq((await outs(page)).err, 'Runs cannot go down: score entry 2 has 40, score entry 1 has 52.', 'runs dropping from 52 to 40');
 		}
 	},
 	{
@@ -305,6 +302,47 @@ export default [
 			eq(v.head, 'none', 'site header in print');
 			eq(v.share, 'none', 'share buttons in print');
 			ok(v.url.includes('b=30-4-10'), 'sheet ends with the link: ' + v.url);
+		}
+	},
+	{
+		name: 'print: on A4 a short par table stays on one page with the sheet, a long one is never split',
+		desktop: true,
+		run: async ({ ctx, base }) => {
+			const page = await open(ctx, base + '/dls-calculator/?n=50&r=231&g=245&c=50&f=odi&b=30-4-10');
+			const rows = async () => {
+				await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
+				await page.emulateMedia({ media: 'print' });
+				// A4 at 12 mm margins: 186 x 273 mm of page, 96 px to the inch.
+				await page.setViewportSize({ width: 703, height: 1032 });
+				const r = await page.evaluate(() => {
+					const top = (el) => el.getBoundingClientRect().top + scrollY;
+					const trs = [...document.querySelectorAll('.par tbody tr')];
+					return { first: top(trs[0]), last: top(trs[trs.length - 1]) + trs[trs.length - 1].offsetHeight, foot: top(document.querySelector('.sheet--foot')) + document.querySelector('.sheet--foot').offsetHeight };
+				});
+				await page.emulateMedia({ media: null });
+				await page.setViewportSize({ width: 1280, height: 800 });
+				return r;
+			};
+			const short = await rows();
+			ok(short.foot <= 1032, `sheet with a 10-row table ends at ${Math.round(short.foot)} px, more than one A4 page (1032 px)`);
+			await page.goto(fresh(base + '/dls-calculator/?n=50&r=250&g=245&c=50&f=odi'));
+			const long = await rows();
+			ok(long.last - long.first <= 1000, `49-row table is ${Math.round(long.last - long.first)} px tall, more than an A4 page`);
+			const pdf = await page.pdf({ preferCSSPageSize: true });
+			const pages = (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) || []).length;
+			ok(pages <= 2, `full 50-over sheet prints on ${pages} pages`);
+		}
+	},
+	{
+		name: 'no JavaScript: buttons that need JavaScript are hidden',
+		context: { javaScriptEnabled: false },
+		run: async ({ ctx, base }) => {
+			const page = await ctx.newPage();
+			for (const path of ['/dls-calculator/', '/dls-target-calculator-t20/', '/live-dls-par-score/', '/net-run-rate-calculator/']) {
+				await page.goto(fresh(base + path));
+				const shown = await page.$$eval('button', (bs) => bs.filter((b) => b.offsetParent !== null).map((b) => b.textContent.trim()));
+				ok(!shown.some((t) => /^\+ Add|Copy link|Start a new match|^Print/.test(t)), path + ' shows ' + shown.join(', '));
+			}
 		}
 	},
 	{
