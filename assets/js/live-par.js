@@ -52,6 +52,29 @@
 
 	var box = $('[data-rows="x"]', form);
 	var spare = $('.lrow--spare', box);
+
+	// Reloading during a rain break with no signal gets the page the service worker saved without
+	// inputs (data-plain), so fill the form and the score log from the address first, the way the
+	// server reads the link online; otherwise the next entry would overwrite the saved log (audit F46).
+	if (form.hasAttribute('data-plain') && window.URLSearchParams) {
+		var linkQ = new URLSearchParams(location.search);
+		if (['n', 'r', 'g', 'c', 'f', 'x'].some(function (k) { return linkQ.has(k); })) {
+			var got = function (k, dflt) { return linkQ.has(k) ? linkQ.get(k).trim().slice(0, 120) : dflt; };
+			form.elements.n.value = got('n', form.elements.n.value);
+			form.elements.r.value = got('r', form.elements.r.value);
+			form.elements.c.value = got('c', '');
+			form.elements.g.value = got('g', '') === '200' ? '200' : '245';
+			var fmt = got('f', '');
+			form.elements.f.value = ['odi', 't20', 't10', 'custom'].indexOf(fmt) > -1 ? fmt : ({ 50: 'odi', 20: 't20', 10: 't10' }[form.elements.n.value] || 'custom');
+			$$('.lrow:not(.lrow--spare)', box).forEach(function (row) { box.removeChild(row); });
+			got('x', '').split('_').filter(Boolean).forEach(function (part) {
+				var row = spare.cloneNode(true), v = part.split('-');
+				row.classList.remove('lrow--spare');
+				['at', 'r', 'w'].forEach(function (f, i) { $('[data-f="' + f + '"]', row).value = v[i] || ''; });
+				box.insertBefore(row, spare);
+			});
+		}
+	}
 	var blank = spare.cloneNode(true);
 	blank.classList.remove('lrow--spare');
 	box.removeChild(spare);
@@ -108,7 +131,7 @@
 		if (!e) {
 			return { label: 'Team 2 target', big: String(r.target), line: 'in ' + DLS.overs(r.allot) + ' overs. Add Team 2\'s score after each over to see who is ahead on DLS.', word: false };
 		}
-		var score = e.runs + '/' + e.w, at = DLS.overs(e.at) + ' overs';
+		var score = e.runs + '/' + e.w, at = DLS.overs(e.at) + (e.at === 6 ? ' over' : ' overs');
 		if (e.state !== 'on') {
 			var lines = {
 				won: 'Team 2 reached the target of ' + r.target + ' with ' + score + ' in ' + at + '.',
@@ -173,7 +196,7 @@
 			store.set(q);
 		}
 		var msg = err ? 'Live DLS par score:' : (last && last.state === 'on' ?
-			'DLS par after ' + DLS.overs(last.at) + ' overs: ' + last.par + '. Team 2 ' + last.runs + '/' + last.w + ', ' + status(last)[0] + '. Live tracker:' :
+			'DLS par after ' + DLS.overs(last.at) + (last.at === 6 ? ' over: ' : ' overs: ') + last.par + '. Team 2 ' + last.runs + '/' + last.w + ', ' + status(last)[0] + '. Live tracker:' :
 			'DLS target: ' + r.target + ' in ' + DLS.overs(r.allot) + ' overs. Live tracker:');
 		out('wa').href = 'https://wa.me/?text=' + encodeURIComponent(msg + ' ' + link(p));
 	}

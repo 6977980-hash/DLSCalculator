@@ -89,13 +89,50 @@ export default [
 	},
 	{
 		name: 'dls calculator: typing a shorter match (40 overs) carries to Team 2 overs',
-		known: 'F48',
 		run: async ({ ctx, base }) => {
 			const page = await open(ctx, base + '/dls-calculator/');
 			await page.fill(`${form} [name=n]`, '40');
 			const o = await outs(page);
 			eq(o.err, '', 'error after typing 40 overs per side');
 			eq(o.big, DLS.calc({ n: '40', r: '250', g: '245', c: '40', f: 'odi' }).target, 'target');
+		}
+	},
+	{
+		name: 'dls calculator: overs typed with a comma or a trailing dot (Android number pads)',
+		run: async ({ ctx, base }) => {
+			const page = await open(ctx, base + '/dls-calculator/');
+			await page.fill(`${form} [name=n]`, '40.');
+			await page.fill(`${form} [name=c]`, '35,3');
+			const o = await outs(page);
+			eq(o.err, '', 'error for 40. and 35,3');
+			eq(o.big, DLS.calc({ n: '40', r: '250', g: '245', c: '35.3', f: 'odi' }).target, 'target');
+			page.noErrors();
+		}
+	},
+	{
+		name: 'dls calculator: on a phone the answer shows at the bottom while the result is below',
+		run: async ({ ctx, base }) => {
+			for (const path of ['/dls-calculator/', '/dls-target-calculator-t20/']) {
+				const page = await open(ctx, base + path);
+				await page.fill(`${form} [name=r]`, '199');
+				const bar = page.locator('.stick');
+				ok(await bar.isVisible(), path + ': answer bar visible while the result is below the screen');
+				ok(new RegExp('Target ' + (await outs(page)).big + '\\b').test(await bar.innerText()), path + ': bar shows the target: ' + await bar.innerText());
+				await page.locator('#result').scrollIntoViewIfNeeded();
+				await page.waitForTimeout(300);
+				ok(!(await bar.isVisible()), path + ': bar hides once the result is on screen');
+				page.noErrors();
+			}
+		}
+	},
+	{
+		name: 'dls calculator: no answer bar on a desktop, where the result sits beside the form',
+		desktop: true,
+		run: async ({ ctx, base }) => {
+			const page = await open(ctx, base + '/dls-calculator/');
+			await page.fill(`${form} [name=r]`, '199');
+			await page.waitForTimeout(300);
+			ok(!(await page.locator('.stick').isVisible()), 'answer bar hidden on a 1280px screen');
 		}
 	},
 	{
@@ -195,6 +232,13 @@ export default [
 			await page.getByRole('button', { name: 'Start a new match' }).click();
 			eq(await page.locator('.lrow').count(), 0, 'rows after a new match');
 			page.noErrors();
+		}
+	},
+	{
+		name: 'live tracker: one over reads "1 over"',
+		run: async ({ ctx, base }) => {
+			const page = await open(ctx, base + '/live-dls-par-score/?n=20&r=160&g=245&f=t20&x=1-9-0');
+			eq((await outs(page)).label, 'DLS par at 1 over, 0 down', 'label after one over');
 		}
 	},
 	{

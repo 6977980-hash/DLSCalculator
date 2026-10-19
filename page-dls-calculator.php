@@ -35,7 +35,7 @@ dlscalc_par_sheet_head();
 dlscalc_dls_scenarios_html( $dlscalc_in );
 ?>
 <div class="tool">
-	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="calc" novalidate>
+	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="calc" novalidate<?php echo dlscalc_dls_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<div class="tool__group" role="group" aria-labelledby="g-match">
 			<h2 id="g-match">Match</h2>
 			<div class="fields">

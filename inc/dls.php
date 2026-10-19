@@ -65,13 +65,24 @@ function dlscalc_dls_res( $balls_left, $wkts ) {
 }
 
 /**
+ * Overs as typed, tidied: a comma (some Android number pads have no dot) reads as the dot and a
+ * trailing dot ("40.") is dropped (audit F55). Same as oversIn() in the JS engines.
+ *
+ * @param mixed $s Overs as typed.
+ * @return string
+ */
+function dlscalc_dls_overs_in( $s ) {
+	return (string) preg_replace( '/\.(a?)$/', '$1', preg_replace( '/,/', '.', trim( (string) $s ), 1 ) );
+}
+
+/**
  * "32.4" (32 overs and 4 balls) to 196 balls. NAN if it is not a valid overs figure.
  *
  * @param mixed $s Overs as typed.
  * @return float|int
  */
 function dlscalc_dls_balls( $s ) {
-	$s = trim( (string) $s );
+	$s = dlscalc_dls_overs_in( $s );
 	if ( ! preg_match( '/^\d{1,3}(\.\d)?$/', $s ) ) {
 		return NAN;
 	}
@@ -100,7 +111,7 @@ function dlscalc_dls_overs( $b ) {
  * @return string
  */
 function dlscalc_dls_overs_help( $label, $s ) {
-	if ( preg_match( '/^(\d{1,3})\.(\d)$/', trim( (string) $s ), $m ) ) {
+	if ( preg_match( '/^(\d{1,3})\.(\d)$/', dlscalc_dls_overs_in( $s ), $m ) ) {
 		return $label . ': ' . $m[0] . ' is not valid. Balls after the dot go from 0 to 5, so after ' . $m[1] . '.5 comes ' . ( (int) $m[1] + 1 ) . '.';
 	}
 	return $label . ': write overs as 32.4 for 32 overs and 4 balls.';

@@ -12,19 +12,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Pages saved for offline use when the service worker installs: home and the calculators.
+ * Pages saved for offline use when the service worker installs: home, the calculators and the
+ * three guides (audit F47), with the names the offline page lists them by.
+ *
+ * @return array<string, string> Root-relative URL => name.
+ */
+function dlscalc_offline_links() {
+	$names = array_map(
+		function ( $tool ) {
+			return $tool['title'];
+		},
+		dlscalc_tools()
+	) + array(
+		'dls-par-score-table'  => 'DLS Par Score Table',
+		'live-dls-par-score'   => 'Live DLS Par Score',
+		'dls-method'           => 'DLS method guide',
+		'how-to-calculate-nrr' => 'How to calculate NRR',
+		'vjd-method'           => 'VJD method guide',
+	);
+	$links = array( (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH ) => 'Home' );
+	foreach ( $names as $slug => $name ) {
+		if ( dlscalc_page_is_live( $slug ) ) {
+			$links[ (string) wp_parse_url( dlscalc_page_url( $slug ), PHP_URL_PATH ) ] = $name;
+		}
+	}
+	return $links;
+}
+
+/**
+ * Pages saved for offline use when the service worker installs.
  *
  * @return string[] Root-relative URLs.
  */
 function dlscalc_offline_pages() {
-	$slugs = array_merge( array_keys( dlscalc_tools() ), array( 'dls-par-score-table', 'live-dls-par-score' ) );
-	$pages = array( (string) wp_parse_url( home_url( '/' ), PHP_URL_PATH ) );
-	foreach ( $slugs as $slug ) {
-		if ( dlscalc_page_is_live( $slug ) ) {
-			$pages[] = (string) wp_parse_url( dlscalc_page_url( $slug ), PHP_URL_PATH );
-		}
-	}
-	return $pages;
+	return array_keys( dlscalc_offline_links() );
 }
 
 /**
@@ -55,10 +76,11 @@ function dlscalc_serve_sw() {
 	}
 	$js = (string) file_get_contents( DLSCALC_DIR . '/assets/js/sw.js' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- local theme file.
 	$js = str_replace(
-		array( "'__VERSION__'", '__PAGES__', "'/wp-content/themes/dlscalc/'" ),
+		array( "'__VERSION__'", '__PAGES__', '__LINKS__', "'/wp-content/themes/dlscalc/'" ),
 		array(
 			wp_json_encode( dlscalc_sw_version() ),
 			wp_json_encode( dlscalc_offline_pages(), JSON_UNESCAPED_SLASHES ),
+			wp_json_encode( (object) dlscalc_offline_links(), JSON_UNESCAPED_SLASHES ),
 			wp_json_encode( trailingslashit( (string) wp_parse_url( DLSCALC_URI, PHP_URL_PATH ) ), JSON_UNESCAPED_SLASHES ),
 		),
 		$js

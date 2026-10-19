@@ -28,6 +28,44 @@
 		}
 	};
 
+	// A result link opened with no signal gets the page the service worker saved without inputs
+	// (data-plain), so fill the form from the address first, the way the server reads the link
+	// online: stoppages and Team 2's overs left out of a link mean none (audit F46).
+	if (form.hasAttribute('data-plain') && window.URLSearchParams) {
+		var linkQ = new URLSearchParams(location.search);
+		var linkKeys = ['n', 'r', 'g', 'c', 'l', 'o', 'f', 'k', 'a', 'b'];
+		if (linkKeys.some(function (k) { return linkQ.has(k); })) {
+			linkKeys.forEach(function (k) {
+				var v = linkQ.has(k) ? linkQ.get(k).trim().slice(0, 120) : (['a', 'b', 'c', 'f'].indexOf(k) > -1 ? '' : null);
+				var box = $('[data-stops="' + k + '"]', form), el = form.elements[k];
+				if (v === null) {
+					return;
+				}
+				if (box) {
+					var spare = $('.stop--spare', box);
+					$$('.stop:not(.stop--spare)', box).forEach(function (row) { box.removeChild(row); });
+					v.split('_').filter(Boolean).forEach(function (part) {
+						var row = spare.cloneNode(true), x = part.split('-');
+						row.classList.remove('stop--spare');
+						['at', 'w', 'lost'].forEach(function (f, i) { $('[data-f="' + f + '"]', row).value = x[i] || ''; });
+						box.insertBefore(row, spare);
+					});
+				} else if (el && el.tagName === 'SELECT' && k === 'f') {
+					// Links without a format go by the overs, as on the server.
+					var known = v !== '' && $$('option', el).some(function (o) { return o.value === v; });
+					el.value = known ? v : ({ 50: 'odi', 20: 't20', 10: 't10' }[form.elements.n.value.trim()] || 'custom');
+				} else if (el && el.tagName) {
+					el.value = v;
+				}
+			});
+			var gs = $('[data-gsel]', form);
+			if (gs) {
+				gs.value = ['245', '200'].indexOf(form.elements.g.value) > -1 ? form.elements.g.value : 'custom';
+				show($('[data-gwrap]', form), gs.value === 'custom');
+			}
+		}
+	}
+
 	// Stoppage rows: drop the spare no-JS row, then add and remove rows on demand.
 	$$('[data-stops]').forEach(function (box) {
 		var spare = $('.stop--spare', box);
@@ -164,6 +202,36 @@
 		});
 	};
 
+	// On a phone the result panel sits below the whole form, so typing changes nothing on screen. A
+	// slim bar at the bottom repeats the answer while the panel is below the screen (audit F51).
+	var panel = document.getElementById('result'), bar = null, below = false;
+	var placeBar = function () {
+		// Only when the panel is stacked under the form (phones), not beside it (wide screens).
+		var stacked = panel.getBoundingClientRect().top >= form.getBoundingClientRect().bottom - 1;
+		bar.hidden = !(below && stacked);
+		document.documentElement.classList.toggle('has-stick', !bar.hidden);
+	};
+	if ((tool === 'calc' || tool === 't20') && panel && window.IntersectionObserver) {
+		bar = document.createElement('a');
+		bar.className = 'stick noprint';
+		bar.href = '#result';
+		bar.hidden = true;
+		document.body.appendChild(bar);
+		new IntersectionObserver(function (entries) {
+			var e = entries[entries.length - 1];
+			below = !e.isIntersecting && e.boundingClientRect.top > 0;
+			placeBar();
+		}).observe(panel);
+		window.addEventListener('resize', placeBar);
+	}
+	var barText = function (r) {
+		if (r.err) {
+			return '<span>Check the inputs</span><span class="stick__more">See why ↓</span>';
+		}
+		return '<span>' + (r.ended ? 'Par score <b>' + r.par + '</b>' : 'Target <b>' + r.target + '</b> in ' + DLS.overs(r.allot) + ' overs') +
+			'</span><span class="stick__more">See working ↓</span>';
+	};
+
 	var first = true;
 	function update() {
 		var p = params();
@@ -197,6 +265,9 @@
 			return;
 		}
 
+		if (bar) {
+			bar.innerHTML = barText(r);
+		}
 		text('label', !err && r.ended ? 'Match ended: Team 2 par score' : 'Team 2 revised target');
 		text('big', err ? '–' : String(r.ended ? r.par : r.target));
 		text('line', err ? 'Check the inputs.' : (r.ended ? 'Team 2 wins with more than ' + r.par + ' and ties on ' + r.par + '.' : 'to win in ' + DLS.overs(r.allot) + ' overs'));
@@ -237,6 +308,20 @@
 		}
 	}
 
+	// Rain before the start: a shorter match typed in the overs per side carries to Team 2's overs
+	// while they still equal the old value, as the format picker does (audit F48).
+	var side = form.elements.c ? form.elements[tool === 'parTable' ? 'o' : 'n'] : null, lastSide = side ? side.value.trim() : '';
+	var carry = function (to) {
+		if (form.elements.c.value.trim() === lastSide) {
+			form.elements.c.value = to;
+		}
+		form.elements.c.placeholder = tool === 'calc' ? to : form.elements.c.placeholder;
+		lastSide = to;
+	};
+	if (side && tool !== 'quick') {
+		side.addEventListener('input', function () { carry(side.value.trim()); });
+	}
+
 	// The format picker fills in its usual overs, unless overs a rain-shortened match started with
 	// are already typed (a 40-over ODI keeps 40). The format itself sets the minimum overs.
 	var preset = $('[data-preset]', form);
@@ -246,6 +331,7 @@
 			if (to && ['', '50', '20', '10'].indexOf(now) > -1) {
 				form.elements.n.value = to;
 				form.elements.c.value = to;
+				lastSide = to;
 			}
 		});
 	}
@@ -270,6 +356,9 @@
 		chip.addEventListener('click', function (e) {
 			e.preventDefault();
 			form.elements.o.value = chip.getAttribute('data-o');
+			if (side) {
+				carry(form.elements.o.value);
+			}
 			update();
 		});
 	});

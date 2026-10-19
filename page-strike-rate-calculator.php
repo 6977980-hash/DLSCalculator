@@ -22,7 +22,7 @@ dlscalc_tool_page_open(
 );
 ?>
 <div class="tool">
-	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-form="batting" novalidate>
+	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-form="batting" novalidate<?php echo dlscalc_nrr_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<div class="fields">
 			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'r', 'Runs scored' ); ?>
 			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'b', 'Balls faced', 'type="number" inputmode="numeric" min="1"' ); ?>

@@ -584,7 +584,7 @@ function dlscalc_live_headline( $r ) {
 		);
 	}
 	$score = $e['runs'] . '/' . $e['w'];
-	$at    = dlscalc_dls_overs( $e['at'] ) . ' overs';
+	$at    = dlscalc_dls_overs( $e['at'] ) . ( 6 === (int) $e['at'] ? ' over' : ' overs' );
 	if ( 'on' !== $e['state'] ) {
 		$lines = array(
 			'won'  => 'Team 2 reached the target of ' . $r['target'] . ' with ' . $score . ' in ' . $at . '.',

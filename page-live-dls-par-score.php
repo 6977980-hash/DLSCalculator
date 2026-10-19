@@ -48,7 +48,7 @@ $dlscalc_rows[] = array(
 if ( $dlscalc_err ) {
 	$dlscalc_share = 'Live DLS par score:';
 } elseif ( $dlscalc_last && 'on' === $dlscalc_last['state'] ) {
-	$dlscalc_share = 'DLS par after ' . dlscalc_dls_overs( $dlscalc_last['at'] ) . ' overs: ' . $dlscalc_last['par'] . '. Team 2 ' . $dlscalc_last['runs'] . '/' . $dlscalc_last['w'] . ', ' . dlscalc_live_status( $dlscalc_last )[0] . '. Live tracker:';
+	$dlscalc_share = 'DLS par after ' . dlscalc_dls_overs( $dlscalc_last['at'] ) . ( 6 === (int) $dlscalc_last['at'] ? ' over: ' : ' overs: ' ) . $dlscalc_last['par'] . '. Team 2 ' . $dlscalc_last['runs'] . '/' . $dlscalc_last['w'] . ', ' . dlscalc_live_status( $dlscalc_last )[0] . '. Live tracker:';
 } else {
 	$dlscalc_share = 'DLS target: ' . $dlscalc_r['target'] . ' in ' . dlscalc_dls_overs( $dlscalc_r['allot'] ) . ' overs. Live tracker:';
 }
@@ -61,7 +61,7 @@ dlscalc_tool_page_open(
 dlscalc_par_sheet_head();
 ?>
 <div class="tool">
-	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="live" novalidate>
+	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="live" novalidate<?php echo dlscalc_dls_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<div class="tool__group" role="group" aria-labelledby="g-match">
 			<h2 id="g-match">Match</h2>
 			<div class="fields">

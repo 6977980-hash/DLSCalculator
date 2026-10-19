@@ -1,5 +1,5 @@
 // Offline mode (no signal at the ground) and a slow phone connection.
-import { DLS, fresh, ok, eq, outs } from './lib.mjs';
+import { DLS, NRR, fresh, ok, eq, outs } from './lib.mjs';
 
 /** Opens home, waits for the service worker to take over and save the calculators. */
 async function installed(ctx, base) {
@@ -36,7 +36,6 @@ export default [
 	},
 	{
 		name: 'offline: a result link opens with its own inputs',
-		known: 'F46',
 		run: async ({ ctx, base }) => {
 			const page = await installed(ctx, base);
 			await offline(ctx);
@@ -46,8 +45,27 @@ export default [
 		}
 	},
 	{
+		name: 'offline: links to the other calculators open with their own inputs',
+		run: async ({ ctx, base }) => {
+			const page = await installed(ctx, base);
+			await offline(ctx);
+			const T = 'Lions~4~3~6~640~78.2~600~80_Tigers~4~2~4~610~80~590~79.3_Hawks~4~2~4~580~80~575~80_Kings~4~1~2~560~80~625~79_Stars~4~2~4~600~80~600~80';
+			const solve = NRR.solve({ t: T, y: '5', v: '3', o: '1', k: 'c', e: '150', q: '20', d: '2', z: '' });
+			const checks = [
+				['/dls-target-calculator-t20/?n=20&r=150&l=4&b=10-2-2', 'big', DLS.t20({ n: '20', r: '150', l: '4', b: '10-2-2' }).target],
+				['/net-run-rate-calculator/?q=20&x=150-20-140-20_120-18.4a-121-19,2', 'cbig', NRR.calc({ q: '20', x: '150-20-140-20_120-18.4a-121-19.2' }).nrr],
+				['/net-run-rate-calculator/?u=t&t=' + encodeURIComponent(T) + '&y=5&v=3&o=1&k=c&e=150&h=20&d=2', 'sbig', solve.big],
+				['/run-rate-calculator/?u=f&n=20&r=60&o=10', 'big', NRR.runRate({ u: 'f', n: '20', t: '', r: '60', o: '10' }).big],
+				['/strike-rate-calculator/?r=50&b=40', 'big', NRR.batting({ r: '50', b: '40' }).big]
+			];
+			for (const [url, key, want] of checks) {
+				await go(page, base + url);
+				eq((await outs(page))[key], want, url + ' offline');
+			}
+		}
+	},
+	{
 		name: 'offline: reloading the live tracker keeps the score log',
-		known: 'F46',
 		run: async ({ ctx, base }) => {
 			const page = await installed(ctx, base);
 			await go(page, base + '/live-dls-par-score/');
@@ -62,7 +80,6 @@ export default [
 	},
 	{
 		name: 'offline: a page that was not saved says so instead of showing home',
-		known: 'F47',
 		run: async ({ ctx, base }) => {
 			const page = await installed(ctx, base);
 			await offline(ctx);

@@ -40,7 +40,7 @@ dlscalc_tool_page_open(
 <section class="pane" data-pane="c"<?php echo 'c' === $dlscalc_tab ? '' : ' data-off'; ?> aria-labelledby="h-calc">
 	<h2 class="pane__title" id="h-calc">Calculate net run rate</h2>
 	<div class="tool">
-		<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#nrr-result' ); ?>" data-form="calc" novalidate>
+		<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#nrr-result' ); ?>" data-form="calc" novalidate<?php echo dlscalc_nrr_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 			<div class="fields">
 				<label class="fld fld--narrow">Overs per side
 					<input type="number" inputmode="numeric" min="1" max="50" name="q" value="<?php echo esc_attr( $dlscalc_in['q'] ); ?>" autocomplete="off">

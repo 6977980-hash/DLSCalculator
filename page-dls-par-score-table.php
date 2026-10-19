@@ -22,7 +22,7 @@ dlscalc_tool_page_open(
 dlscalc_par_sheet_head();
 ?>
 <div class="tool">
-	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="parTable" novalidate>
+	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="parTable" novalidate<?php echo dlscalc_dls_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<div class="tool__group" role="group" aria-labelledby="g-overs">
 			<h2 id="g-overs">Overs per side</h2>
 			<div class="chips">
