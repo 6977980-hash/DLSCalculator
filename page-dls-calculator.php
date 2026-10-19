@@ -61,7 +61,7 @@ dlscalc_tool_page_open(
 			<h2 id="g-t1">Team 1 stoppages</h2>
 			<p class="hint">Add one row per stoppage. If rain ended the innings, enter all the overs that were left as overs lost. Write overs as 32.4 for 32 overs and 4 balls.</p>
 			<?php dlscalc_dls_stop_rows( 'a', $dlscalc_in['a'], 'Team 1' ); ?>
-			<div><button type="button" class="btn btn--line" data-add hidden>+ Add Team 1 stoppage</button></div>
+			<div><button type="button" class="btn btn--line" data-add>+ Add Team 1 stoppage</button></div>
 		</div>
 
 		<div class="tool__group" role="group" aria-labelledby="g-t2">
@@ -70,7 +70,7 @@ dlscalc_tool_page_open(
 				<input type="text" inputmode="decimal" name="c" value="<?php echo esc_attr( $dlscalc_in['c'] ); ?>" placeholder="<?php echo esc_attr( $dlscalc_n ); ?>" autocomplete="off">
 			</label>
 			<?php dlscalc_dls_stop_rows( 'b', $dlscalc_in['b'], 'Team 2' ); ?>
-			<div><button type="button" class="btn btn--line" data-add hidden>+ Add Team 2 stoppage</button></div>
+			<div><button type="button" class="btn btn--line" data-add>+ Add Team 2 stoppage</button></div>
 		</div>
 		<div data-submit><button type="submit" class="btn btn--green">Calculate</button></div>
 	</form>

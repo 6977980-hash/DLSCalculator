@@ -44,9 +44,7 @@
 			}
 		};
 		var wire = function (row) {
-			var x = $('[data-remove]', row);
-			x.hidden = false;
-			x.addEventListener('click', function () {
+			$('[data-remove]', row).addEventListener('click', function () {
 				box.removeChild(row);
 				renumber();
 				update();
@@ -234,12 +232,12 @@
 			e.preventDefault();
 			update();
 		});
-		show($('[data-submit]', form), false);
 	}
 
 	var copy = $('[data-copy]');
-	if (copy && navigator.clipboard) {
-		copy.hidden = false;
+	if (copy && !navigator.clipboard) {
+		copy.hidden = true;
+	} else if (copy) {
 		copy.addEventListener('click', function () {
 			var q = query(params());
 			navigator.clipboard.writeText(location.origin + location.pathname + (q ? '?' + q : '')).then(function () {
@@ -249,7 +247,6 @@
 		});
 	}
 	$$('[data-print]').forEach(function (print) {
-		print.hidden = false;
 		print.addEventListener('click', function () { window.print(); });
 	});
 
