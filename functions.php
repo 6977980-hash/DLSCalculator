@@ -28,3 +28,4 @@ require DLSCALC_DIR . '/inc/ads.php';
 require DLSCALC_DIR . '/inc/llms.php';
 require DLSCALC_DIR . '/inc/matches.php';
 require DLSCALC_DIR . '/inc/matches-ui.php';
+require DLSCALC_DIR . '/inc/embed.php';

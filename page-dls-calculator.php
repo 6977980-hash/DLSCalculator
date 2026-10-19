@@ -107,6 +107,7 @@ dlscalc_par_sheet_head();
 	<?php dlscalc_dls_par_table_html( $dlscalc_r, 'DLS par score for Team 2 by completed overs and wickets down' ); ?>
 </section>
 <?php dlscalc_par_sheet_foot(); ?>
+<?php dlscalc_embed_box(); ?>
 
 <div class="entry-content tool-prose">
 	<?php get_template_part( 'template-parts/content/dls-calculator' ); ?>

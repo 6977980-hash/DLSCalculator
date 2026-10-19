@@ -249,6 +249,14 @@
 	$$('[data-print]').forEach(function (print) {
 		print.addEventListener('click', function () { window.print(); });
 	});
+	$$('[data-copy-embed]').forEach(function (btn) {
+		btn.addEventListener('click', function () {
+			navigator.clipboard.writeText($('[data-embed-code]').value).then(function () {
+				btn.textContent = 'Code copied';
+				setTimeout(function () { btn.textContent = 'Copy code'; }, 2000);
+			});
+		});
+	});
 	// The printed par sheet ends with the link that reopens this result.
 	window.addEventListener('beforeprint', function () {
 		$$('[data-sheet-url]').forEach(function (el) { el.textContent = location.href.replace(/#.*$/, ''); });
