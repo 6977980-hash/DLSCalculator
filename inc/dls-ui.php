@@ -699,20 +699,13 @@ function dlscalc_resource_lookup_html() {
 		<p class="lookup__out" aria-live="polite"><span class="lookup__err" data-lk="err"<?php echo $r['err'] ? '' : ' hidden'; ?>><?php echo esc_html( $r['err'] ); ?></span><b data-lk="pct"><?php echo esc_html( $r['pct'] ); ?></b> <span data-lk="text"><?php echo esc_html( $r['text'] ); ?></span></p>
 	</form>
 	<?php
-}
-
-/**
- * Engine and lookup script on /dls-method/, deferred.
- */
-function dlscalc_lookup_scripts() {
-	if ( 'dls-method' !== dlscalc_current_slug() ) {
-		return;
-	}
-	$args = array(
-		'strategy'  => 'defer',
-		'in_footer' => true,
+	// The engine loads only when the visitor first uses the form: loading it with the page made the
+	// fonts arrive after first paint on this long guide (a layout shift). Until then the form submits.
+	$srcs = array(
+		DLSCALC_URI . '/assets/js/dls-engine.js?ver=' . dlscalc_asset_version( 'assets/js/dls-engine.js' ),
+		DLSCALC_URI . '/assets/js/resource-lookup.js?ver=' . dlscalc_asset_version( 'assets/js/resource-lookup.js' ),
 	);
-	wp_enqueue_script( 'dlscalc-dls-engine', DLSCALC_URI . '/assets/js/dls-engine.js', array(), dlscalc_asset_version( 'assets/js/dls-engine.js' ), $args );
-	wp_enqueue_script( 'dlscalc-resource-lookup', DLSCALC_URI . '/assets/js/resource-lookup.js', array( 'dlscalc-dls-engine' ), dlscalc_asset_version( 'assets/js/resource-lookup.js' ), $args );
+	?>
+	<script>(function(f,s){var go=function(){f.removeEventListener('focusin',go);(function next(i){if(i<s.length){var e=document.createElement('script');e.src=s[i];e.onload=function(){next(i+1)};document.head.appendChild(e)}})(0)};f.addEventListener('focusin',go)})(document.querySelector('form[data-lookup]'),<?php echo wp_json_encode( array_map( 'esc_url_raw', $srcs ) ); ?>)</script>
+	<?php
 }
-add_action( 'wp_enqueue_scripts', 'dlscalc_lookup_scripts', 100 );

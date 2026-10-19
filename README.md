@@ -48,7 +48,7 @@ The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is 
 | `assets/css/nrr.css` | NRR, run rate and live tracker styles, printed inline only on those pages |
 | `assets/js/dls-engine.js` | DLS engine: ICC Standard Edition table (delta-encoded), targets, par scores, par tables |
 | `assets/js/dls-tools.js` | Live results, stoppage rows, permalinks and sharing on the DLS pages and the home quick box |
-| `assets/js/resource-lookup.js` | Resource lookup on `/dls-method/` (overs left and wickets lost to resources %) |
+| `assets/js/resource-lookup.js` | Resource lookup on `/dls-method/` (overs left and wickets lost to resources %); loaded with the engine on the form's first focus, not with the page |
 | `assets/js/live-par.js` | Live DLS par tracker: score rows, par per entry, saved on the device |
 | `assets/js/nrr-engine.js` | NRR engine: NRR with the all-out and no-result rules, points table, qualification solver, run rate |
 | `assets/js/nrr-tools.js` | Live results, match and team rows, saved points table, permalinks and sharing on the NRR and run rate pages |
