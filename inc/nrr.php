@@ -59,6 +59,22 @@ function dlscalc_nrr_cmp( $a, $b ) {
 }
 
 /**
+ * Error for an overs figure with more than 5 balls after the dot ("20.7"), naming the field and the
+ * 0-to-5 rule (audit F39); any other bad figure gets the fallback. See oversErr() in nrr-engine.js.
+ *
+ * @param string $label    Field name.
+ * @param mixed  $s        Overs as typed.
+ * @param string $fallback Message for any other bad figure.
+ * @return string
+ */
+function dlscalc_nrr_overs_err( $label, $s, $fallback ) {
+	if ( preg_match( '/^(\d{1,5})\.(\d)a?$/', trim( (string) $s ), $m ) && (int) $m[2] > 5 ) {
+		return $label . ': ' . $m[1] . '.' . $m[2] . ' is not valid. Balls after the dot go from 0 to 5, so after ' . $m[1] . '.5 comes ' . ( (int) $m[1] + 1 ) . '.';
+	}
+	return $fallback;
+}
+
+/**
  * Overs as entered in a match row: "18.3" or "18.3a" (bowled out, so the full quota for the match counts).
  *
  * @param mixed $runs  Runs as typed.
@@ -118,18 +134,22 @@ function dlscalc_nrr_calc( $p ) {
 		if ( $mo ) {
 			$mq = dlscalc_dls_balls( $mo[0] );
 			if ( is_nan( (float) $mq ) || $mq < 1 || $mq > $quota ) {
-				return array( 'err' => $name . ': overs per side in this match must be between 0.1 and ' . $q . '.' );
+				return array( 'err' => dlscalc_nrr_overs_err( $name . ', overs per side in this match', $mo[0], $name . ': overs per side in this match must be between 0.1 and ' . $q . '.' ) );
 			}
 		}
 		$cut = $mq < $quota;
 		$mov = dlscalc_dls_overs( $mq );
 		$a   = dlscalc_nrr_side( $x[0] ?? '', $x[1] ?? '', $mq );
 		$d   = dlscalc_nrr_side( $x[2] ?? '', $x[3] ?? '', $mq );
+		if ( dlscalc_dls_neg( $x[0] ?? '' ) || dlscalc_dls_neg( $x[2] ?? '' ) ) {
+			return array( 'err' => $name . ': runs cannot be negative.' );
+		}
 		if ( is_nan( (float) $a['runs'] ) || is_nan( (float) $d['runs'] ) || $a['runs'] > 999 || $d['runs'] > 999 ) {
 			return array( 'err' => $name . ': enter runs scored and runs conceded.' );
 		}
 		if ( is_nan( (float) $a['at'] ) || is_nan( (float) $d['at'] ) ) {
-			return array( 'err' => $name . ': enter overs faced and overs bowled, like 19.4 for 19 overs and 4 balls.' );
+			$bad = is_nan( (float) $a['at'] );
+			return array( 'err' => dlscalc_nrr_overs_err( $name . ( $bad ? ', overs faced' : ', overs bowled' ), $bad ? ( $x[1] ?? '' ) : ( $x[3] ?? '' ), $name . ': enter overs faced and overs bowled, like 19.4 for 19 overs and 4 balls.' ) );
 		}
 		if ( $a['at'] > $mq || $d['at'] > $mq || ( ! $a['allOut'] && 0 === $a['at'] ) || ( ! $d['allOut'] && 0 === $d['at'] ) ) {
 			return array( 'err' => $name . ': overs must be more than 0 and no more than ' . $mov . ' per side' . ( $cut ? ' in this match.' : '.' ) );
@@ -311,7 +331,7 @@ function dlscalc_nrr_solve( $p ) {
 		return $res;
 	}
 	if ( is_nan( (float) $e ) || $e > 999 ) {
-		$res['err'] = 'f' === $bat ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.';
+		$res['err'] = dlscalc_dls_neg( $p['e'] ?? '' ) ? 'The score cannot be negative.' : ( 'f' === $bat ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.' );
 		return $res;
 	}
 	if ( is_nan( (float) $d ) || $d > 10 ) {
@@ -453,13 +473,13 @@ function dlscalc_nrr_run_rate( $p ) {
 	$n = $nn * 6;
 	$t = dlscalc_dls_int( $p['t'] ?? '' );
 	if ( $chase && ( is_nan( (float) $t ) || $t < 1 || $t > 999 ) ) {
-		return array( 'err' => 'Enter the target, the runs needed to win.' );
+		return array( 'err' => dlscalc_dls_neg( $p['t'] ?? '' ) ? 'The target cannot be negative.' : 'Enter the target, the runs needed to win.' );
 	}
 	if ( is_nan( (float) $r ) || $r > 999 ) {
-		return array( 'err' => 'Enter the runs scored so far.' );
+		return array( 'err' => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs scored cannot be negative.' : 'Enter the runs scored so far.' );
 	}
 	if ( is_nan( (float) $b ) ) {
-		return array( 'err' => 'Enter the overs bowled so far, like 12.4 for 12 overs and 4 balls.' );
+		return array( 'err' => dlscalc_nrr_overs_err( 'Overs bowled so far', $p['o'] ?? '', 'Enter the overs bowled so far, like 12.4 for 12 overs and 4 balls.' ) );
 	}
 	if ( $b > $n ) {
 		return array( 'err' => 'Overs bowled cannot be more than ' . $nn . ' overs per side.' );
@@ -580,7 +600,7 @@ function dlscalc_nrr_batting( $p ) {
 	};
 	if ( $na( $r ) ) {
 		return array(
-			'err'   => 'Enter the runs scored.',
+			'err'   => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs cannot be negative.' : 'Enter the runs scored.',
 			'field' => 'r',
 		);
 	}
@@ -593,6 +613,13 @@ function dlscalc_nrr_batting( $p ) {
 	if ( null !== $i && $na( $i ) ) {
 		return array(
 			'err'   => 'Innings must be a whole number.',
+			'field' => 'i',
+		);
+	}
+	// Runs off balls faced need at least one innings; 0 would read as "never out" (audit F39).
+	if ( 0 === $i ) {
+		return array(
+			'err'   => 'Innings must be at least 1, or leave it blank.',
 			'field' => 'i',
 		);
 	}
@@ -670,13 +697,13 @@ function dlscalc_nrr_bowling( $p ) {
 	};
 	if ( $na( $b ) || $b < 1 ) {
 		return array(
-			'err'   => 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.',
+			'err'   => dlscalc_nrr_overs_err( 'Overs bowled', $p['o'] ?? '', 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.' ),
 			'field' => 'o',
 		);
 	}
 	if ( $na( $r ) ) {
 		return array(
-			'err'   => 'Enter the runs conceded.',
+			'err'   => dlscalc_dls_neg( $p['r'] ?? '' ) ? 'Runs cannot be negative.' : 'Enter the runs conceded.',
 			'field' => 'r',
 		);
 	}

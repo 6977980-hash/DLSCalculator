@@ -55,7 +55,8 @@ for (let i = 0; i < 400; i++) {
 	};
 	const M = 6 + rnd(N - 5);
 	cases.push({ fn: 'calc', p: { n: ov(N), r: String(80 + rnd(300)), g: ['245', '200', '222.5'][rnd(3)], c: ov(M), a: stops(N), b: stops(M), f: ['', 'odi', 't20', 't10', 'custom', 'zz'][rnd(6)], k: ['', '', '', '5', '1', 'x'][rnd(6)] } });
-	cases.push({ fn: 't20', p: { n: String(5 + rnd(16)), r: String(60 + rnd(200)), l: String(rnd(16)), b: rnd(2) ? stops(60) : '' } });
+	const tn = 5 + rnd(16);
+	cases.push({ fn: 't20', p: { n: String(tn), r: String(60 + rnd(200)), l: String(rnd(tn - 4)), b: rnd(2) ? stops(60) : '' } });
 	cases.push({ fn: 'parTable', p: { o: String(5 + rnd(46)), r: String(60 + rnd(300)) } });
 }
 // Live par tracker: random score logs, judged at every entry.
@@ -139,6 +140,25 @@ for (let i = 0; i < 200; i++) {
 	cases.push({ fn: 'nrr.batting', p: { r: String(rnd(bb * 2)), b: String(bb), i: rnd(4) ? String(bi) : '', o: rnd(2) ? String(rnd(bi + 1)) : '', f: rnd(2) ? String(rnd(bb / 8)) : '', x: rnd(2) ? String(rnd(bb / 20)) : '', g: rnd(2) ? String(50 + rnd(200)) : '' } });
 	cases.push({ fn: 'nrr.bowling', p: { o: ov(1 + rnd(6000)), r: String(rnd(3000)), k: rnd(5) ? String(rnd(120)) : '', d: rnd(2) ? String(rnd(1000)) : '' } });
 }
+
+// Clear messages for common slips (audit F39), the same in both engines.
+const BALLS = (label, o) => label + ': ' + o + ' is not valid. Balls after the dot go from 0 to 5, so after ' + o.split('.')[0] + '.5 comes ' + (parseInt(o, 10) + 1) + '.';
+cases.push({ fn: 't20', p: { n: '20', r: '160', l: '18' }, expect: { field: 'l', err: 'Overs lost before the chase must be a whole number from 0 to 15: Team 2 needs at least 5 overs for a result in a T20.' } });
+cases.push({ fn: 't20', p: { n: '10', r: '90', l: '5' }, expect: { allot: 30 } });
+cases.push({ fn: 't20', p: { n: '20', r: '160', l: '' }, expect: { allot: 120 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', b: '0-0-10' }, expect: { field: 'b-1-at', err: 'Team 2 stoppage 1: overs bowled must be more than 0. Overs lost before an innings starts are not a stoppage: enter the shorter innings as its overs instead.' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '-5', g: '245' }, expect: { field: 'r', err: 'Team 1\'s score cannot be negative.' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', a: '30-3-10' }, expect: { warn: 'Team 2 starts with 50 overs, more than the 40 Team 1 had after its stoppages. Both sides usually get the same overs, so check Team 2\'s overs at the start of the chase.' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', a: '30-3-10', c: '40' }, expect: { warn: '' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20.7-150-20' }, expect: { err: BALLS('Match 1, overs faced', '20.7') } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20-150-19.6a' }, expect: { err: BALLS('Match 1, overs bowled', '19.6') } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '−5-20-150-20' }, expect: { err: 'Match 1: runs cannot be negative.' } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '181', r: '92', o: '12.6' }, expect: { err: BALLS('Overs bowled so far', '12.6') } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'c', n: '20', t: '-181', r: '92', o: '12' }, expect: { err: 'The target cannot be negative.' } });
+cases.push({ fn: 'nrr.batting', p: { r: '50', b: '40', i: '0' }, expect: { field: 'i', err: 'Innings must be at least 1, or leave it blank.' } });
+cases.push({ fn: 'nrr.batting', p: { r: '-50', b: '40' }, expect: { field: 'r', err: 'Runs cannot be negative.' } });
+cases.push({ fn: 'nrr.bowling', p: { o: '10.8', r: '50' }, expect: { field: 'o', err: BALLS('Overs bowled', '10.8') } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'f', e: '-180', q: '20' }, expect: { err: 'The score cannot be negative.' } });
 
 // Bad input must give the same error text in both.
 cases.push({ fn: 'calc', p: { n: '50', r: '', g: '245' } });

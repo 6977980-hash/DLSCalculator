@@ -85,6 +85,11 @@
 		return v == null || String(v).trim() === '';
 	}
 
+	/** Whether a value was typed as a negative number ("-5"), so the error can say so (audit F39). */
+	function neg(v) {
+		return /^\s*[-−]\s*\d/.test(String(v == null ? '' : v));
+	}
+
 	function int(s) {
 		s = String(s == null ? '' : s).trim();
 		return /^\d{1,4}$/.test(s) ? parseInt(s, 10) : NaN;
@@ -166,7 +171,10 @@
 				return fail(label + ' stoppages must be entered in the order they happened.', f + (st.at < stops[i - 1].at ? 'at' : 'w'));
 			}
 			var left = allot - st.at;
-			if (st.at <= 0 || left <= 0) {
+			if (st.at === 0) {
+				return fail(name + ': overs bowled must be more than 0. Overs lost before an innings starts are not a stoppage: enter the shorter innings as its overs instead.', f + 'at');
+			}
+			if (left <= 0) {
 				return fail(name + ' must come before the end of the innings (' + overs(allot) + ' overs).', f + 'at');
 			}
 			if (st.w > 9) {
@@ -240,6 +248,10 @@
 		if (minB && (b.ended ? b.lastAt : b.allot) < minB) {
 			warn = 'Team 2 ' + (b.ended ? 'faced' : 'can face') + ' fewer than ' + overs(minB) + ' overs, so under ICC rules there is no result unless the match was already decided.';
 		}
+		// A common slip: Team 1's innings was cut but Team 2 keeps the full overs (audit F39).
+		if (o.t1.length && o.M > a.allot) {
+			warn += (warn ? ' ' : '') + 'Team 2 starts with ' + overs(o.M) + ' overs, more than the ' + overs(a.allot) + ' Team 1 had after its stoppages. Both sides usually get the same overs, so check Team 2\'s overs at the start of the chase.';
+		}
 		return {
 			N: o.N, F: o.F || '', S: o.S, G: o.G, M: o.M, R1: a.R, R2: b.R, raw: c2(raw), par: par, target: par + 1,
 			allot: b.allot, lastAt: b.lastAt, ended: b.ended, steps: steps, warn: warn, rows: parRows(o.S, a.R, o.G, b, P)
@@ -262,9 +274,9 @@
 		return rows;
 	}
 
-	function check(S, G) {
+	function check(S, G, raw) {
 		if (isNaN(S)) {
-			return fail('Enter Team 1\'s final score.', 'r');
+			return fail(neg(raw) ? 'Team 1\'s score cannot be negative.' : 'Enter Team 1\'s final score.', 'r');
 		}
 		if (S > 999) {
 			return fail('Team 1\'s score looks too high. Enter runs only.', 'r');
@@ -291,7 +303,7 @@
 		if (isNaN(N) || N < 6 || N > 300) {
 			return fail('Overs per side must be between 1 and 50.', 'n');
 		}
-		var e = check(S, G);
+		var e = check(S, G, p.r);
 		if (e) {
 			return e;
 		}
@@ -314,11 +326,16 @@
 		if (isNaN(No) || No < 5 || No > 20) {
 			return fail('Overs per side must be between 5 and 20.', 'n');
 		}
-		var e = check(S, 245);
+		var e = check(S, 245, p.r);
 		if (e) {
 			return e;
 		}
-		L = isNaN(L) ? 0 : Math.min(L, No - 5);
+		// More overs lost than leave Team 2 its 5 is an error, not a silent cap (audit F39).
+		if (blank(p.l)) {
+			L = 0;
+		} else if (isNaN(L) || L > No - 5) {
+			return fail('Overs lost before the chase must be a whole number from 0 to ' + (No - 5) + ': Team 2 needs at least 5 overs for a result in a T20.', 'l');
+		}
 		var r = match({
 			N: No * 6, S: S, G: 245, t1: [], M: (No - L) * 6, t2: parseStops(p.b), F: 't20',
 			note: L ? 'Rain cut ' + L + (L === 1 ? ' over' : ' overs') + ' before the chase, so Team 2 starts with ' + (No - L) + ' overs.' : ''
@@ -342,7 +359,7 @@
 		if (isNaN(No) || No < 5 || No > 50) {
 			return fail('Overs per side must be between 5 and 50.', 'o');
 		}
-		var e = check(S, 245);
+		var e = check(S, 245, p.r);
 		if (e) {
 			return e;
 		}

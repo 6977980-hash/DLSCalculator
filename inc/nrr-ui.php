@@ -135,7 +135,8 @@ function dlscalc_nrr_matches_from_rows() {
 	$nr    = dlscalc_nrr_get_rows( 'x_nr' );
 	$parts = array();
 	foreach ( array_slice( $rf, 0, DLSCALC_MATCHES_MAX, true ) as $i => $runs ) {
-		$row = array( trim( $runs ), trim( $of[ $i ] ?? '' ), trim( $ra[ $i ] ?? '' ), trim( $oa[ $i ] ?? '' ) );
+		// "-" and "_" separate fields and matches, so a typed minus travels as "−" (see nrr-tools.js).
+		$row = str_replace( array( '-', '_' ), array( '−', '' ), array( trim( $runs ), trim( $of[ $i ] ?? '' ), trim( $ra[ $i ] ?? '' ), trim( $oa[ $i ] ?? '' ) ) );
 		if ( '' === implode( '', $row ) ) {
 			continue;
 		}

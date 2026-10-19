@@ -46,6 +46,21 @@
 		return s == null || String(s).trim() === '';
 	}
 
+	/** Whether a value was typed as a negative number ("-5"), so the error can say so (audit F39). */
+	function neg(v) {
+		return /^\s*[-−]\s*\d/.test(String(v == null ? '' : v));
+	}
+
+	/**
+	 * Error for an overs figure with more than 5 balls after the dot ("20.7"), naming the field and
+	 * the 0-to-5 rule (audit F39); any other bad figure gets the fallback message. As oversHelp() in
+	 * dls-engine.js; PHP: dlscalc_nrr_overs_err().
+	 */
+	function oversErr(label, s, fallback) {
+		var m = /^(\d{1,5})\.(\d)a?$/.exec(String(s == null ? '' : s).trim());
+		return m && parseInt(m[2], 10) > 5 ? label + ': ' + m[1] + '.' + m[2] + ' is not valid. Balls after the dot go from 0 to 5, so after ' + m[1] + '.5 comes ' + (parseInt(m[1], 10) + 1) + '.' : fallback;
+	}
+
 	/**
 	 * num ÷ den rounded half away from zero to d decimals, as text ("13.463", "-5.438"). Works on
 	 * whole numbers, so the browser and PHP always agree and exact halves round the same way every
@@ -121,16 +136,19 @@
 			if (mo !== undefined) {
 				mq = balls(mo);
 				if (isNaN(mq) || mq < 1 || mq > quota) {
-					return { err: name + ': overs per side in this match must be between 0.1 and ' + Q + '.' };
+					return { err: oversErr(name + ', overs per side in this match', mo, name + ': overs per side in this match must be between 0.1 and ' + Q + '.') };
 				}
 			}
 			var cut = mq < quota, mov = overs(mq);
 			var a = side(x[0], x[1], mq), d = side(x[2], x[3], mq);
+			if (neg(x[0]) || neg(x[2])) {
+				return { err: name + ': runs cannot be negative.' };
+			}
 			if (isNaN(a.runs) || isNaN(d.runs) || a.runs > 999 || d.runs > 999) {
 				return { err: name + ': enter runs scored and runs conceded.' };
 			}
 			if (isNaN(a.at) || isNaN(d.at)) {
-				return { err: name + ': enter overs faced and overs bowled, like 19.4 for 19 overs and 4 balls.' };
+				return { err: oversErr(name + (isNaN(a.at) ? ', overs faced' : ', overs bowled'), isNaN(a.at) ? x[1] : x[3], name + ': enter overs faced and overs bowled, like 19.4 for 19 overs and 4 balls.') };
 			}
 			if (a.at > mq || d.at > mq || (!a.allOut && a.at === 0) || (!d.allOut && d.at === 0)) {
 				return { err: name + ': overs must be more than 0 and no more than ' + mov + ' per side' + (cut ? ' in this match.' : '.') };
@@ -252,7 +270,7 @@
 			return res;
 		}
 		if (isNaN(E) || E > 999) {
-			res.err = bat === 'f' ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.';
+			res.err = neg(p.e) ? 'The score cannot be negative.' : (bat === 'f' ? 'Enter the score you expect to make.' : 'Enter the opponent\'s score you will chase.');
 			return res;
 		}
 		if (isNaN(D) || D > 10) {
@@ -384,13 +402,13 @@
 		}
 		var N = Nn * 6, T = int(p.t);
 		if (chase && (isNaN(T) || T < 1 || T > 999)) {
-			return { err: 'Enter the target, the runs needed to win.' };
+			return { err: neg(p.t) ? 'The target cannot be negative.' : 'Enter the target, the runs needed to win.' };
 		}
 		if (isNaN(R) || R > 999) {
-			return { err: 'Enter the runs scored so far.' };
+			return { err: neg(p.r) ? 'Runs scored cannot be negative.' : 'Enter the runs scored so far.' };
 		}
 		if (isNaN(B)) {
-			return { err: 'Enter the overs bowled so far, like 12.4 for 12 overs and 4 balls.' };
+			return { err: oversErr('Overs bowled so far', p.o, 'Enter the overs bowled so far, like 12.4 for 12 overs and 4 balls.') };
 		}
 		if (B > N) {
 			return { err: 'Overs bowled cannot be more than ' + Nn + ' overs per side.' };
@@ -459,13 +477,17 @@
 		var R = count(p.r), B = count(p.b), I = blank(p.i) ? null : count(p.i), O = blank(p.o) ? 0 : count(p.o);
 		var F = blank(p.f) ? 0 : count(p.f), X = blank(p.x) ? 0 : count(p.x), G = blank(p.g) ? null : count(p.g);
 		if (isNaN(R)) {
-			return { err: 'Enter the runs scored.', field: 'r' };
+			return { err: neg(p.r) ? 'Runs cannot be negative.' : 'Enter the runs scored.', field: 'r' };
 		}
 		if (isNaN(B) || B < 1) {
 			return { err: 'Enter the balls faced, at least 1.', field: 'b' };
 		}
 		if (I !== null && isNaN(I)) {
 			return { err: 'Innings must be a whole number.', field: 'i' };
+		}
+		// Runs off balls faced need at least one innings; 0 would read as "never out" (audit F39).
+		if (I === 0) {
+			return { err: 'Innings must be at least 1, or leave it blank.', field: 'i' };
 		}
 		if (isNaN(O) || (I !== null && O > I)) {
 			return { err: 'Not outs must be a whole number, no more than the innings.', field: 'o' };
@@ -513,10 +535,10 @@
 	function bowling(p) {
 		var B = careerBalls(p.o), R = count(p.r), K = blank(p.k) ? 0 : count(p.k), D = blank(p.d) ? null : count(p.d);
 		if (isNaN(B) || B < 1) {
-			return { err: 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.', field: 'o' };
+			return { err: oversErr('Overs bowled', p.o, 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.'), field: 'o' };
 		}
 		if (isNaN(R)) {
-			return { err: 'Enter the runs conceded.', field: 'r' };
+			return { err: neg(p.r) ? 'Runs cannot be negative.' : 'Enter the runs conceded.', field: 'r' };
 		}
 		if (isNaN(K) || K > B) {
 			return { err: 'Wickets must be a whole number, no more than the balls bowled.', field: 'k' };

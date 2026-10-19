@@ -28,8 +28,24 @@ function dlscalc_offline_pages() {
 }
 
 /**
- * Serve /sw.js. Its cache name changes with the theme version or the worker file, which clears
- * the old saved copies.
+ * Version for the service worker's cache name: the theme version plus a short hash of every theme
+ * file's name, size and change time. Any deploy that changes a file (a font, an icon, an image, CSS
+ * or JS) gives a new cache name, so phones drop their old saved copies (audit F41).
+ *
+ * @return string
+ */
+function dlscalc_sw_version() {
+	$sig   = '';
+	$files = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( DLSCALC_DIR . '/assets', FilesystemIterator::SKIP_DOTS ) );
+	foreach ( $files as $file ) {
+		$sig .= substr( $file->getPathname(), strlen( DLSCALC_DIR ) ) . ':' . $file->getSize() . ':' . $file->getMTime() . "\n";
+	}
+	return DLSCALC_VERSION . '.' . substr( md5( $sig ), 0, 10 );
+}
+
+/**
+ * Serve /sw.js. Its cache name changes whenever a theme file changes (dlscalc_sw_version()), which
+ * clears the old saved copies.
  */
 function dlscalc_serve_sw() {
 	$path = wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- only compared below.
@@ -41,7 +57,7 @@ function dlscalc_serve_sw() {
 	$js = str_replace(
 		array( "'__VERSION__'", '__PAGES__', "'/wp-content/themes/dlscalc/'" ),
 		array(
-			wp_json_encode( dlscalc_asset_version( 'assets/js/sw.js' ) ),
+			wp_json_encode( dlscalc_sw_version() ),
 			wp_json_encode( dlscalc_offline_pages(), JSON_UNESCAPED_SLASHES ),
 			wp_json_encode( trailingslashit( (string) wp_parse_url( DLSCALC_URI, PHP_URL_PATH ) ), JSON_UNESCAPED_SLASHES ),
 		),
@@ -58,9 +74,12 @@ add_action( 'wp_loaded', 'dlscalc_serve_sw' );
 
 /**
  * Register the service worker after the page has loaded, so it never slows the first visit.
+ * Logged-in users get no worker: a browser that registered one before logging in removes it and its
+ * saved pages, so pages with the admin bar are never kept for offline use (audit F41).
  */
 function dlscalc_register_sw() {
 	if ( is_user_logged_in() ) {
+		echo "<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});if(window.caches){caches.keys().then(function(k){k.forEach(function(n){if(n.indexOf('dlscalc-')===0){caches.delete(n)}})})}}</script>\n";
 		return;
 	}
 	printf(
@@ -69,3 +88,4 @@ function dlscalc_register_sw() {
 	);
 }
 add_action( 'wp_footer', 'dlscalc_register_sw', 100 );
+add_action( 'admin_footer', 'dlscalc_register_sw', 100 );

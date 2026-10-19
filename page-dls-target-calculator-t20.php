@@ -39,7 +39,7 @@ dlscalc_par_sheet_head();
 		<div class="slider">
 			<label for="rain-slider" class="slider__label"><span>Overs lost before the chase</span><span data-out="lostlabel"><?php echo esc_html( $dlscalc_l . ( 1 === $dlscalc_l ? ' over' : ' overs' ) ); ?></span></label>
 			<input id="rain-slider" type="range" name="l" min="0" max="<?php echo (int) ( $dlscalc_no - 5 ); ?>" step="1" value="<?php echo (int) $dlscalc_l; ?>">
-			<p class="hint">Team 2 gets <b data-out="mlabel"><?php echo (int) ( $dlscalc_no - $dlscalc_l ); ?></b> overs. At least 5 overs are needed for a result.</p>
+			<p class="hint">Team 2 gets <b data-out="mlabel"><?php echo (int) ( $dlscalc_no - $dlscalc_l ); ?></b> overs. At least 5 overs are needed for a result (the T20 rule).</p>
 		</div>
 		<div class="tool__group" role="group" aria-labelledby="g-chase">
 			<h2 id="g-chase">Stoppages during the chase</h2>
@@ -65,8 +65,9 @@ dlscalc_par_sheet_head();
 <section class="panel block noprint">
 	<h2>Target for every chase length</h2>
 	<p class="hint">If no more overs are lost once the chase starts. The gold bar is the current setting.</p>
-	<div class="chart" role="img" aria-label="<?php echo esc_attr( 'Bar chart of the Team 2 target for chases of 5 to ' . $dlscalc_no . ' overs' ); ?>">
-		<div class="chart__bars" data-out="bars">
+	<div class="chart">
+		<?php // The bars scroll sideways on phones, so the scroll area takes keyboard focus (audit F40). ?>
+		<div class="chart__bars" data-out="bars" tabindex="0" role="img" aria-label="<?php echo esc_attr( 'Bar chart of the Team 2 target for chases of 5 to ' . $dlscalc_no . ' overs' ); ?>">
 			<?php
 			if ( $dlscalc_ok ) {
 				$dlscalc_cur = '' === $dlscalc_in['b'] ? $dlscalc_no - $dlscalc_l : 0;

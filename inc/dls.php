@@ -269,7 +269,10 @@ function dlscalc_dls_innings( $start_b, $stops, $label, $key ) {
 			return dlscalc_dls_fail( $label . ' stoppages must be entered in the order they happened.', $f . ( $st['at'] < $stops[ $i - 1 ]['at'] ? 'at' : 'w' ) );
 		}
 		$left = $allot - $st['at'];
-		if ( $st['at'] <= 0 || $left <= 0 ) {
+		if ( 0 === $st['at'] ) {
+			return dlscalc_dls_fail( $name . ': overs bowled must be more than 0. Overs lost before an innings starts are not a stoppage: enter the shorter innings as its overs instead.', $f . 'at' );
+		}
+		if ( $left <= 0 ) {
 			return dlscalc_dls_fail( $name . ' must come before the end of the innings (' . dlscalc_dls_overs( $allot ) . ' overs).', $f . 'at' );
 		}
 		if ( $st['w'] > 9 ) {
@@ -355,6 +358,10 @@ function dlscalc_dls_match( $o ) {
 	if ( $min_b && ( $b['ended'] ? $b['lastAt'] : $b['allot'] ) < $min_b ) {
 		$warn = 'Team 2 ' . ( $b['ended'] ? 'faced' : 'can face' ) . ' fewer than ' . dlscalc_dls_overs( $min_b ) . ' overs, so under ICC rules there is no result unless the match was already decided.';
 	}
+	// A common slip: Team 1's innings was cut but Team 2 keeps the full overs (audit F39).
+	if ( $o['t1'] && $o['M'] > $a['allot'] ) {
+		$warn .= ( $warn ? ' ' : '' ) . 'Team 2 starts with ' . dlscalc_dls_overs( $o['M'] ) . ' overs, more than the ' . dlscalc_dls_overs( $a['allot'] ) . ' Team 1 had after its stoppages. Both sides usually get the same overs, so check Team 2\'s overs at the start of the chase.';
+	}
 	return array(
 		'N'      => $o['N'],
 		'F'      => $o['F'] ?? '',
@@ -420,9 +427,9 @@ function dlscalc_dls_par_rows( $s, $r1, $g, $b, $p = 0 ) {
  * @param float     $g G50.
  * @return array|null Error result, or null when fine.
  */
-function dlscalc_dls_check( $s, $g ) {
+function dlscalc_dls_check( $s, $g, $raw = '' ) {
 	if ( is_nan( (float) $s ) ) {
-		return dlscalc_dls_fail( 'Enter Team 1\'s final score.', 'r' );
+		return dlscalc_dls_fail( dlscalc_dls_neg( $raw ) ? 'Team 1\'s score cannot be negative.' : 'Enter Team 1\'s final score.', 'r' );
 	}
 	if ( $s > 999 ) {
 		return dlscalc_dls_fail( 'Team 1\'s score looks too high. Enter runs only.', 'r' );
@@ -444,6 +451,16 @@ function dlscalc_dls_blank( $v ) {
 }
 
 /**
+ * Whether a value was typed as a negative number ("-5"), so the error can say so (audit F39).
+ *
+ * @param mixed $v Value.
+ * @return bool
+ */
+function dlscalc_dls_neg( $v ) {
+	return (bool) preg_match( '/^\s*[-−]\s*\d/u', (string) $v );
+}
+
+/**
  * DLS Calculator page.
  *
  * @param array $p Keys n, r, g, c, a, b, f, k as strings (see calc() in the JS engine).
@@ -461,7 +478,7 @@ function dlscalc_dls_calc( $p ) {
 	if ( is_nan( (float) $n ) || $n < 6 || $n > 300 ) {
 		return dlscalc_dls_fail( 'Overs per side must be between 1 and 50.', 'n' );
 	}
-	$e = dlscalc_dls_check( $s, $g );
+	$e = dlscalc_dls_check( $s, $g, $p['r'] ?? '' );
 	if ( $e ) {
 		return $e;
 	}
@@ -501,11 +518,16 @@ function dlscalc_dls_t20( $p ) {
 	if ( is_nan( (float) $no ) || $no < 5 || $no > 20 ) {
 		return dlscalc_dls_fail( 'Overs per side must be between 5 and 20.', 'n' );
 	}
-	$e = dlscalc_dls_check( $s, 245 );
+	$e = dlscalc_dls_check( $s, 245, $p['r'] ?? '' );
 	if ( $e ) {
 		return $e;
 	}
-	$l = is_nan( (float) $l ) ? 0 : min( $l, $no - 5 );
+	// More overs lost than leave Team 2 its 5 is an error, not a silent cap (audit F39).
+	if ( dlscalc_dls_blank( $p['l'] ?? null ) ) {
+		$l = 0;
+	} elseif ( is_nan( (float) $l ) || $l > $no - 5 ) {
+		return dlscalc_dls_fail( 'Overs lost before the chase must be a whole number from 0 to ' . ( $no - 5 ) . ': Team 2 needs at least 5 overs for a result in a T20.', 'l' );
+	}
 	$r = dlscalc_dls_match(
 		array(
 			'N'    => $no * 6,
@@ -546,7 +568,7 @@ function dlscalc_dls_par_table( $p ) {
 	if ( is_nan( (float) $no ) || $no < 5 || $no > 50 ) {
 		return dlscalc_dls_fail( 'Overs per side must be between 5 and 50.', 'o' );
 	}
-	$e = dlscalc_dls_check( $s, 245 );
+	$e = dlscalc_dls_check( $s, 245, $p['r'] ?? '' );
 	if ( $e ) {
 		return $e;
 	}
