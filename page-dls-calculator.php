@@ -20,7 +20,7 @@ $dlscalc_gsel = in_array( $dlscalc_g, array( '245', '200' ), true ) ? $dlscalc_g
 
 get_header();
 dlscalc_tool_page_open(
-	'DLS Calculator: Revised Target and Par Score',
+	'DLS Calculator: Revised Target for Rain-Hit Matches',
 	'Work out the Duckworth-Lewis-Stern target for any rain-affected match, with as many stoppages as you need in either innings. Every result shows its full working, using the ICC Standard Edition table.'
 );
 ?>

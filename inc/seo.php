@@ -30,11 +30,11 @@ function dlscalc_seo_plugin_active() {
 function dlscalc_seo_pages() {
 	return array(
 		'home'                      => array(
-			'title'       => 'DLS Calculator & Net Run Rate Calculator for Cricket | DLSCalc',
+			'title'       => 'DLSCalc: Free Cricket Calculators for Rain Targets, NRR & Run Rate',
 			'description' => 'Free DLS calculator for revised targets and par scores in T20, ODI and local matches, plus a net run rate calculator with qualification scenarios. Works on any phone.',
 		),
 		'dls-calculator'            => array(
-			'title'       => 'DLS Calculator: Revised Target & Par Score (ICC Method) | DLSCalc',
+			'title'       => 'DLS Calculator: Revised Target for Rain-Hit Matches (ICC) | DLSCalc',
 			'description' => 'Work out the DLS revised target and par score for any rain-hit match. Uses the ICC Standard Edition table, handles several interruptions and shows every step.',
 		),
 		'dls-target-calculator-t20' => array(
