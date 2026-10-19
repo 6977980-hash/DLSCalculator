@@ -88,8 +88,29 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 	.xbtn { margin-left: auto; }
 }
 
+.sheet { display: none; }
+
 @media print {
-	.site-head, .site-foot, .breadcrumbs, .byline, .tool-lede, .tool__form, .noprint, .tool-prose, .author-box, .share { display: none !important; }
+	@page { size: A4; margin: 12mm; }
+	.site-head, .site-foot, .breadcrumbs, .byline, .tool-lede, .tool__form, .noprint, .tool-prose, .author-box, .share, .related, .result__note { display: none !important; }
+	.sheet { display: block; font-size: 10pt; }
+	.sheet__title { margin: 0 0 4pt; font: 700 16pt var(--font-head); }
+	.sheet__lines { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8pt 16pt; margin-bottom: 10pt; }
+	.sheet__lines span { padding-top: 14pt; border-bottom: 1px solid #000; font-size: 8pt; }
+	.sheet__lines--sign span { padding-top: 24pt; }
+	.sheet--foot { margin-top: 10pt; }
+	.entry-title { font-size: 18pt; }
+	.par th, .par td { padding: 2pt 4pt; font-size: 9pt; }
+	.par tr { break-inside: avoid; }
+	.result, .panel { padding: 8pt 12pt; border-radius: 0; }
+	.result__label, .stat span { color: #000; }
+	.result__big { font-size: 36pt; }
+	.stats { display: flex; gap: 6pt; }
+	.stat { flex: 1; padding: 4pt 8pt; }
+	.stat b { font-size: 13pt; }
+	.block h2 { font-size: 14pt; break-after: avoid; }
+	.block__head { break-after: avoid; }
+	.block, .steps li { margin: 6pt 0; font-size: 9pt; }
 	body { background: #fff; font-size: 12pt; }
 	.result { background: #fff; color: #000; border: 1px solid #000; }
 	.result__big { color: #000; }

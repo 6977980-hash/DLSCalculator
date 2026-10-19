@@ -331,7 +331,7 @@ function dlscalc_dls_result_panel( $r, $slug, $in, $stats ) {
 				Share on WhatsApp
 			</a>
 			<button type="button" class="btn btn--ghost js-only" data-copy>Copy link</button>
-			<button type="button" class="btn btn--ghost js-only" data-print>Print</button>
+			<button type="button" class="btn btn--ghost js-only" data-print>Print par sheet</button>
 		</div>
 		<p class="result__note">DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ by a few runs.</p>
 	</aside>
@@ -541,4 +541,36 @@ function dlscalc_live_headline( $r ) {
 		'line'  => $line,
 		'word'  => false,
 	);
+}
+
+/**
+ * Printable par sheet, top: lines for the scorers to fill in. Hidden on screen; the print styles
+ * show it above the result, the working and the par table.
+ */
+function dlscalc_par_sheet_head() {
+	?>
+	<div class="sheet sheet--head" aria-hidden="true">
+		<p class="sheet__title">DLS par sheet</p>
+		<div class="sheet__lines">
+			<span>Match</span><span>Venue</span><span>Date</span>
+			<span>Team 1</span><span>Team 2</span><span>Overs per side</span>
+		</div>
+	</div>
+	<?php
+}
+
+/**
+ * Printable par sheet, bottom: signatures and the link that reopens the same result.
+ * dls-tools.js and live-par.js keep the link current before printing.
+ */
+function dlscalc_par_sheet_foot() {
+	$url = home_url( add_query_arg( array() ) );
+	?>
+	<div class="sheet sheet--foot" aria-hidden="true">
+		<div class="sheet__lines sheet__lines--sign">
+			<span>Umpire</span><span>Umpire</span><span>Scorer</span>
+		</div>
+		<p>DLS Standard Edition (ICC). Par = score to tie if play ends after that over; one more run wins. Worked out at <span data-sheet-url><?php echo esc_html( $url ); ?></span></p>
+	</div>
+	<?php
 }
