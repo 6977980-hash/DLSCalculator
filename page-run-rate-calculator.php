@@ -102,5 +102,5 @@ dlscalc_tool_page_open(
 	<?php get_template_part( 'template-parts/content/run-rate-calculator' ); ?>
 </div>
 <?php
-dlscalc_tool_page_close( array( 'net-run-rate-calculator', 'dls-target-calculator-t20', 'live-dls-par-score', 'dls-calculator' ) );
+dlscalc_tool_page_close( array( 'net-run-rate-calculator', 'strike-rate-calculator', 'dls-target-calculator-t20', 'live-dls-par-score', 'dls-calculator' ) );
 get_footer();

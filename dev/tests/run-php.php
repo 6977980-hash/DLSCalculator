@@ -20,6 +20,8 @@ $map   = array(
 	'nrr.calc'    => 'dlscalc_nrr_calc',
 	'nrr.solve'   => 'dlscalc_nrr_solve',
 	'nrr.runRate' => 'dlscalc_nrr_run_rate',
+	'nrr.batting' => 'dlscalc_nrr_batting',
+	'nrr.bowling' => 'dlscalc_nrr_bowling',
 	'nrr.convert' => 'dlscalc_nrr_convert',
 );
 $cases = json_decode( file_get_contents( $argv[1] ), true );

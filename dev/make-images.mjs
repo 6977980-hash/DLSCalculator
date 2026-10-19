@@ -27,6 +27,8 @@ const pages = {
   'live-dls-par-score': ['Live DLS Par', 'Live DLS par score: who is ahead?', 'Enter the chase over by over, see the par if rain stops play'],
   'net-run-rate-calculator': ['Net Run Rate', 'Net Run Rate Calculator (NRR)', 'Your NRR and the margin you need to qualify'],
   'run-rate-calculator': ['Run Rate', 'Run Rate Calculator: current and required', 'CRR, RRR, runs per ball and projected score'],
+  'strike-rate-calculator': ['Strike Rate', 'Strike rate and batting average calculator', 'One innings or a whole season, with boundary figures'],
+  'bowling-average-calculator': ['Bowling', 'Bowling average and economy rate calculator', 'Average, economy and bowling strike rate from your figures'],
   'dls-method': ['Guide', 'The DLS method explained', 'Resource table, formula and ICC worked examples'],
   'how-to-calculate-nrr': ['Guide', 'How to calculate net run rate', 'The NRR formula with a step-by-step example'],
   'vjd-method': ['Guide', 'VJD method vs DLS', 'Jayadevan\'s rain rule, explained and compared'],

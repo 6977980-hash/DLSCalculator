@@ -29,55 +29,63 @@ function dlscalc_seo_plugin_active() {
  */
 function dlscalc_seo_pages() {
 	return array(
-		'home'                      => array(
+		'home'                       => array(
 			'title'       => 'DLSCalc: Free Cricket Calculators for Rain Targets, NRR & Run Rate',
 			'description' => 'Free DLS calculator for revised targets and par scores in T20, ODI and local matches, plus a net run rate calculator with qualification scenarios. Works on any phone.',
 		),
-		'dls-calculator'            => array(
+		'dls-calculator'             => array(
 			'title'       => 'DLS Calculator: Revised Target for Rain-Hit Matches (ICC) | DLSCalc',
 			'description' => 'Work out the DLS revised target and par score for any rain-hit match. Uses the ICC Standard Edition table, handles several interruptions and shows every step.',
 		),
-		'dls-target-calculator-t20' => array(
+		'dls-target-calculator-t20'  => array(
 			'title'       => 'DLS Target Calculator T20: Rain Target & Par Score | DLSCalc',
 			'description' => 'DLS target calculator for T20 matches. Enter the score and overs lost to get the revised target, par score and an over-by-over par table for every wicket.',
 		),
-		'dls-par-score-table'       => array(
+		'dls-par-score-table'        => array(
 			'title'       => 'DLS Par Score Calculator & Table (5 to 50 Overs) | DLSCalc',
 			'description' => 'DLS par score for every over and wicket of the chase. Pick 5 to 50 overs, enter Team 1\'s score and print the par table for the scorers. ICC Standard Edition.',
 		),
-		'live-dls-par-score'        => array(
+		'live-dls-par-score'         => array(
 			'title'       => 'Live DLS Par Score: Who Is Ahead on DLS Right Now? | DLSCalc',
 			'description' => 'Enter the chasing score over by over and see the live DLS par score, so you know who is ahead if rain stops play. Free live DLS calculator for scorers.',
 		),
-		'net-run-rate-calculator'   => array(
+		'net-run-rate-calculator'    => array(
 			'title'       => 'Net Run Rate Calculator (NRR Calculator Cricket) | DLSCalc',
 			'description' => 'Calculate net run rate across every match, with the all-out rule built in. Then see the win margin or chase overs your team needs to pass a rival. Free.',
 		),
-		'run-rate-calculator'       => array(
+		'run-rate-calculator'        => array(
 			'title'       => 'Run Rate Calculator: Current & Required Run Rate | DLSCalc',
 			'description' => 'Current run rate, required run rate, runs needed per ball and projected score for any cricket innings. Overs counted in balls, so 12.4 overs is handled correctly.',
 		),
-		'dls-method'                => array(
+		'strike-rate-calculator'     => array(
+			'title'       => 'Strike Rate Calculator Cricket & Batting Average Calculator',
+			'description' => 'Free cricket strike rate and batting average calculator. Enter runs, balls, innings and not outs for one innings or a season, plus boundary figures and target strike rate.',
+		),
+		'bowling-average-calculator' => array(
+			'title'       => 'Bowling Average & Economy Rate Calculator (Cricket) | DLSCalc',
+			'description' => 'Free bowling average calculator with economy rate and bowling strike rate. Enter overs like 38.4, runs conceded and wickets for a spell, a match or a career.',
+		),
+		'dls-method'                 => array(
 			'title'       => 'DLS Method in Cricket Explained: Formula, Table & Examples',
 			'description' => 'What the DLS method is, how resources work, the formula for revised targets, the resource table and the ICC worked examples, explained step by step.',
 		),
-		'how-to-calculate-nrr'      => array(
+		'how-to-calculate-nrr'       => array(
 			'title'       => 'How to Calculate NRR in Cricket: Net Run Rate Formula',
 			'description' => 'The net run rate formula with a worked two-match example, the all-out rule, DLS matches and no-results, and how a team can improve its NRR.',
 		),
-		'vjd-method'                => array(
+		'vjd-method'                 => array(
 			'title'       => 'VJD Method in Cricket: Jayadevan System vs DLS Explained',
 			'description' => 'What the VJD method is, who V. Jayadevan is, how his rain rule sets targets, where the BCCI used it, and how it differs from DLS and the old D/L method.',
 		),
-		'about'                     => array(
+		'about'                      => array(
 			'title'       => 'About DLSCalc and Ch Alee | DLSCalc',
 			'description' => 'DLSCalc is built by Ch Alee, a cricketer and tournament organiser. How the calculators work, the ICC sources they follow and their limits.',
 		),
-		'privacy-policy'            => array(
+		'privacy-policy'             => array(
 			'title'       => 'Privacy Policy | DLSCalc',
 			'description' => 'How DLSCalc handles data. The calculators run in your browser and nothing you type is sent to us.',
 		),
-		'contact'                   => array(
+		'contact'                    => array(
 			'title'       => 'Contact | DLSCalc',
 			'description' => 'Contact DLSCalc to report a mistake or suggest a new cricket calculator.',
 		),

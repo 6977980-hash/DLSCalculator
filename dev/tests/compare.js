@@ -37,5 +37,5 @@ const phpTable = JSON.parse(require('child_process').execFileSync('php', ['-r', 
 if (JSON.stringify(phpTable) !== JSON.stringify(icc)) fail('PHP table differs from the ICC table');
 
 const examples = cases.filter((c) => c.expect).length;
-console.log(fails ? `${fails} failures` : `OK: ${examples} worked examples (ICC DLS, NRR, run rate) pass in JS and PHP, ${cases.length} cases agree, ${cells} table cells match`);
+console.log(fails ? `${fails} failures` : `OK: ${examples} worked examples (ICC DLS, NRR, run rate, stats) pass in JS and PHP, ${cases.length} cases agree, ${cells} table cells match`);
 process.exit(fails ? 1 : 0);

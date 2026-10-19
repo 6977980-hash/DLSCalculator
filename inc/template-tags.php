@@ -13,29 +13,44 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Site pages the theme links to before menus are set up in WP admin.
  * Keyed by slug so menus, cards and footers stay in sync.
  *
- * @return array<string, array{label: string, title: string, blurb: string}>
+ * The stats calculators stay out of the header ("menu" false) and are linked from the home page,
+ * the footer and the related tools.
+ *
+ * @return array<string, array{label: string, title: string, blurb: string, menu?: bool}>
  */
 function dlscalc_tools() {
 	return array(
-		'dls-calculator'            => array(
+		'dls-calculator'             => array(
 			'label' => 'DLS Calculator',
 			'title' => 'DLS Calculator',
 			'blurb' => 'Revised target and par score for any format, with interruptions in either innings.',
 		),
-		'dls-target-calculator-t20' => array(
+		'dls-target-calculator-t20'  => array(
 			'label' => 'T20 Target',
 			'title' => 'DLS Target Calculator T20',
 			'blurb' => 'Built for 20-over matches, with an over-by-over par score table for every wicket.',
 		),
-		'net-run-rate-calculator'   => array(
+		'net-run-rate-calculator'    => array(
 			'label' => 'Net Run Rate',
 			'title' => 'Net Run Rate Calculator',
 			'blurb' => 'Net run rate from your points table, plus the margin you need to qualify. Free, no app needed.',
 		),
-		'run-rate-calculator'       => array(
+		'run-rate-calculator'        => array(
 			'label' => 'Run Rate',
 			'title' => 'Run Rate Calculator',
 			'blurb' => 'Current and required run rate, runs needed per ball, and projected scores.',
+		),
+		'strike-rate-calculator'     => array(
+			'label' => 'Strike Rate',
+			'title' => 'Strike Rate Calculator',
+			'blurb' => 'Batting strike rate and batting average for one innings or a whole season.',
+			'menu'  => false,
+		),
+		'bowling-average-calculator' => array(
+			'label' => 'Bowling Average',
+			'title' => 'Bowling Average Calculator',
+			'blurb' => 'Bowling average, economy rate and bowling strike rate from your figures.',
+			'menu'  => false,
 		),
 	);
 }
@@ -102,7 +117,13 @@ function dlscalc_menu( $location, $label, $class ) {
  * @return array<string, string> Slug => label.
  */
 function dlscalc_default_primary_links() {
-	$links = wp_list_pluck( dlscalc_tools(), 'label' );
+	$tools = array_filter(
+		dlscalc_tools(),
+		function ( $tool ) {
+			return $tool['menu'] ?? true;
+		}
+	);
+	$links = wp_list_pluck( $tools, 'label' );
 	$links['dls-method']           = 'DLS Guide';
 	$links['how-to-calculate-nrr'] = 'NRR Guide';
 	return $links;
@@ -115,15 +136,17 @@ function dlscalc_default_primary_links() {
  */
 function dlscalc_default_footer_links() {
 	return array(
-		'about'                => 'About',
-		'dls-par-score-table'  => 'DLS par score table',
-		'live-dls-par-score'   => 'Live DLS par',
-		'dls-method'           => 'DLS method guide',
-		'how-to-calculate-nrr' => 'NRR guide',
-		'vjd-method'           => 'VJD method',
-		'famous-dls-matches'   => 'Famous DLS matches',
-		'privacy-policy'       => 'Privacy Policy',
-		'contact'              => 'Contact',
+		'about'                      => 'About',
+		'dls-par-score-table'        => 'DLS par score table',
+		'live-dls-par-score'         => 'Live DLS par',
+		'strike-rate-calculator'     => 'Strike rate calculator',
+		'bowling-average-calculator' => 'Bowling average calculator',
+		'dls-method'                 => 'DLS method guide',
+		'how-to-calculate-nrr'       => 'NRR guide',
+		'vjd-method'                 => 'VJD method',
+		'famous-dls-matches'         => 'Famous DLS matches',
+		'privacy-policy'             => 'Privacy Policy',
+		'contact'                    => 'Contact',
 	);
 }
 

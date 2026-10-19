@@ -1,6 +1,6 @@
 /*!
- * DLSCalc NRR tools: live results as you type on the net run rate and run rate pages, match and
- * team rows, the points table saved on this device, result permalinks and sharing.
+ * DLSCalc NRR tools: live results as you type on the net run rate, run rate and stats pages,
+ * match and team rows, the points table saved on this device, result permalinks and sharing.
  * The page is already rendered by PHP from the same engine; this only keeps it in step.
  */
 (function () {
@@ -306,10 +306,71 @@
 		}
 	}
 
+	/* Strike rate and bowling average pages ------------------------------------------------ */
+
+	function statsPage(form, tool) {
+		var names = tool === 'batting' ? ['r', 'b', 'i', 'o', 'f', 'x', 'g'] : ['o', 'r', 'k', 'd'];
+		var title = tool === 'batting' ? 'Strike rate' : 'Bowling average';
+		var params = function () {
+			var p = {};
+			names.forEach(function (n) { p[n] = form.elements[n].value.trim(); });
+			return p;
+		};
+		// Error message under the input it belongs to, as on the DLS calculator.
+		var markField = function (r) {
+			$$('[aria-invalid]', form).forEach(function (el) {
+				el.removeAttribute('aria-invalid');
+				el.removeAttribute('aria-describedby');
+			});
+			$$('.fld__err', form).forEach(function (el) { el.parentNode.removeChild(el); });
+			var el = r.err && r.field ? form.elements[r.field] : null;
+			if (!el) {
+				return;
+			}
+			var msg = document.createElement('span');
+			msg.className = 'fld__err';
+			msg.id = 'fe-' + r.field;
+			msg.textContent = r.err;
+			el.parentNode.appendChild(msg);
+			el.setAttribute('aria-invalid', 'true');
+			el.setAttribute('aria-describedby', msg.id);
+		};
+		var first = true;
+		function update() {
+			var p = params(), r = NRR[tool](p);
+			text('err', r.err || '');
+			show(out('err'), !!r.err);
+			markField(r);
+			text('label', r.err ? title : r.label);
+			text('big', r.err ? '–' : r.big);
+			text('line', r.err ? 'Check the inputs.' : r.line);
+			out('lines').innerHTML = (r.err ? [] : r.lines).map(function (l) {
+				return '<tr><th scope="row">' + esc(l[0]) + '</th><td>' + esc(l[1]) + '</td></tr>';
+			}).join('');
+			if (!first) {
+				var q = query(p);
+				history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + '#result');
+			}
+			var msg = r.err ? title + ' calculator:' : r.label + ': ' + r.big + '. ' + r.line + '.';
+			out('wa').href = 'https://wa.me/?text=' + encodeURIComponent(msg + ' ' + link(p));
+		}
+		form.addEventListener('input', update);
+		form.addEventListener('submit', function (e) {
+			e.preventDefault();
+			update();
+		});
+		shareWire(params);
+		update();
+		first = false;
+	}
+
 	var calcForm = $('form[data-form="calc"]'), tableForm = $('form[data-form="table"]'), rrForm = $('form[data-form="rr"]');
+	var statsForm = $('form[data-form="batting"], form[data-form="bowling"]');
 	if (calcForm && tableForm) {
 		nrrPage(calcForm, tableForm);
 	} else if (rrForm) {
 		runRatePage(rrForm, $('form[data-form="conv"]'));
+	} else if (statsForm) {
+		statsPage(statsForm, statsForm.getAttribute('data-form'));
 	}
 }());

@@ -1,6 +1,7 @@
 /*!
- * DLSCalc NRR engine: net run rate across matches, points tables, the qualification solver and
- * the run rate calculator. Runs in the browser (window.NRR) and in Node (module.exports) for tests.
+ * DLSCalc NRR engine: net run rate across matches, points tables, the qualification solver, the
+ * run rate calculator and the batting and bowling stats calculators. Runs in the browser
+ * (window.NRR) and in Node (module.exports) for tests.
  * inc/nrr.php is a line-for-line PHP copy, so pages render real results without JavaScript.
  */
 (function (root, factory) {
@@ -378,6 +379,110 @@
 		};
 	}
 
+	/** A career total such as runs or balls: a whole number up to 999999. */
+	function count(s) {
+		s = String(s == null ? '' : s).trim();
+		return /^\d{1,6}$/.test(s) ? parseInt(s, 10) : NaN;
+	}
+
+	/** Career overs such as "1043.2", up to 99999 overs, to balls. NaN if it is not a valid overs figure. */
+	function careerBalls(s) {
+		s = String(s == null ? '' : s).trim();
+		if (!/^\d{1,5}(\.\d)?$/.test(s)) {
+			return NaN;
+		}
+		var p = s.split('.'), b = p[1] ? parseInt(p[1], 10) : 0;
+		return b > 5 ? NaN : parseInt(p[0], 10) * 6 + b;
+	}
+
+	/**
+	 * Strike rate and batting average. p: { r: runs, b: balls faced, i: innings, o: not outs,
+	 * f: fours, x: sixes, g: target strike rate }. Only r and b are needed.
+	 */
+	function batting(p) {
+		var R = count(p.r), B = count(p.b), I = blank(p.i) ? null : count(p.i), O = blank(p.o) ? 0 : count(p.o);
+		var F = blank(p.f) ? 0 : count(p.f), X = blank(p.x) ? 0 : count(p.x), G = blank(p.g) ? null : count(p.g);
+		if (isNaN(R)) {
+			return { err: 'Enter the runs scored.', field: 'r' };
+		}
+		if (isNaN(B) || B < 1) {
+			return { err: 'Enter the balls faced, at least 1.', field: 'b' };
+		}
+		if (I !== null && isNaN(I)) {
+			return { err: 'Innings must be a whole number.', field: 'i' };
+		}
+		if (isNaN(O) || (I !== null && O > I)) {
+			return { err: 'Not outs must be a whole number, no more than the innings.', field: 'o' };
+		}
+		if (isNaN(F) || isNaN(X)) {
+			return { err: 'Fours and sixes must be whole numbers.', field: isNaN(F) ? 'f' : 'x' };
+		}
+		if (F * 4 + X * 6 > R || F + X > B) {
+			return { err: 'The fours and sixes add up to more runs or balls than the batter had.', field: 'f' };
+		}
+		if (G !== null && (isNaN(G) || G < 1 || G > 600)) {
+			return { err: 'Target strike rate must be between 1 and 600.', field: 'g' };
+		}
+		var sr = R * 100 / B, outs = I === null ? null : I - O, avg = outs ? fx(R / outs, 2) : null, lines = [];
+		lines.push(['Batting average', avg !== null ? avg : (I === null ? 'Add innings and not outs' : 'None yet: never out')]);
+		lines.push(['Runs per ball', fx(R / B, 2)]);
+		if (I) {
+			lines.push(['Runs per innings', fx(R / I, 2)]);
+		}
+		if (outs) {
+			lines.push(['Balls per dismissal', fx(B / outs, 1)]);
+		}
+		if (F + X > 0) {
+			lines.push(['Runs in fours and sixes', (F * 4 + X * 6) + ' (' + fx((F * 4 + X * 6) * 100 / R, 1) + '%)']);
+			lines.push(['Balls per boundary', fx(B / (F + X), 1)]);
+		}
+		if (G !== null) {
+			// Whole-number sum, so the rounding up is exact in both engines.
+			[6, 12, 30].forEach(function (n) {
+				var need = Math.max(0, Math.ceil((G * (B + n) - 100 * R) / 100));
+				lines.push(['Strike rate ' + G + ' after ' + n + ' more balls', need > 6 * n ? 'Not possible: needs ' + need + ' runs' : need + (need === 1 ? ' run' : ' runs') + ' needed']);
+			});
+		}
+		return {
+			label: 'Strike rate', big: fx(sr, 2), sr: fx(sr, 2), avg: avg, outs: outs,
+			line: R + (R === 1 ? ' run' : ' runs') + ' off ' + B + (B === 1 ? ' ball' : ' balls') + (avg !== null ? ', average ' + avg + ' (' + outs + (outs === 1 ? ' dismissal)' : ' dismissals)') : ''),
+			lines: lines
+		};
+	}
+
+	/**
+	 * Bowling average, economy rate and bowling strike rate. p: { o: overs bowled, r: runs
+	 * conceded, k: wickets, d: dot balls }. Only o and r are needed.
+	 */
+	function bowling(p) {
+		var B = careerBalls(p.o), R = count(p.r), K = blank(p.k) ? 0 : count(p.k), D = blank(p.d) ? null : count(p.d);
+		if (isNaN(B) || B < 1) {
+			return { err: 'Enter the overs bowled, like 38.4 for 38 overs and 4 balls.', field: 'o' };
+		}
+		if (isNaN(R)) {
+			return { err: 'Enter the runs conceded.', field: 'r' };
+		}
+		if (isNaN(K) || K > B) {
+			return { err: 'Wickets must be a whole number, no more than the balls bowled.', field: 'k' };
+		}
+		if (D !== null && (isNaN(D) || D > B)) {
+			return { err: 'Dot balls must be a whole number, no more than the balls bowled.', field: 'd' };
+		}
+		var econ = fx(R * 6 / B, 2), avg = K ? fx(R / K, 2) : null, sr = K ? fx(B / K, 1) : null, lines = [];
+		lines.push(['Economy rate', econ]);
+		lines.push(['Bowling strike rate', sr !== null ? sr : 'None yet: no wickets']);
+		lines.push(['Balls bowled', B + ' (' + overs(B) + ' overs)']);
+		lines.push(['Runs per ball', fx(R / B, 2)]);
+		if (D !== null) {
+			lines.push(['Dot balls', D + ' (' + fx(D * 100 / B, 1) + '%)']);
+		}
+		return {
+			label: K ? 'Bowling average' : 'Economy rate', big: K ? avg : econ, avg: avg, econ: econ, sr: sr,
+			line: K + (K === 1 ? ' wicket' : ' wickets') + ' for ' + R + (R === 1 ? ' run' : ' runs') + ' in ' + overs(B) + ' overs' + (K ? ', economy ' + econ : ''),
+			lines: lines
+		};
+	}
+
 	/** Overs and balls converter: { v: overs as typed, j: balls }. */
 	function convert(p) {
 		var b = balls(p.v), n = int(p.j);
@@ -389,6 +494,6 @@
 
 	return {
 		balls: balls, overs: overs, fx: fx, sign3: sign3, nrrOf: nrrOf, calc: calc, parseTeams: parseTeams, standings: standings,
-		solve: solve, runRate: runRate, convert: convert, cleanName: cleanName, MATCHES_MAX: MATCHES_MAX, TEAMS_MAX: TEAMS_MAX
+		solve: solve, runRate: runRate, batting: batting, bowling: bowling, convert: convert, cleanName: cleanName, MATCHES_MAX: MATCHES_MAX, TEAMS_MAX: TEAMS_MAX
 	};
 }));
