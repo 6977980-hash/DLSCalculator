@@ -1,0 +1,66 @@
+/* NRR, run rate and live par tracker: tabs, match and team rows, points table, segmented
+   choice, converter and status pills. Printed inline after tools.css only on those pages. */
+.tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.tab { min-height: 48px; padding: 0 22px; border: 1px solid var(--green); border-radius: 10px; background: var(--white); color: var(--green); font-weight: 700; font-size: 16px; cursor: pointer; }
+.tab[aria-pressed="true"] { background: var(--green); color: var(--cream); }
+.js [data-off] { display: none; }
+.pane + .pane { margin-top: 40px; }
+.pane__title { margin: 0 0 16px; font-size: 34px; }
+.panel__title { margin: 0; font-size: 24px; }
+.btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.tick { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.tick input { width: 20px; height: 20px; accent-color: var(--green); }
+.radios { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; padding: 0; border: 0; }
+.radios legend { padding: 0; font-size: 15px; font-weight: 600; }
+.rows { display: flex; flex-direction: column; gap: 12px; }
+.mrow { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: flex-end; margin: 0; padding: 4px 14px 10px; border: 1px solid var(--line); border-radius: 12px; }
+.mrow legend { padding: 0 6px; font-weight: 700; }
+.mrow__side { display: flex; gap: 12px; flex: 1 1 260px; }
+.mrow__side .fld { flex-basis: 100px; }
+.mrow__end { display: flex; flex-wrap: wrap; gap: 0 18px; align-items: center; flex: 1 1 100%; }
+.mrow__end .xbtn { margin-left: auto; }
+.data input { width: 100%; min-width: 64px; height: 40px; padding: 0 8px; border: 1px solid #8a8577; border-radius: 6px; background: var(--white); font-size: 16px; }
+.data input:focus { outline: 3px solid var(--gold); outline-offset: 1px; }
+.data td { vertical-align: middle; }
+.ptable { min-width: 860px; }
+.ptable td { padding: 6px 4px; }
+.ptable__name input { min-width: 120px; }
+.ptable__nrr, .live__par { font-weight: 700; white-space: nowrap; }
+.data .xbtn { height: 40px; }
+.standings th[scope="row"] { background: transparent; text-align: left; }
+.result__big--word { font-size: 60px; line-height: 1; }
+.result__table { width: 100%; font-variant-numeric: tabular-nums; }
+.result__table th, .result__table td { padding: 6px 0; border-top: 1px solid #2c6a4e; font-size: 16px; }
+.result__table th { font-weight: 600; color: #c9d4cd; text-align: left; }
+.result__table td { font-weight: 700; text-align: right; }
+.result__note a { color: var(--gold); }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; }
+.seg label { flex: 1 1 160px; position: relative; }
+.seg input { position: absolute; opacity: 0; }
+.seg span { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 16px; border: 1px solid var(--green); border-radius: 10px; color: var(--green); font-weight: 700; cursor: pointer; }
+.seg input:checked + span { background: var(--green); color: var(--cream); }
+.seg input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+.conv { display: flex; flex-wrap: wrap; gap: 16px 32px; margin-top: 12px; }
+.conv__pair { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; flex: 1 1 320px; }
+.conv__pair .fld { flex: 0 1 180px; }
+.conv__out { padding-bottom: 10px; font-size: 19px; font-weight: 700; }
+.live { min-width: 0; }
+.live th, .live td { padding: 6px 3px; }
+.live input { width: 58px; min-width: 0; }
+.live td:last-child { width: 44px; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.pill:empty { display: none; }
+.pill--t2 { background: #dcefe2; color: #13452f; }
+.pill--t1 { background: #f8dcd8; color: #7a2e22; }
+.pill--level { background: #fbe9c6; color: #5a3a00; }
+
+@media (max-width: 640px) {
+	.result__big--word { font-size: 48px; }
+	.pane__title { font-size: 30px; }
+	.live input { width: 48px; padding: 0 6px; }
+	.live .xbtn { flex-basis: 36px; width: 36px; }
+}
+
+@media print {
+	.tabs, [data-off] { display: none !important; }
+}

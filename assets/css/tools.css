@@ -1,5 +1,5 @@
-/* DLS tools: forms, result panel, par tables, charts and the home quick box.
-   Printed inline only on the DLS pages and the home page, after main.css. */
+/* Tools: forms, result panel, par tables, charts, NRR tables and the home quick box.
+   Printed inline only on the tool pages and the home page, after main.css. */
 
 /* Home: quick target box beside the hero copy */
 .hero__inner { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }

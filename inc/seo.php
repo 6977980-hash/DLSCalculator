@@ -45,6 +45,10 @@ function dlscalc_seo_pages() {
 			'title'       => 'DLS Par Score Calculator & Table (5 to 50 Overs) | DLSCalc',
 			'description' => 'DLS par score for every over and wicket of the chase. Pick 5 to 50 overs, enter Team 1\'s score and print the par table for the scorers. ICC Standard Edition.',
 		),
+		'live-dls-par-score'        => array(
+			'title'       => 'Live DLS Par Score: Who Is Ahead on DLS Right Now? | DLSCalc',
+			'description' => 'Enter the chasing score over by over and see the live DLS par score, so you know who is ahead if rain stops play. Free live DLS calculator for scorers.',
+		),
 		'net-run-rate-calculator'   => array(
 			'title'       => 'Net Run Rate Calculator (NRR Calculator Cricket) | DLSCalc',
 			'description' => 'Calculate net run rate across every match, with the all-out rule built in. Then see the win margin or chase overs your team needs to pass a rival. Free.',
@@ -284,7 +288,7 @@ function dlscalc_tool_schema( $seo ) {
 	$home  = home_url( '/' );
 	$url   = get_permalink();
 	$nodes = array();
-	if ( isset( dlscalc_dls_tools()[ $slug ] ) ) {
+	if ( isset( dlscalc_dls_tools()[ $slug ] ) || isset( dlscalc_nrr_tools()[ $slug ] ) ) {
 		$nodes[] = array(
 			'@type'               => 'WebApplication',
 			'@id'                 => $url . '#app',

@@ -46,6 +46,16 @@ function dlscalc_dls_tools() {
 				'c' => '',
 			),
 		),
+		'live-dls-par-score'        => array(
+			'tool'     => 'live',
+			'defaults' => array(
+				'n' => '20',
+				'r' => '160',
+				'g' => '245',
+				'c' => '',
+				'x' => '1-6-0_2-15-0_3-21-1_4-30-1_5-41-1_6-49-2',
+			),
+		),
 	);
 }
 
@@ -60,23 +70,26 @@ function dlscalc_is_dls_page() {
 
 /**
  * Stoppages sent by a form without JavaScript: a_at[], a_w[], a_lost[] become "12-1-10_22-3-2".
- * Fully blank rows are skipped.
+ * The live tracker's score log comes the same way, as x_at[], x_r[], x_w[]. Fully blank rows are skipped.
  *
- * @param string $key "a" (Team 1) or "b" (Team 2).
+ * @param string   $key    "a" (Team 1), "b" (Team 2) or "x" (live score log).
+ * @param string[] $fields Field names after the key, in permalink order.
  * @return string|null Null when the form sent no rows.
  */
-function dlscalc_dls_stops_from_rows( $key ) {
+function dlscalc_dls_stops_from_rows( $key, $fields = array( 'at', 'w', 'lost' ) ) {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only calculator inputs.
 	if ( ! isset( $_GET[ $key . '_at' ] ) || ! is_array( $_GET[ $key . '_at' ] ) ) {
 		return null;
 	}
 	$at    = array_map( 'sanitize_text_field', wp_unslash( $_GET[ $key . '_at' ] ) );
-	$w     = isset( $_GET[ $key . '_w' ] ) && is_array( $_GET[ $key . '_w' ] ) ? array_map( 'sanitize_text_field', wp_unslash( $_GET[ $key . '_w' ] ) ) : array();
-	$lost  = isset( $_GET[ $key . '_lost' ] ) && is_array( $_GET[ $key . '_lost' ] ) ? array_map( 'sanitize_text_field', wp_unslash( $_GET[ $key . '_lost' ] ) ) : array();
+	$cols  = array();
+	foreach ( array_slice( $fields, 1 ) as $field ) {
+		$cols[] = isset( $_GET[ $key . '_' . $field ] ) && is_array( $_GET[ $key . '_' . $field ] ) ? array_map( 'sanitize_text_field', wp_unslash( $_GET[ $key . '_' . $field ] ) ) : array();
+	}
 	// phpcs:enable
 	$parts = array();
-	foreach ( array_slice( $at, 0, DLSCALC_STOPS_MAX ) as $i => $value ) {
-		$row = array( trim( $value ), trim( $w[ $i ] ?? '' ), trim( $lost[ $i ] ?? '' ) );
+	foreach ( array_slice( $at, 0, 'x' === $key ? DLSCALC_LIVE_MAX : DLSCALC_STOPS_MAX ) as $i => $value ) {
+		$row = array( trim( $value ), trim( $cols[0][ $i ] ?? '' ), trim( $cols[1][ $i ] ?? '' ) );
 		if ( '' === implode( '', $row ) ) {
 			continue;
 		}
@@ -100,12 +113,13 @@ function dlscalc_dls_inputs( $slug ) {
 	}
 	foreach ( array_keys( $in ) as $key ) {
 		$rows = in_array( $key, array( 'a', 'b' ), true ) ? dlscalc_dls_stops_from_rows( $key ) : null;
+		$rows = 'x' === $key ? dlscalc_dls_stops_from_rows( 'x', array( 'at', 'r', 'w' ) ) : $rows;
 		if ( null !== $rows ) {
 			$in[ $key ] = $rows;
 		} elseif ( isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$in[ $key ] = substr( sanitize_text_field( wp_unslash( $_GET[ $key ] ) ), 0, 120 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		} elseif ( in_array( $key, array( 'a', 'b', 'c' ), true ) ) {
-			// A permalink without stoppages means there were none.
+		} elseif ( in_array( $key, array( 'a', 'b', 'c', 'x' ), true ) ) {
+			// A permalink without stoppages (or score entries) means there were none.
 			$in[ $key ] = '';
 		}
 	}
@@ -118,7 +132,7 @@ function dlscalc_dls_inputs( $slug ) {
  * @return bool
  */
 function dlscalc_dls_has_params() {
-	foreach ( array( 'n', 'r', 'g', 'c', 'a', 'b', 'l', 'o', 'a_at', 'b_at' ) as $key ) {
+	foreach ( array( 'n', 'r', 'g', 'c', 'a', 'b', 'l', 'o', 'x', 'a_at', 'b_at', 'x_at' ) as $key ) {
 		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return true;
 		}
@@ -139,6 +153,8 @@ function dlscalc_dls_run( $slug, $in ) {
 			return dlscalc_dls_t20( $in );
 		case 'parTable':
 			return dlscalc_dls_par_table( $in );
+		case 'live':
+			return dlscalc_dls_live( $in );
 		default:
 			return dlscalc_dls_calc( $in );
 	}
@@ -173,18 +189,20 @@ add_filter(
 );
 
 /**
- * Engine and tool script, deferred, only on the DLS pages and home.
+ * Engine and tool script, deferred, only on the DLS pages and home. The live par tracker has its
+ * own script on top of the same engine.
  */
 function dlscalc_dls_scripts() {
 	if ( ! dlscalc_is_dls_page() ) {
 		return;
 	}
-	$args = array(
+	$args   = array(
 		'strategy'  => 'defer',
 		'in_footer' => true,
 	);
+	$script = 'live-dls-par-score' === dlscalc_current_slug() ? 'live-par' : 'dls-tools';
 	wp_enqueue_script( 'dlscalc-dls-engine', DLSCALC_URI . '/assets/js/dls-engine.js', array(), dlscalc_asset_version( 'assets/js/dls-engine.js' ), $args );
-	wp_enqueue_script( 'dlscalc-dls-tools', DLSCALC_URI . '/assets/js/dls-tools.js', array( 'dlscalc-dls-engine' ), dlscalc_asset_version( 'assets/js/dls-tools.js' ), $args );
+	wp_enqueue_script( 'dlscalc-' . $script, DLSCALC_URI . '/assets/js/' . $script . '.js', array( 'dlscalc-dls-engine' ), dlscalc_asset_version( 'assets/js/' . $script . '.js' ), $args );
 
 	// Templates on these pages use no blocks, so the block stylesheets are dead weight.
 	wp_dequeue_style( 'wp-block-library' );
@@ -194,14 +212,17 @@ function dlscalc_dls_scripts() {
 add_action( 'wp_enqueue_scripts', 'dlscalc_dls_scripts', 100 );
 
 /**
- * Tool styles, inlined after the main stylesheet, only on pages that have a tool. The one-line
+ * Tool styles, inlined after the main stylesheet, only on pages that have a tool (DLS, NRR and home). The one-line
  * script marks the page as scripted before it paints, so buttons that need JavaScript take their
  * place at once and the no-JS extras never show: nothing shifts when the tool script runs.
  */
 function dlscalc_dls_styles() {
-	if ( dlscalc_is_dls_page() ) {
+	if ( dlscalc_is_dls_page() || dlscalc_is_nrr_page() ) {
 		echo "<script>document.documentElement.classList.add('js')</script>\n";
 		dlscalc_print_inline_css( 'assets/css/tools.css', 'dlscalc-tools-css' );
+		if ( dlscalc_is_nrr_page() || 'live-dls-par-score' === dlscalc_current_slug() ) {
+			dlscalc_print_inline_css( 'assets/css/nrr.css', 'dlscalc-nrr-css' );
+		}
 	}
 }
 add_action( 'wp_head', 'dlscalc_dls_styles', 6 );
@@ -440,4 +461,81 @@ function dlscalc_faq_html( $slug ) {
 		echo '<details><summary>' . esc_html( $faq[0] ) . '</summary><p>' . wp_kses( $faq[1], array( 'a' => array( 'href' => true ) ) ) . '</p></details>';
 	}
 	echo '</div>';
+}
+
+/**
+ * Who is ahead at one score entry of the live tracker: text, a CSS modifier and a short label
+ * for the narrow score table.
+ *
+ * @param array $e Score entry from dlscalc_dls_live().
+ * @return array{0: string, 1: string, 2: string}
+ */
+function dlscalc_live_status( $e ) {
+	$n    = abs( $e['diff'] );
+	$runs = $n . ( 1 === $n ? ' run' : ' runs' );
+	switch ( $e['state'] ) {
+		case 'won':
+			return array( 'Team 2 won', 't2', 'Team 2 won' );
+		case 'tied':
+			return array( 'Match tied', 'level', 'Tied' );
+		case 'lost':
+			return array( 'Team 1 won by ' . $runs, 't1', 'Team 1 won' );
+	}
+	if ( 0 === $e['diff'] ) {
+		return array( 'Level: tie', 'level', 'Level' );
+	}
+	return $e['diff'] > 0 ? array( 'Team 2 ahead by ' . $runs, 't2', 'Team 2 +' . $n ) : array( 'Team 1 ahead by ' . $runs, 't1', 'Team 1 +' . $n );
+}
+
+/**
+ * Headline of the live tracker: label, big value, line, and whether the big value is words.
+ *
+ * @param array $r Live result.
+ * @return array{label: string, big: string, line: string, word: bool}
+ */
+function dlscalc_live_headline( $r ) {
+	if ( ! empty( $r['err'] ) ) {
+		return array(
+			'label' => 'Live DLS par',
+			'big'   => '–',
+			'line'  => 'Check the inputs.',
+			'word'  => false,
+		);
+	}
+	$e = $r['log'] ? end( $r['log'] ) : null;
+	if ( ! $e ) {
+		return array(
+			'label' => 'Team 2 target',
+			'big'   => (string) $r['target'],
+			'line'  => 'in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs. Add Team 2\'s score after each over to see who is ahead on DLS.',
+			'word'  => false,
+		);
+	}
+	$score = $e['runs'] . '/' . $e['w'];
+	$at    = dlscalc_dls_overs( $e['at'] ) . ' overs';
+	if ( 'on' !== $e['state'] ) {
+		$lines = array(
+			'won'  => 'Team 2 reached the target of ' . $r['target'] . ' with ' . $score . ' in ' . $at . '.',
+			'tied' => 'Team 2 finished on ' . $score . ', level with the par score of ' . $e['par'] . '.',
+			'lost' => 'Team 2 finished on ' . $score . ' in ' . $at . ', short of the target of ' . $r['target'] . '.',
+		);
+		return array(
+			'label' => 'Result',
+			'big'   => dlscalc_live_status( $e )[0],
+			'line'  => $lines[ $e['state'] ],
+			'word'  => true,
+		);
+	}
+	$runs = abs( $e['diff'] ) . ( 1 === abs( $e['diff'] ) ? ' run' : ' runs' );
+	if ( 0 === $e['diff'] ) {
+		$line = 'Team 2 has ' . $score . ', exactly on par. If play stopped now, the match would be tied.';
+	} else {
+		$line = 'Team 2 has ' . $score . ', ' . $runs . ( $e['diff'] > 0 ? ' above' : ' below' ) . ' par. If play stopped now, ' . ( $e['diff'] > 0 ? 'Team 2 would win by ' . ( 10 - $e['w'] ) . ( 9 === $e['w'] ? ' wicket' : ' wickets' ) . ' (DLS method).' : 'Team 1 would win by ' . $runs . ' (DLS method).' );
+	}
+	return array(
+		'label' => 'DLS par at ' . $at . ', ' . $e['w'] . ' down',
+		'big'   => (string) $e['par'],
+		'line'  => $line,
+		'word'  => false,
+	);
 }

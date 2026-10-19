@@ -75,7 +75,7 @@ get_header();
 					</a>
 				<?php endforeach; ?>
 			</div>
-			<p class="section__more">Need a sheet for the scorers? Print the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-par-score-table' ) ); ?>">DLS par score table</a> for any match from 5 to 50 overs.</p>
+			<p class="section__more">Need a sheet for the scorers? Print the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-par-score-table' ) ); ?>">DLS par score table</a> for any match from 5 to 50 overs. Scoring a chase right now? The <a href="<?php echo esc_url( dlscalc_page_url( 'live-dls-par-score' ) ); ?>">live DLS par tracker</a> shows who is ahead after every over.</p>
 		</div>
 	</section>
 

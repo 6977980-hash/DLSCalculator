@@ -38,7 +38,7 @@
 		return out;
 	});
 
-	var STOPS_MAX = 10;
+	var STOPS_MAX = 10, LIVE_MAX = 100;
 
 	/** Resources left (percent) with this many balls left and wickets lost. */
 	function res(ballsLeft, wkts) {
@@ -283,8 +283,63 @@
 		return r;
 	}
 
+	/**
+	 * Live par tracker. p: { n, r, g, c as in calc(), x: Team 2's score log "5-38-1_10-71-2"
+	 * (overs - runs - wickets) }. Each entry is judged as if rain ended the chase right there, so its
+	 * par is the DLS par at that point: who is ahead if play stops now.
+	 */
+	function live(p) {
+		var base = calc({ n: p.n, r: p.r, g: p.g, c: p.c });
+		if (base.err) {
+			return base;
+		}
+		var log = [], last = null, now = null;
+		var parts = (p.x == null || String(p.x).trim() === '') ? [] : String(p.x).split('_').slice(0, LIVE_MAX);
+		for (var i = 0; i < parts.length; i++) {
+			var x = parts[i].split('-'), at = balls(x[0]), runs = int(x[1]), w = int(x[2]), name = 'Score entry ' + (i + 1);
+			if (x.join('') === '') {
+				continue;
+			}
+			if (isNaN(at) || isNaN(runs) || isNaN(w)) {
+				return { err: name + ': fill in overs, runs and wickets (overs like 12.3).' };
+			}
+			if (last && last.state !== 'on') {
+				return { err: 'The chase was already over before ' + name.toLowerCase() + '. Remove the entries after it.' };
+			}
+			if (at < 1 || at > base.allot) {
+				return { err: name + ': overs must be between 0.1 and ' + overs(base.allot) + '.' };
+			}
+			if (w > 10 || runs > 999) {
+				return { err: name + ': wickets must be 0 to 10 and runs no more than 999.' };
+			}
+			if (last && (at <= last.at || runs < last.runs || w < last.w)) {
+				return { err: 'Score entries must be in order, with the overs going up.' };
+			}
+			var e = { at: at, runs: runs, w: w };
+			now = null;
+			if (runs >= base.target) {
+				e.state = 'won';
+				e.par = base.par;
+			} else if (w === 10 || at === base.allot) {
+				e.state = runs === base.par ? 'tied' : 'lost';
+				e.par = base.par;
+			} else {
+				now = match({ N: base.N, S: base.S, G: base.G, t1: [], M: base.M, t2: [{ at: at, w: w, lost: base.allot - at }] });
+				e.state = 'on';
+				e.par = now.par;
+				e.warn = now.warn;
+			}
+			e.diff = runs - e.par;
+			log.push(e);
+			last = e;
+		}
+		base.log = log;
+		base.nowSteps = now ? now.steps.slice(-3) : [];
+		return base;
+	}
+
 	return {
 		res: res, balls: balls, overs: overs, scale: scale, innings: innings, match: match,
-		parRows: parRows, parseStops: parseStops, calc: calc, t20: t20, parTable: parTable, STOPS_MAX: STOPS_MAX
+		parRows: parRows, parseStops: parseStops, calc: calc, t20: t20, parTable: parTable, live: live, STOPS_MAX: STOPS_MAX, LIVE_MAX: LIVE_MAX
 	};
 }));

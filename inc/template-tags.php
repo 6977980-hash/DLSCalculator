@@ -116,6 +116,7 @@ function dlscalc_default_footer_links() {
 	return array(
 		'about'                => 'About',
 		'dls-par-score-table'  => 'DLS par score table',
+		'live-dls-par-score'   => 'Live DLS par',
 		'dls-method'           => 'DLS method guide',
 		'how-to-calculate-nrr' => 'NRR guide',
 		'privacy-policy'       => 'Privacy Policy',

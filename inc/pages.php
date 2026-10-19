@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DLSCALC_PAGES_VERSION', 2 );
+define( 'DLSCALC_PAGES_VERSION', 3 );
 
 /**
  * Pages the theme owns: slug => title. Content comes from theme templates, not the editor.
@@ -26,6 +26,7 @@ function dlscalc_site_pages() {
 		$pages,
 		array(
 			'dls-par-score-table'  => 'DLS Par Score Table',
+			'live-dls-par-score'   => 'Live DLS Par Score',
 			'dls-method'           => 'DLS Method Explained',
 			'how-to-calculate-nrr' => 'How to Calculate NRR',
 			'about'                => 'About DLSCalc',
