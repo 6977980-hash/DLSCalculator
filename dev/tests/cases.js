@@ -1,5 +1,5 @@
-// Test inputs shared by the JS and PHP test runners: the six ICC worked examples plus a seeded
-// spread of random matches. Prints JSON: [{ fn, p, expect? }].
+// Test inputs shared by the JS and PHP test runners: the six ICC worked examples, NRR and run rate
+// worked examples, plus a seeded spread of random matches, points tables and live score logs. Prints JSON: [{ fn, p, expect? }].
 'use strict';
 
 const icc = [
@@ -42,11 +42,59 @@ for (let i = 0; i < 400; i++) {
 	cases.push({ fn: 't20', p: { n: String(5 + rnd(16)), r: String(60 + rnd(200)), l: String(rnd(16)), b: rnd(2) ? stops(60) : '' } });
 	cases.push({ fn: 'parTable', p: { o: String(5 + rnd(46)), r: String(60 + rnd(300)) } });
 }
+// Live par tracker: random score logs, judged at every entry.
+for (let i = 0; i < 150; i++) {
+	const N = [300, 120, 60, 240][rnd(4)], M = rnd(3) ? N : 6 + rnd(N - 5);
+	const log = [];
+	let at = 0, runs = 0, w = 0;
+	for (let k = 1 + rnd(12); k > 0 && at < M; k--) {
+		at = Math.min(M, at + 1 + rnd(24));
+		runs += rnd(40);
+		w = Math.min(10, w + (rnd(3) ? 0 : 1 + rnd(3)));
+		log.push(ov(at) + '-' + runs + '-' + w);
+		if (w === 10) break;
+	}
+	cases.push({ fn: 'live', p: { n: ov(N), r: String(60 + rnd(300)), g: '245', c: ov(M), x: log.join('_') } });
+}
+
+// NRR engine: worked examples, then random matches, points tables, solver runs and run rates.
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-20-150-20_160-20-150-20' }, expect: { nrr: '+0.500' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '168-20-151-20_142-18.3a-145-20' }, expect: { nrr: '+0.350', bf: 240 } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '120-15a-121-14.2_150-20-140-20-n' }, expect: { nrr: '-2.442', counted: 1 } });
+cases.push({ fn: 'nrr.runRate', p: { n: '20', t: '181', r: '92', o: '12.4' }, expect: { big: '12.14', crr: '7.26', need: 89, left: 44 } });
+cases.push({ fn: 'nrr.convert', p: { v: '12.5', j: '77' }, expect: { ov: '77 balls (12.83 overs in decimal)', bl: '12.5 overs' } });
+const T4 = 'Team A~4~3~6~640~78.2~600~80_Team B~4~2~4~610~80~590~79.3_Team C~4~2~4~580~80~575~80_Team D~4~1~2~560~80~625~79';
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'f', e: '180', q: '20' }, expect: { kind: 'runs', margin: 63 } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'c', e: '150', q: '20' }, expect: { kind: 'overs', within: '12.1' } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '2', o: '0', k: 'f', e: '170', q: '20' }, expect: { kind: 'points' } });
+const oval = (max) => ov(1 + rnd(max)) + (rnd(6) ? '' : 'a');
+for (let i = 0; i < 200; i++) {
+	const q = [20, 50, 10, 8][rnd(4)], ms = [];
+	for (let k = 1 + rnd(6); k > 0; k--) {
+		ms.push([rnd(400), oval(q * 6), rnd(400), oval(q * 6)].join('-') + (rnd(97) < 12 ? '-n' : ''));
+	}
+	cases.push({ fn: 'nrr.calc', p: { q: String(q), x: ms.join('_') } });
+	const teams = [];
+	for (let k = 2 + rnd(6); k > 0; k--) {
+		const pl = rnd(10), won = rnd(pl + 1);
+		teams.push(['Team ' + k, pl, won, rnd(2) ? 4 : rnd(3) ? '' : won * 2, 100 + rnd(2000), ov(60 + rnd(900)), 100 + rnd(2000), ov(60 + rnd(900))].join('~'));
+	}
+	const y = 1 + rnd(teams.length), v = 1 + ((y + rnd(teams.length - 1)) % teams.length), o = rnd(3) ? v : rnd(teams.length + 1);
+	cases.push({ fn: 'nrr.solve', p: { t: teams.join('_'), y: String(y), v: String(v), o: String(o), k: rnd(2) ? 'f' : 'c', e: String(60 + rnd(300)), q: String(q), d: rnd(3) ? '' : String(rnd(3)) } });
+	const nn = [20, 50, 10][rnd(3)];
+	cases.push({ fn: 'nrr.runRate', p: { u: rnd(3) ? 'c' : 'f', n: String(nn), t: String(50 + rnd(350)), r: String(rnd(300)), o: ov(rnd(nn * 6 + 1)) } });
+}
+
 // Bad input must give the same error text in both.
 cases.push({ fn: 'calc', p: { n: '50', r: '', g: '245' } });
 cases.push({ fn: 'calc', p: { n: '50', r: '200', g: '245', b: '12.7-1-10' } });
 cases.push({ fn: 'calc', p: { n: '50', r: '200', g: '245', b: '20-1-10_12-1-5' } });
 cases.push({ fn: 't20', p: { n: '25', r: '150' } });
 cases.push({ fn: 'parTable', p: { o: '20', r: '150', c: '25' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '10-80-2_8-90-2' } });
+cases.push({ fn: 'live', p: { n: '20', r: '160', g: '245', x: '10-170-2_12-180-2' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '160-21-150-20' } });
+cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '3', k: 'f', e: '180', q: '20' } });
+cases.push({ fn: 'nrr.runRate', p: { u: 'f', n: '20', r: '0', o: '0' } });
 
 process.stdout.write(JSON.stringify(cases));

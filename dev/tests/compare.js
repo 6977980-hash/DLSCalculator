@@ -19,7 +19,7 @@ cases.forEach((c, i) => {
 	if (c.expect) {
 		for (const [k, v] of Object.entries(c.expect)) {
 			for (const [name, out] of [['js', js[i]], ['php', php[i]]]) {
-				if (out[k] !== v) fail(`ICC example #${i + 1} ${name}: ${k} is ${out[k]}, expected ${v}`);
+				if (out[k] !== v) fail(`Worked example #${i + 1} (${c.fn}) ${name}: ${k} is ${out[k]}, expected ${v}`);
 			}
 		}
 	}
@@ -37,5 +37,5 @@ const phpTable = JSON.parse(require('child_process').execFileSync('php', ['-r', 
 if (JSON.stringify(phpTable) !== JSON.stringify(icc)) fail('PHP table differs from the ICC table');
 
 const examples = cases.filter((c) => c.expect).length;
-console.log(fails ? `${fails} failures` : `OK: ${examples} ICC examples pass in JS and PHP, ${cases.length} cases agree, ${cells} table cells match`);
+console.log(fails ? `${fails} failures` : `OK: ${examples} worked examples (ICC DLS, NRR, run rate) pass in JS and PHP, ${cases.length} cases agree, ${cells} table cells match`);
 process.exit(fails ? 1 : 0);

@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'DLSCALC_STOPS_MAX', 10 );
+define( 'DLSCALC_LIVE_MAX', 100 );
 
 /**
  * ICC DLS Standard Edition resource table, ball by ball, delta-encoded exactly as in the JS engine.
@@ -479,4 +480,92 @@ function dlscalc_dls_par_table( $p ) {
 	);
 	$r['No'] = $no;
 	return $r;
+}
+
+/**
+ * Live par tracker. See live() in assets/js/dls-engine.js.
+ *
+ * @param array $p Inputs: n, r, g, c as in dlscalc_dls_calc(), x score log.
+ * @return array
+ */
+function dlscalc_dls_live( $p ) {
+	$base = dlscalc_dls_calc(
+		array(
+			'n' => $p['n'] ?? '',
+			'r' => $p['r'] ?? '',
+			'g' => $p['g'] ?? '',
+			'c' => $p['c'] ?? '',
+		)
+	);
+	if ( isset( $base['err'] ) ) {
+		return $base;
+	}
+	$log   = array();
+	$last  = null;
+	$now   = null;
+	$parts = dlscalc_dls_blank( $p['x'] ?? '' ) ? array() : array_slice( explode( '_', (string) $p['x'] ), 0, DLSCALC_LIVE_MAX );
+	foreach ( $parts as $i => $part ) {
+		$x    = explode( '-', $part );
+		$at   = dlscalc_dls_balls( $x[0] ?? '' );
+		$runs = dlscalc_dls_int( $x[1] ?? '' );
+		$w    = dlscalc_dls_int( $x[2] ?? '' );
+		$name = 'Score entry ' . ( $i + 1 );
+		if ( '' === implode( '', $x ) ) {
+			continue;
+		}
+		if ( is_nan( (float) $at ) || is_nan( (float) $runs ) || is_nan( (float) $w ) ) {
+			return array( 'err' => $name . ': fill in overs, runs and wickets (overs like 12.3).' );
+		}
+		if ( $last && 'on' !== $last['state'] ) {
+			return array( 'err' => 'The chase was already over before ' . strtolower( $name ) . '. Remove the entries after it.' );
+		}
+		if ( $at < 1 || $at > $base['allot'] ) {
+			return array( 'err' => $name . ': overs must be between 0.1 and ' . dlscalc_dls_overs( $base['allot'] ) . '.' );
+		}
+		if ( $w > 10 || $runs > 999 ) {
+			return array( 'err' => $name . ': wickets must be 0 to 10 and runs no more than 999.' );
+		}
+		if ( $last && ( $at <= $last['at'] || $runs < $last['runs'] || $w < $last['w'] ) ) {
+			return array( 'err' => 'Score entries must be in order, with the overs going up.' );
+		}
+		$e   = array(
+			'at'   => $at,
+			'runs' => $runs,
+			'w'    => $w,
+		);
+		$now = null;
+		if ( $runs >= $base['target'] ) {
+			$e['state'] = 'won';
+			$e['par']   = $base['par'];
+		} elseif ( 10 === $w || $at === $base['allot'] ) {
+			$e['state'] = $runs === $base['par'] ? 'tied' : 'lost';
+			$e['par']   = $base['par'];
+		} else {
+			$now        = dlscalc_dls_match(
+				array(
+					'N'  => $base['N'],
+					'S'  => $base['S'],
+					'G'  => $base['G'],
+					't1' => array(),
+					'M'  => $base['M'],
+					't2' => array(
+						array(
+							'at'   => $at,
+							'w'    => $w,
+							'lost' => $base['allot'] - $at,
+						),
+					),
+				)
+			);
+			$e['state'] = 'on';
+			$e['par']   = $now['par'];
+			$e['warn']  = $now['warn'];
+		}
+		$e['diff'] = $runs - $e['par'];
+		$log[]     = $e;
+		$last      = $e;
+	}
+	$base['log']      = $log;
+	$base['nowSteps'] = $now ? array_slice( $now['steps'], -3 ) : array();
+	return $base;
 }

@@ -65,7 +65,7 @@ function dlscalc_site_footer() {
  * @return string[]
  */
 function dlscalc_authored_slugs() {
-	return array_merge( array_keys( dlscalc_tools() ), array( 'dls-method', 'how-to-calculate-nrr' ) );
+	return array_merge( array_keys( dlscalc_tools() ), array( 'dls-par-score-table', 'live-dls-par-score', 'dls-method', 'how-to-calculate-nrr' ) );
 }
 
 /**
