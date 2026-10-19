@@ -150,7 +150,7 @@
 			return {
 				u: tab === 't' ? 't' : '', q: calcForm.elements.q.value.trim(), x: matches(), t: teams(),
 				y: el('y').value, v: el('v').value, o: el('o').value, k: k ? k.value : 'f',
-				e: el('e').value.trim(), h: el('h').value.trim(), d: el('d').value.trim()
+				e: el('e').value.trim(), h: el('h').value.trim(), d: el('d').value.trim(), z: el('z').value
 			};
 		};
 
@@ -187,12 +187,13 @@
 			var list = NRR.parseTeams(p.t);
 			syncPickers(list);
 			p = params();
-			var s = NRR.solve({ t: p.t, y: p.y, v: p.v, o: p.o, k: p.k, e: p.e, q: p.h, d: p.d });
+			var s = NRR.solve({ t: p.t, y: p.y, v: p.v, o: p.o, k: p.k, e: p.e, q: p.h, d: p.d, z: p.z });
 			var nrrCells = $$('[data-nrr]', teamBox), used = 0;
 			$$('.trow', teamBox).forEach(function (row, i) {
 				var blank = ['n', 'p', 'w', 'pts', 'rf', 'of', 'ra', 'oa'].every(function (f) { return field(row, f) === ''; });
 				nrrCells[i].textContent = blank ? '–' : s.teams[used++].nrr;
 			});
+			text('scap', p.z === 'w' ? 'Standings by points, then wins, then net run rate' : 'Standings by points, then net run rate');
 			out('standings').innerHTML = s.order.map(function (i, pos) {
 				var t = s.teams[i], v = function (x) { return x === null ? '–' : x; };
 				return '<tr><td>' + (pos + 1) + '</td><th scope="row">' + esc(t.name) + '</th><td>' + v(t.p) + '</td><td>' + v(t.w) + '</td><td>' + v(t.pts) + '</td><td>' + t.nrr + '</td></tr>';

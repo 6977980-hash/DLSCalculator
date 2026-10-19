@@ -57,6 +57,8 @@ get_header();
 					</div>
 					<div class="quick__line" data-out="line"><?php echo esc_html( 'in ' . dlscalc_dls_overs( $dlscalc_quick['allot'] ) . ' overs (par ' . $dlscalc_quick['par'] . ')' ); ?></div>
 				</div>
+				<?php // Below the minimum overs for the format (5 in a T20, 20 in an ODI) there is no result (audit F24). ?>
+				<p class="alert alert--soft" data-out="warn"<?php echo $dlscalc_quick['warn'] ? '' : ' hidden'; ?>><?php echo esc_html( $dlscalc_quick['warn'] ); ?></p>
 				<button type="submit" class="btn btn--green">See the full working</button>
 				<p class="quick__more">Rain in the middle of an innings? The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">full DLS calculator</a> handles every stoppage.</p>
 			</form>

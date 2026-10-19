@@ -114,6 +114,12 @@ dlscalc_tool_page_open(
 					<label class="fld">Points for a win
 						<input type="number" inputmode="numeric" min="0" max="10" name="d" value="<?php echo esc_attr( $dlscalc_in['d'] ); ?>" autocomplete="off">
 					</label>
+					<label class="fld fld--wide">Level on points
+						<select name="z">
+							<option value=""<?php selected( 'w' !== $dlscalc_in['z'] ); ?>>Net run rate (most leagues)</option>
+							<option value="w"<?php selected( 'w' === $dlscalc_in['z'] ); ?>>Most wins first (ICC events)</option>
+						</select>
+					</label>
 				</div>
 				<div data-submit><button type="submit" class="btn btn--green">Work out the scenario</button></div>
 			</div>

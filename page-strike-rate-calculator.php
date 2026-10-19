@@ -28,15 +28,15 @@ dlscalc_tool_page_open(
 			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'b', 'Balls faced', 'type="number" inputmode="numeric" min="1"' ); ?>
 		</div>
 		<div class="fields">
-			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'i', 'Innings' ); ?>
-			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'o', 'Not outs' ); ?>
+			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'i', 'Innings', 'type="number" inputmode="numeric" min="0" placeholder="e.g. 5"' ); ?>
+			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'o', 'Not outs', 'type="number" inputmode="numeric" min="0" placeholder="e.g. 1"' ); ?>
 		</div>
 		<div class="fields">
-			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'f', 'Fours (optional)' ); ?>
-			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'x', 'Sixes (optional)' ); ?>
+			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'f', 'Fours (optional)', 'type="number" inputmode="numeric" min="0" placeholder="e.g. 18"' ); ?>
+			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'x', 'Sixes (optional)', 'type="number" inputmode="numeric" min="0" placeholder="e.g. 6"' ); ?>
 		</div>
 		<div class="fields">
-			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'g', 'Target strike rate (optional)', 'type="number" inputmode="numeric" min="1" max="600"' ); ?>
+			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'g', 'Target strike rate (optional)', 'type="number" inputmode="numeric" min="1" max="600" placeholder="e.g. 150"' ); ?>
 		</div>
 		<p class="hint">Balls faced include no-balls but not wides. For one innings, enter 1 innings and 1 not out if the batter finished not out.</p>
 		<div data-submit><button type="submit" class="btn btn--green">Calculate</button></div>

@@ -18,7 +18,16 @@ $dlscalc_err  = $dlscalc_r['err'] ?? '';
 $dlscalc_head = dlscalc_live_headline( $dlscalc_r );
 $dlscalc_log  = $dlscalc_err ? array() : $dlscalc_r['log'];
 $dlscalc_last = $dlscalc_log ? end( $dlscalc_log ) : null;
-$dlscalc_warn = $dlscalc_last && ! empty( $dlscalc_last['warn'] ) ? $dlscalc_last['warn'] : '';
+// The latest entry's warning, or before any entry the one for the whole chase (audit F24).
+$dlscalc_warn = $dlscalc_err ? '' : ( $dlscalc_last ? ( $dlscalc_last['warn'] ?? '' ) : $dlscalc_r['warn'] );
+// Format sets the minimum overs for a result (ODI 20, T20 5). Links without one go by the overs.
+$dlscalc_fmts = array(
+	'odi'    => 'ODI',
+	't20'    => 'T20',
+	't10'    => 'T10',
+	'custom' => 'Other format',
+);
+$dlscalc_fmt  = isset( $dlscalc_fmts[ $dlscalc_in['f'] ] ) ? $dlscalc_in['f'] : ( array( '50' => 'odi', '20' => 't20', '10' => 't10' )[ $dlscalc_in['n'] ] ?? 'custom' );
 $dlscalc_rows = array();
 // The score log uses the stoppage format (three fields per entry): overs, runs, wickets.
 foreach ( dlscalc_dls_stop_fields( $dlscalc_in['x'] ) as $dlscalc_i => $dlscalc_f ) {
@@ -56,7 +65,14 @@ dlscalc_par_sheet_head();
 		<div class="tool__group" role="group" aria-labelledby="g-match">
 			<h2 id="g-match">Match</h2>
 			<div class="fields">
-				<label class="fld">Overs per side
+				<label class="fld">Format
+					<select name="f">
+						<?php foreach ( $dlscalc_fmts as $dlscalc_v => $dlscalc_t ) : ?>
+							<option value="<?php echo esc_attr( $dlscalc_v ); ?>"<?php selected( $dlscalc_fmt, $dlscalc_v ); ?>><?php echo esc_html( $dlscalc_t ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</label>
+				<label class="fld">Overs per side at start
 					<input type="text" inputmode="decimal" name="n" value="<?php echo esc_attr( $dlscalc_in['n'] ); ?>" autocomplete="off">
 				</label>
 				<label class="fld">Team 1 final score

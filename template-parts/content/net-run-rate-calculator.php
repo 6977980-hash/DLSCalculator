@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h2 id="leagues">Can you use it for the IPL, PSL, T20 World Cup and local leagues?</h2>
 <p>Yes. Every major league and ICC event uses the same net run rate rule, and so do most club and school competitions. During the IPL or PSL, copy the "for" and "against" columns from the official points table into the qualification scenario and you can test any result before the match starts. For your own tournament, keep the table here: the page remembers it on your device, so you only need to add the latest match.</p>
-<p>Check one rule in your competition's playing conditions: what comes first when teams are level on points. Many leagues go straight to net run rate. ICC events compare the number of wins first, then net run rate. This calculator shows the standings by points, then NRR, and the qualification scenario assumes NRR decides when teams finish level.</p>
+<p>Check one rule in your competition's playing conditions: what comes first when teams are level on points. Many leagues go straight to net run rate. ICC events compare the number of wins first, then net run rate. Pick the rule under "Level on points" in the qualification scenario: the standings and the answer follow it, and the result says which rule it used.</p>
 
 <h2 id="faq">Net run rate calculator FAQ</h2>
 <?php dlscalc_faq_html( 'net-run-rate-calculator' ); ?>

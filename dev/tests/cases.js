@@ -104,6 +104,20 @@ const T4 = 'Team A~4~3~6~640~78.2~600~80_Team B~4~2~4~610~80~590~79.3_Team C~4~2
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'f', e: '180', q: '20' }, expect: { kind: 'runs', margin: 63 } });
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '1', o: '0', k: 'c', e: '150', q: '20' }, expect: { kind: 'overs', within: '12.1' } });
 cases.push({ fn: 'nrr.solve', p: { t: T4, y: '3', v: '2', o: '0', k: 'f', e: '170', q: '20' }, expect: { kind: 'points' } });
+// Rounding from whole numbers, half away from zero, the same in JS and PHP (audit F38).
+cases.push({ fn: 't20', p: { n: '16', r: '162', l: '2', b: '9.3-4-0.4' }, expect: { rr: '10.43' } });
+cases.push({ fn: 'nrr.calc', p: { q: '20', x: '378-13.3a-58-10.4' }, expect: { nrr: '+13.463' } });
+cases.push({ fn: 'nrr.calc', p: { q: '50', x: '279-37.4a-120-10.4-48' }, expect: { nrr: '-5.438' } });
+// Equal net run rates are not "above" (audit F25): both sides end on exactly -1.050 at 79.
+const TIE = 'Me~1~0~~20~20~63~20_Riv~1~0~~169~20~190~20_X~1~1~~1~1~1~1';
+cases.push({ fn: 'nrr.solve', p: { t: TIE, y: '1', v: '2', o: '3', k: 'f', e: '80', q: '20' }, expect: { kind: 'runs', margin: 2, limit: 78 } });
+// Tie-break (audit F45): with z=w, teams level on points are split by wins before net run rate.
+const WINS = 'A~5~2~6~600~80~620~80_B~5~2~8~640~80~600~80_C~5~4~8~640~80~600~80_D~5~3~6~500~80~520~80';
+cases.push({ fn: 'nrr.solve', p: { t: WINS, y: '1', v: '2', o: '4', k: 'f', e: '160', q: '20', z: 'w' }, expect: { kind: 'points', big: 'Any win' } });
+cases.push({ fn: 'nrr.solve', p: { t: WINS, y: '1', v: '2', o: '4', k: 'f', e: '160', q: '20' }, expect: { kind: 'runs' } });
+cases.push({ fn: 'nrr.solve', p: { t: WINS, y: '1', v: '3', o: '4', k: 'f', e: '160', q: '20', z: 'w' }, expect: { kind: 'short', big: 'Not on wins' } });
+cases.push({ fn: 'nrr.solve', p: { t: WINS, y: '4', v: '2', o: '1', k: 'f', e: '160', q: '20', z: 'w' }, expect: { big: 'Any win' } });
+cases.push({ fn: 'nrr.solve', p: { t: 'A~5~~6~600~80~620~80_B~5~2~8~640~80~600~80', y: '1', v: '2', o: '0', k: 'f', e: '160', q: '20', z: 'w' }, expect: { err: 'Fill in wins for A in the points table: teams level on points are split by wins first.' } });
 const oval = (max) => ov(1 + rnd(max)) + (rnd(6) ? '' : 'a');
 for (let i = 0; i < 200; i++) {
 	const q = [20, 50, 10, 8][rnd(4)], ms = [];
@@ -118,7 +132,7 @@ for (let i = 0; i < 200; i++) {
 		teams.push(['Team ' + k, pl, won, rnd(2) ? 4 : rnd(3) ? '' : won * 2, 100 + rnd(2000), ov(60 + rnd(900)), 100 + rnd(2000), ov(60 + rnd(900))].join('~'));
 	}
 	const y = 1 + rnd(teams.length), v = 1 + ((y + rnd(teams.length - 1)) % teams.length), o = rnd(3) ? v : rnd(teams.length + 1);
-	cases.push({ fn: 'nrr.solve', p: { t: teams.join('_'), y: String(y), v: String(v), o: String(o), k: rnd(2) ? 'f' : 'c', e: String(60 + rnd(300)), q: String(q), d: rnd(3) ? '' : String(rnd(3)) } });
+	cases.push({ fn: 'nrr.solve', p: { t: teams.join('_'), y: String(y), v: String(v), o: String(o), k: rnd(2) ? 'f' : 'c', e: String(60 + rnd(300)), q: String(q), d: rnd(3) ? '' : String(rnd(3)), z: rnd(2) ? 'w' : '' } });
 	const nn = [20, 50, 10][rnd(3)];
 	cases.push({ fn: 'nrr.runRate', p: { u: rnd(3) ? 'c' : 'f', n: String(nn), t: String(50 + rnd(350)), r: String(rnd(300)), o: ov(rnd(nn * 6 + 1)) } });
 	const bb = 1 + rnd(3000), bi = rnd(60);

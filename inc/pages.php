@@ -40,9 +40,11 @@ function dlscalc_site_pages() {
 }
 
 /**
- * Create missing pages and make Home the front page.
+ * Create missing pages and make Home the front page. New pages go to IndexNow straight away: the
+ * deploy's own ping ran before they existed (audit F27).
  */
 function dlscalc_create_pages() {
+	$created = array();
 	foreach ( dlscalc_site_pages() as $slug => $title ) {
 		$path     = dlscalc_page_path( $slug );
 		$existing = get_page_by_path( $path, OBJECT, 'page' );
@@ -54,7 +56,7 @@ function dlscalc_create_pages() {
 		// Child pages (the match pages under /famous-dls-matches/) come after their parent in the list.
 		$parent = dirname( $path );
 		$parent = '.' === $parent ? null : get_page_by_path( $parent, OBJECT, 'page' );
-		wp_insert_post(
+		$id = wp_insert_post(
 			array(
 				'post_parent'  => $parent ? $parent->ID : 0,
 				'post_type'    => 'page',
@@ -64,6 +66,9 @@ function dlscalc_create_pages() {
 				'post_content' => '',
 			)
 		);
+		if ( $id && ! is_wp_error( $id ) && 'home' !== $slug ) {
+			$created[] = $id;
+		}
 	}
 
 	$home = get_page_by_path( 'home', OBJECT, 'page' );
@@ -76,6 +81,10 @@ function dlscalc_create_pages() {
 		update_option( 'permalink_structure', '/%postname%/' );
 	}
 	flush_rewrite_rules();
+
+	if ( $created && DLSCALC_LAUNCHED ) {
+		wp_schedule_single_event( time(), 'dlscalc_indexnow_ping', array( array_map( 'get_permalink', $created ) ) );
+	}
 
 	update_option( 'dlscalc_pages_version', DLSCALC_PAGES_VERSION );
 }

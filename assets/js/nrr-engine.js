@@ -46,26 +46,46 @@
 		return s == null || String(s).trim() === '';
 	}
 
-	// Floor of x + 0.5 rather than Math.round, because PHP's round() pre-rounds and can differ.
-	function fx(x, d) {
-		var k = Math.pow(10, d), v = Math.floor(x * k + 0.5) / k;
-		return (v === 0 ? 0 : v).toFixed(d);
+	/**
+	 * num ÷ den rounded half away from zero to d decimals, as text ("13.463", "-5.438"). Works on
+	 * whole numbers, so the browser and PHP always agree and exact halves round the same way every
+	 * time (audit F38). Copy of fxq() in dls-engine.js and dlscalc_fxq() in inc/dls.php.
+	 */
+	function fxq(num, den, d) {
+		if (den < 0) {
+			num = -num;
+			den = -den;
+		}
+		var a = Math.abs(num) * Math.pow(10, d) * 2 + den, v = (a - a % (2 * den)) / (2 * den), s = String(v);
+		while (s.length <= d) {
+			s = '0' + s;
+		}
+		return (num < 0 && v ? '-' : '') + (d ? s.slice(0, -d) + '.' + s.slice(-d) : s);
 	}
 
-	/** Net run rate with a sign, 3 decimals: "+0.350", "-1.025", "0.000". */
-	function sign3(x) {
-		var s = fx(x, 3);
+	/** Runs an over, from runs and balls, 3 decimals. */
+	function rate3(runs, b) {
+		return fxq(runs * 6, b, 3);
+	}
+
+	/**
+	 * Net run rate of t = [runs for, balls faced, runs against, balls bowled] with a sign,
+	 * 3 decimals: "+0.350", "-1.025", "0.000".
+	 */
+	function nrrText(t) {
+		var s = fxq(6 * (t[0] * t[3] - t[2] * t[1]), t[1] * t[3], 3);
 		return s.charAt(0) === '-' || s === '0.000' ? s : '+' + s;
 	}
 
-	/** Runs an over, from runs and balls. */
-	function rate(runs, b) {
-		return runs * 6 / b;
-	}
-
-	/** Net run rate, or null when either side has no overs yet. */
-	function nrrOf(rf, bf, ra, ba) {
-		return bf > 0 && ba > 0 ? rate(rf, bf) - rate(ra, ba) : null;
+	/**
+	 * Compares two net run rates exactly: 1 when a is higher, -1 when lower, 0 when equal. NRR is
+	 * 6 × (rf × ba − ra × bf) ÷ (bf × ba), so whole-number cross products decide; as floats, two
+	 * equal rates can come out a hair apart (audit F25). The products stay below 2^53 for totals up
+	 * to 9999 runs and 1049 overs.
+	 */
+	function cmpNrr(a, b) {
+		var x = (a[0] * a[3] - a[2] * a[1]) * (b[1] * b[3]) - (b[0] * b[3] - b[2] * b[1]) * (a[1] * a[3]);
+		return x > 0 ? 1 : (x < 0 ? -1 : 0);
 	}
 
 	/** Overs as entered in a match row: "18.3" or "18.3a" (bowled out, so the full quota for the match counts). */
@@ -131,13 +151,13 @@
 		if (!counted) {
 			return { err: 'Enter at least one match with a result.' };
 		}
-		var nrr = nrrOf(rf, bf, ra, ba);
-		steps.push('Runs scored: ' + rf + ' in ' + overs(bf) + ' overs = ' + fx(rate(rf, bf), 3) + ' an over.');
-		steps.push('Runs conceded: ' + ra + ' in ' + overs(ba) + ' overs = ' + fx(rate(ra, ba), 3) + ' an over.');
-		steps.push('Net run rate = ' + fx(rate(rf, bf), 3) + ' − ' + fx(rate(ra, ba), 3) + ' = ' + sign3(nrr) + '.');
+		var nrr = nrrText([rf, bf, ra, ba]);
+		steps.push('Runs scored: ' + rf + ' in ' + overs(bf) + ' overs = ' + rate3(rf, bf) + ' an over.');
+		steps.push('Runs conceded: ' + ra + ' in ' + overs(ba) + ' overs = ' + rate3(ra, ba) + ' an over.');
+		steps.push('Net run rate = ' + rate3(rf, bf) + ' − ' + rate3(ra, ba) + ' = ' + nrr + '.');
 		return {
-			Q: Q, rows: rows, counted: counted, rf: rf, bf: bf, ra: ra, ba: ba, nrr: sign3(nrr),
-			forRate: fx(rate(rf, bf), 3), agRate: fx(rate(ra, ba), 3), steps: steps
+			Q: Q, rows: rows, counted: counted, rf: rf, bf: bf, ra: ra, ba: ba, nrr: nrr,
+			forRate: rate3(rf, bf), agRate: rate3(ra, ba), steps: steps
 		};
 	}
 
@@ -161,14 +181,17 @@
 			};
 			t.raw = { p: x[1] || '', w: x[2] || '', pts: x[3] || '', rf: x[4] || '', of: x[5] || '', ra: x[6] || '', oa: x[7] || '' };
 			t.ok = t.rf !== null && t.ra !== null && t.bf > 0 && t.ba > 0;
-			t.val = t.ok ? nrrOf(t.rf, t.bf, t.ra, t.ba) : null;
-			t.nrr = t.ok ? sign3(t.val) : '–';
+			t.tot = t.ok ? [t.rf, t.bf, t.ra, t.ba] : null;
+			t.nrr = t.ok ? nrrText(t.tot) : '–';
 			return t;
 		});
 	}
 
-	/** Teams in table order: points, then net run rate. Teams without numbers go last. */
-	function standings(teams) {
+	/**
+	 * Teams in table order: points, then wins when Z is "w" (ICC events), then net run rate.
+	 * Teams without numbers go last.
+	 */
+	function standings(teams, Z) {
 		var order = teams.map(function (t, i) {
 			return i;
 		});
@@ -178,8 +201,15 @@
 			if (pa !== pb) {
 				return pb - pa;
 			}
-			var na = a.ok ? a.val : -1e9, nb = b.ok ? b.val : -1e9;
-			return na !== nb ? (nb > na ? 1 : -1) : i - j;
+			var wa = a.w === null ? -1 : a.w, wb = b.w === null ? -1 : b.w;
+			if (Z === 'w' && wa !== wb) {
+				return wb - wa;
+			}
+			if (a.ok !== b.ok) {
+				return a.ok ? -1 : 1;
+			}
+			var c = a.ok ? cmpNrr(b.tot, a.tot) : 0;
+			return c || i - j;
 		});
 		return order;
 	}
@@ -187,13 +217,15 @@
 	/**
 	 * Qualification solver. p: { t: teams, y: your team (1-based), v: team to pass, o: next opponent
 	 * (1-based, or 0 for a team not in the table), k: "f" bat first or "c" chase, e: your score when
-	 * batting first or the opponent's score when chasing, q: overs per side, d: points for a win }.
+	 * batting first or the opponent's score when chasing, q: overs per side, d: points for a win,
+	 * z: "w" when teams level on points are split by wins first (ICC events), otherwise straight
+	 * to net run rate (audit F45) }.
 	 * Assumes the team to pass does not play again before your match, unless it is your opponent.
 	 */
 	function solve(p) {
 		var teams = parseTeams(p.t), Y = int(p.y), V = int(p.v), O = blank(p.o) ? 0 : int(p.o);
-		var Q = int(p.q), E = int(p.e), D = blank(p.d) ? 2 : int(p.d), bat = p.k === 'c' ? 'c' : 'f';
-		var res = { teams: teams, order: standings(teams) };
+		var Q = int(p.q), E = int(p.e), D = blank(p.d) ? 2 : int(p.d), bat = p.k === 'c' ? 'c' : 'f', Z = p.z === 'w' ? 'w' : '';
+		var res = { teams: teams, order: standings(teams, Z), z: Z };
 		if (teams.length < 2) {
 			res.err = 'Add at least two teams to the points table.';
 			return res;
@@ -236,7 +268,8 @@
 		res.rv = rv.name;
 		res.vs = vs;
 		res.bat = bat;
-		res.note = vs ? 'Your opponent is ' + rv.name + ', so its net run rate changes too.' : 'Assumes ' + rv.name + ' does not play again before your match.';
+		res.note = (Z ? 'Level on points: most wins, then net run rate. ' : 'Level on points: net run rate decides. ') +
+			(vs ? 'Your opponent is ' + rv.name + ', so its net run rate changes too.' : 'Assumes ' + rv.name + ' does not play again before your match.');
 
 		if (me.pts !== null && rv.pts !== null) {
 			var after = me.pts + D;
@@ -251,21 +284,44 @@
 				res.steps = steps;
 				return res;
 			}
-			steps.push('Level on points after a win, so net run rate decides.');
+			if (Z) {
+				if (me.w === null || rv.w === null) {
+					res.err = 'Fill in wins for ' + (me.w === null ? me.name : rv.name) + ' in the points table: teams level on points are split by wins first.';
+					return res;
+				}
+				var won = me.w + 1;
+				steps.push('Level on points after a win, so wins come next: ' + me.name + ' would have ' + won + ', ' + rv.name + ' has ' + rv.w + '.');
+				if (won !== rv.w) {
+					res.kind = won > rv.w ? 'points' : 'short';
+					res.big = won > rv.w ? 'Any win' : 'Not on wins';
+					res.line = won > rv.w ?
+						'A win puts ' + me.name + ' level with ' + rv.name + ' on ' + after + ' points but ahead on wins, ' + won + ' to ' + rv.w + ', so the margin does not matter.' :
+						'A win puts ' + me.name + ' level with ' + rv.name + ' on ' + after + ' points, but behind on wins, ' + won + ' to ' + rv.w + '. Net run rate only counts when wins are level too.';
+					steps.push(won > rv.w ? 'More wins than ' + rv.name + ', so net run rate is not needed.' : 'Fewer wins than ' + rv.name + ', so net run rate cannot help.');
+					res.steps = steps;
+					return res;
+				}
+				steps.push('Level on wins too, so net run rate decides.');
+			} else {
+				steps.push('Level on points after a win, so net run rate decides.');
+			}
 		}
 
-		// Your new NRR and the rival's, for your runs and balls and the opponent's runs.
+		// Your runs and balls for and against after the match, and the rival's, as [rf, bf, ra, ba].
 		var mine = function (runs, b, opp) {
-			return nrrOf(me.rf + runs, me.bf + b, me.ra + opp, me.ba + N);
+			return [me.rf + runs, me.bf + b, me.ra + opp, me.ba + N];
 		};
 		var theirs = function (runs, b, opp) {
-			return vs ? nrrOf(rv.rf + opp, rv.bf + N, rv.ra + runs, rv.ba + b) : rv.val;
+			return vs ? [rv.rf + opp, rv.bf + N, rv.ra + runs, rv.ba + b] : rv.tot;
+		};
+		var above = function (runs, b, opp) {
+			return cmpNrr(mine(runs, b, opp), theirs(runs, b, opp)) > 0;
 		};
 
 		if (bat === 'f') {
 			var ymax = -1;
 			for (var y = E - 1; y >= 0; y--) {
-				if (mine(E, N, y) > theirs(E, N, y)) {
+				if (above(E, N, y)) {
 					ymax = y;
 					break;
 				}
@@ -275,22 +331,22 @@
 				res.kind = 'none';
 				res.big = 'Not enough';
 				res.line = 'Even bowling the opponent out for 0 would not lift ' + me.name + ' above ' + rv.name + ' on net run rate. Aim for a bigger total.';
-				steps.push('Opponent all out for 0: ' + me.name + ' NRR ' + sign3(mine(E, N, 0)) + ', ' + rv.name + ' ' + sign3(theirs(E, N, 0)) + '. Still not above.');
+				steps.push('Opponent all out for 0: ' + me.name + ' NRR ' + nrrText(mine(E, N, 0)) + ', ' + rv.name + ' ' + nrrText(theirs(E, N, 0)) + '. Still not above.');
 			} else {
 				res.kind = 'runs';
 				res.margin = E - ymax;
 				res.limit = ymax;
 				res.big = ymax === E - 1 ? 'Any win' : (E - ymax) + ' runs';
 				res.line = 'Win by at least ' + (E - ymax) + (E - ymax === 1 ? ' run' : ' runs') + ': hold the opponent to ' + ymax + ' or fewer in ' + Q + ' overs.';
-				steps.push('Opponent makes ' + ymax + ': ' + me.name + ' NRR ' + sign3(mine(E, N, ymax)) + ', ' + rv.name + ' ' + sign3(theirs(E, N, ymax)) + '. ' + me.name + ' is above.');
+				steps.push('Opponent makes ' + ymax + ': ' + me.name + ' NRR ' + nrrText(mine(E, N, ymax)) + ', ' + rv.name + ' ' + nrrText(theirs(E, N, ymax)) + '. ' + me.name + ' is above.');
 				if (ymax < E - 1) {
-					steps.push('Opponent makes ' + (ymax + 1) + ': ' + me.name + ' NRR ' + sign3(mine(E, N, ymax + 1)) + ', ' + rv.name + ' ' + sign3(theirs(E, N, ymax + 1)) + '. Not above, so ' + ymax + ' is the most the opponent can make.');
+					steps.push('Opponent makes ' + (ymax + 1) + ': ' + me.name + ' NRR ' + nrrText(mine(E, N, ymax + 1)) + ', ' + rv.name + ' ' + nrrText(theirs(E, N, ymax + 1)) + '. Not above, so ' + ymax + ' is the most the opponent can make.');
 				}
 			}
 		} else {
 			var T = E + 1, bmax = 0;
 			for (var b = N; b >= 1; b--) {
-				if (mine(T, b, E) > theirs(T, b, E)) {
+				if (above(T, b, E)) {
 					bmax = b;
 					break;
 				}
@@ -300,15 +356,15 @@
 				res.kind = 'none';
 				res.big = 'Not possible';
 				res.line = 'No winning chase of ' + T + ' is fast enough to lift ' + me.name + ' above ' + rv.name + ' on net run rate.';
-				steps.push('Even reaching ' + T + ' off the first ball gives ' + me.name + ' ' + sign3(mine(T, 1, E)) + ' against ' + rv.name + ' ' + sign3(theirs(T, 1, E)) + '.');
+				steps.push('Even reaching ' + T + ' off the first ball gives ' + me.name + ' ' + nrrText(mine(T, 1, E)) + ' against ' + rv.name + ' ' + nrrText(theirs(T, 1, E)) + '.');
 			} else {
 				res.kind = 'overs';
 				res.within = overs(bmax);
 				res.big = bmax === N ? 'Any win' : overs(bmax) + ' overs';
 				res.line = 'Reach ' + T + ' within ' + overs(bmax) + ' overs (' + bmax + ' balls) to move above ' + rv.name + '.';
-				steps.push('Reaching ' + T + ' in ' + overs(bmax) + ' overs: ' + me.name + ' NRR ' + sign3(mine(T, bmax, E)) + ', ' + rv.name + ' ' + sign3(theirs(T, bmax, E)) + '. ' + me.name + ' is above.');
+				steps.push('Reaching ' + T + ' in ' + overs(bmax) + ' overs: ' + me.name + ' NRR ' + nrrText(mine(T, bmax, E)) + ', ' + rv.name + ' ' + nrrText(theirs(T, bmax, E)) + '. ' + me.name + ' is above.');
 				if (bmax < N) {
-					steps.push('One ball slower, ' + overs(bmax + 1) + ' overs: ' + me.name + ' NRR ' + sign3(mine(T, bmax + 1, E)) + ', ' + rv.name + ' ' + sign3(theirs(T, bmax + 1, E)) + '. Not above.');
+					steps.push('One ball slower, ' + overs(bmax + 1) + ' overs: ' + me.name + ' NRR ' + nrrText(mine(T, bmax + 1, E)) + ', ' + rv.name + ' ' + nrrText(theirs(T, bmax + 1, E)) + '. Not above.');
 				}
 			}
 		}
@@ -339,8 +395,8 @@
 		if (B > N) {
 			return { err: 'Overs bowled cannot be more than ' + Nn + ' overs per side.' };
 		}
-		var left = N - B, crr = B > 0 ? rate(R, B) : 0, lines = [];
-		lines.push(['Current run rate', B > 0 ? fx(crr, 2) : '–']);
+		var left = N - B, crr = B > 0 ? R * 6 / B : 0, lines = [];
+		lines.push(['Current run rate', B > 0 ? fxq(R * 6, B, 2) : '–']);
 		if (chase) {
 			var need = T - R;
 			if (need <= 0) {
@@ -349,15 +405,15 @@
 			if (left === 0) {
 				return { mode: 'c', state: 'over', label: 'Result', big: need === 1 ? 'Tied' : 'Lost', line: need === 1 ? 'Scores level with no balls left.' : 'No balls left: short by ' + (need - 1) + (need === 2 ? ' run.' : ' runs.'), lines: lines };
 			}
-			var rrr = rate(need, left);
+			var rrr = fxq(need * 6, left, 2);
 			lines.push(['Runs needed', String(need)]);
 			lines.push(['Balls left', left + ' (' + overs(left) + ' overs)']);
-			lines.push(['Runs needed per ball', fx(need / left, 2)]);
+			lines.push(['Runs needed per ball', fxq(need, left, 2)]);
 			if (B > 0) {
-				lines.push(['Required minus current', (rrr >= crr ? '+' : '') + fx(rrr - crr, 2) + ' an over']);
+				lines.push(['Required minus current', (need * B >= R * left ? '+' : '') + fxq(6 * (need * B - R * left), left * B, 2) + ' an over']);
 			}
 			return {
-				mode: 'c', state: 'on', label: 'Required run rate', big: fx(rrr, 2), rrr: fx(rrr, 2), crr: fx(crr, 2), need: need, left: left,
+				mode: 'c', state: 'on', label: 'Required run rate', big: rrr, rrr: rrr, crr: B > 0 ? fxq(R * 6, B, 2) : '0.00', need: need, left: left,
 				line: 'Need ' + need + (need === 1 ? ' run' : ' runs') + ' off ' + left + (left === 1 ? ' ball' : ' balls') + ' (' + overs(left) + ' overs)', lines: lines
 			};
 		}
@@ -368,14 +424,14 @@
 			return String(Math.floor(R + r * left / 6 + 0.5));
 		};
 		for (var d = 1; d <= 3; d++) {
-			lines.push(['At ' + fx(crr + d, 2) + ' an over (+' + d + ')', proj(crr + d)]);
+			lines.push(['At ' + fxq(R * 6 + d * B, B, 2) + ' an over (+' + d + ')', proj(crr + d)]);
 		}
 		[6, 8, 10, 12].forEach(function (r) {
 			lines.push(['At ' + r + ' an over', proj(r)]);
 		});
 		return {
-			mode: 'f', state: 'on', label: 'Projected score at the current rate', big: proj(crr), crr: fx(crr, 2), left: left,
-			line: left ? overs(left) + ' overs left at ' + fx(crr, 2) + ' an over' : 'Innings complete', lines: lines
+			mode: 'f', state: 'on', label: 'Projected score at the current rate', big: proj(crr), crr: fxq(R * 6, B, 2), left: left,
+			line: left ? overs(left) + ' overs left at ' + fxq(R * 6, B, 2) + ' an over' : 'Innings complete', lines: lines
 		};
 	}
 
@@ -423,18 +479,18 @@
 		if (G !== null && (isNaN(G) || G < 1 || G > 600)) {
 			return { err: 'Target strike rate must be between 1 and 600.', field: 'g' };
 		}
-		var sr = R * 100 / B, outs = I === null ? null : I - O, avg = outs ? fx(R / outs, 2) : null, lines = [];
+		var sr = fxq(R * 100, B, 2), outs = I === null ? null : I - O, avg = outs ? fxq(R, outs, 2) : null, lines = [];
 		lines.push(['Batting average', avg !== null ? avg : (I === null ? 'Add innings and not outs' : 'None yet: never out')]);
-		lines.push(['Runs per ball', fx(R / B, 2)]);
+		lines.push(['Runs per ball', fxq(R, B, 2)]);
 		if (I) {
-			lines.push(['Runs per innings', fx(R / I, 2)]);
+			lines.push(['Runs per innings', fxq(R, I, 2)]);
 		}
 		if (outs) {
-			lines.push(['Balls per dismissal', fx(B / outs, 1)]);
+			lines.push(['Balls per dismissal', fxq(B, outs, 1)]);
 		}
 		if (F + X > 0) {
-			lines.push(['Runs in fours and sixes', (F * 4 + X * 6) + ' (' + fx((F * 4 + X * 6) * 100 / R, 1) + '%)']);
-			lines.push(['Balls per boundary', fx(B / (F + X), 1)]);
+			lines.push(['Runs in fours and sixes', (F * 4 + X * 6) + ' (' + fxq((F * 4 + X * 6) * 100, R, 1) + '%)']);
+			lines.push(['Balls per boundary', fxq(B, F + X, 1)]);
 		}
 		if (G !== null) {
 			// Whole-number sum, so the rounding up is exact in both engines.
@@ -444,7 +500,7 @@
 			});
 		}
 		return {
-			label: 'Strike rate', big: fx(sr, 2), sr: fx(sr, 2), avg: avg, outs: outs,
+			label: 'Strike rate', big: sr, sr: sr, avg: avg, outs: outs,
 			line: R + (R === 1 ? ' run' : ' runs') + ' off ' + B + (B === 1 ? ' ball' : ' balls') + (avg !== null ? ', average ' + avg + ' (' + outs + (outs === 1 ? ' dismissal)' : ' dismissals)') : ''),
 			lines: lines
 		};
@@ -468,13 +524,13 @@
 		if (D !== null && (isNaN(D) || D > B)) {
 			return { err: 'Dot balls must be a whole number, no more than the balls bowled.', field: 'd' };
 		}
-		var econ = fx(R * 6 / B, 2), avg = K ? fx(R / K, 2) : null, sr = K ? fx(B / K, 1) : null, lines = [];
+		var econ = fxq(R * 6, B, 2), avg = K ? fxq(R, K, 2) : null, sr = K ? fxq(B, K, 1) : null, lines = [];
 		lines.push(['Economy rate', econ]);
 		lines.push(['Bowling strike rate', sr !== null ? sr : 'None yet: no wickets']);
 		lines.push(['Balls bowled', B + ' (' + overs(B) + ' overs)']);
-		lines.push(['Runs per ball', fx(R / B, 2)]);
+		lines.push(['Runs per ball', fxq(R, B, 2)]);
 		if (D !== null) {
-			lines.push(['Dot balls', D + ' (' + fx(D * 100 / B, 1) + '%)']);
+			lines.push(['Dot balls', D + ' (' + fxq(D * 100, B, 1) + '%)']);
 		}
 		return {
 			label: K ? 'Bowling average' : 'Economy rate', big: K ? avg : econ, avg: avg, econ: econ, sr: sr,
@@ -487,13 +543,13 @@
 	function convert(p) {
 		var b = balls(p.v), n = int(p.j);
 		return {
-			ov: isNaN(b) ? '' : b + (b === 1 ? ' ball' : ' balls') + ' (' + fx(b / 6, 2) + ' overs in decimal)',
+			ov: isNaN(b) ? '' : b + (b === 1 ? ' ball' : ' balls') + ' (' + fxq(b, 6, 2) + ' overs in decimal)',
 			bl: isNaN(n) ? '' : overs(n) + ' overs'
 		};
 	}
 
 	return {
-		balls: balls, overs: overs, fx: fx, sign3: sign3, nrrOf: nrrOf, calc: calc, parseTeams: parseTeams, standings: standings,
+		balls: balls, overs: overs, fxq: fxq, nrrText: nrrText, cmpNrr: cmpNrr, calc: calc, parseTeams: parseTeams, standings: standings,
 		solve: solve, runRate: runRate, batting: batting, bowling: bowling, convert: convert, cleanName: cleanName, MATCHES_MAX: MATCHES_MAX, TEAMS_MAX: TEAMS_MAX
 	};
 }));

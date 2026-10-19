@@ -29,7 +29,7 @@ dlscalc_tool_page_open(
 		</div>
 		<div class="fields">
 			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'k', 'Wickets' ); ?>
-			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'd', 'Dot balls (optional)' ); ?>
+			<?php dlscalc_stats_field( $dlscalc_r, $dlscalc_in, 'd', 'Dot balls (optional)', 'type="number" inputmode="numeric" min="0" placeholder="e.g. 130"' ); ?>
 		</div>
 		<p class="hint">Write overs as 38.4 for 38 overs and 4 balls. Runs conceded include wides and no-balls; byes and leg byes do not count against the bowler.</p>
 		<div data-submit><button type="submit" class="btn btn--green">Calculate</button></div>

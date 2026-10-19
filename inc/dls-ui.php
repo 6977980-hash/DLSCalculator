@@ -12,7 +12,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * The DLS tool pages: slug => tool name used by the script (data-tool) and default inputs.
- * Defaults are what a first visit shows. The DLS Calculator opens on ICC Example 3.
+ * Defaults are what a first visit shows: the core match inputs only. Optional rows (stoppages, the
+ * live score log) start empty, so a visitor who types just a score never keeps a sample stoppage
+ * (audit F22); the worked examples come from the scenario buttons.
  *
  * @return array<string, array{tool: string, defaults: array<string, string>}>
  */
@@ -26,7 +28,7 @@ function dlscalc_dls_tools() {
 				'g' => '245',
 				'c' => '50',
 				'a' => '',
-				'b' => '12-1-10',
+				'b' => '',
 				'f' => '',
 				'k' => '',
 			),
@@ -55,7 +57,8 @@ function dlscalc_dls_tools() {
 				'r' => '160',
 				'g' => '245',
 				'c' => '',
-				'x' => '1-6-0_2-15-0_3-21-1_4-30-1_5-41-1_6-49-2',
+				'f' => '',
+				'x' => '',
 			),
 		),
 	);
@@ -599,7 +602,8 @@ function dlscalc_live_headline( $r ) {
 	if ( 0 === $e['diff'] ) {
 		$line = 'Team 2 has ' . $score . ', exactly on par. If play stopped now, the match would be tied.';
 	} else {
-		$line = 'Team 2 has ' . $score . ', ' . $runs . ( $e['diff'] > 0 ? ' above' : ' below' ) . ' par. If play stopped now, ' . ( $e['diff'] > 0 ? 'Team 2 would win by ' . ( 10 - $e['w'] ) . ( 9 === $e['w'] ? ' wicket' : ' wickets' ) . ' (DLS method).' : 'Team 1 would win by ' . $runs . ' (DLS method).' );
+		// A match decided on DLS during the chase is won by runs either way (ICC DLS section 7, audit F23).
+		$line = 'Team 2 has ' . $score . ', ' . $runs . ( $e['diff'] > 0 ? ' above' : ' below' ) . ' par. If play stopped now, Team ' . ( $e['diff'] > 0 ? '2' : '1' ) . ' would win by ' . $runs . ' (DLS method).';
 	}
 	return array(
 		'label' => 'DLS par at ' . $at . ', ' . $e['w'] . ' down',
