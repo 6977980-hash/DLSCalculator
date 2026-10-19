@@ -212,13 +212,16 @@ function dlscalc_dls_scripts() {
 add_action( 'wp_enqueue_scripts', 'dlscalc_dls_scripts', 100 );
 
 /**
- * Tool styles, inlined after the main stylesheet, only on pages that have a tool (DLS, NRR and home). The one-line
+ * Tool styles, inlined after the main stylesheet (article styles first), only on pages that have a tool (DLS, NRR and home). The one-line
  * script marks the page as scripted before it paints, so buttons that need JavaScript take their
  * place at once and the no-JS extras never show: nothing shifts when the tool script runs.
  */
 function dlscalc_dls_styles() {
 	if ( dlscalc_is_dls_page() || dlscalc_is_nrr_page() ) {
 		echo "<script>document.documentElement.classList.add('js')</script>\n";
+		if ( ! is_front_page() ) {
+			dlscalc_print_inline_css( 'assets/css/prose.css', 'dlscalc-prose-css' );
+		}
 		dlscalc_print_inline_css( 'assets/css/tools.css', 'dlscalc-tools-css' );
 		if ( dlscalc_is_nrr_page() || 'live-dls-par-score' === dlscalc_current_slug() ) {
 			dlscalc_print_inline_css( 'assets/css/nrr.css', 'dlscalc-nrr-css' );

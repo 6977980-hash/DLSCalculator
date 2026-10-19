@@ -9,10 +9,11 @@ WordPress child theme for [dlscalculator.com](https://dlscalculator.com): DLS, T
 
 1. Install and activate GeneratePress (Appearance → Themes → Add New).
 2. Let Hostinger deploy this repo, then activate **DLSCalc** in Appearance → Themes.
-3. On activation the theme creates its pages (Home, the four calculators, the DLS par score table, the live DLS par tracker, the two guides, About, Contact), sets Home as the front page and turns on pretty permalinks. Existing pages are never changed. When a deploy adds a page, it is created the next time an admin opens WP admin.
-4. Optional: delete WordPress's "Sample Page" and "Hello world!" post, which add thin content.
+3. On activation the theme creates its pages (Home, the four calculators, the DLS par score table, the live DLS par tracker, the three guides, About, Contact), sets Home as the front page and turns on pretty permalinks. Existing pages are never changed. When a deploy adds a page, it is created the next time an admin opens WP admin.
+4. Publish WordPress's draft **Privacy Policy** page (Pages → Privacy Policy → Publish). Its text comes from `page-privacy-policy.php`, so the sample text in the editor never shows.
+5. Optional: delete WordPress's "Sample Page" and "Hello world!" post. They are `noindex` and left out of the sitemap anyway.
 
-The theme sends `noindex` on every page until launch. Phase 4 sets `DLSCALC_LAUNCHED` to `true` in `inc/layout.php`.
+The site launched on 19 October 2026: `DLSCALC_LAUNCHED` in `inc/layout.php` is `true`. Setting it to `false` sends `noindex, nofollow` on every page again.
 
 ## What is where
 
@@ -29,11 +30,15 @@ The theme sends `noindex` on every page until launch. Phase 4 sets `DLSCALC_LAUN
 | `inc/nrr.php` | NRR engine in PHP (NRR across matches, points table, qualification solver, run rate), a line-for-line copy of `assets/js/nrr-engine.js` |
 | `inc/nrr-ui.php` | NRR and run rate pages: inputs from the URL and no-JS forms, match and team rows, standings, script loading |
 | `inc/content.php` | FAQs (also used for FAQPage schema), sources, related links and content dates |
+| `inc/guides.php` | Guides (`dlscalc_guides()`: heading, answer box, contents, call to action), Article schema, trust page layout, contact email |
+| `page-guide.php` | Shared template for `/dls-method/`, `/how-to-calculate-nrr/` and `/vjd-method/`; articles in `template-parts/content/<slug>.php` |
+| `page-about.php`, `page-contact.php`, `page-privacy-policy.php` | Trust pages, written in the theme |
 | `page-dls-calculator.php`, `page-dls-target-calculator-t20.php`, `page-dls-par-score-table.php`, `page-live-dls-par-score.php` | The DLS tool pages and the live par tracker; their articles are in `template-parts/content/` |
 | `page-net-run-rate-calculator.php`, `page-run-rate-calculator.php` | NRR calculator with the qualification scenario, and the run rate calculator |
 | `front-page.php`, `404.php` | Home and not-found pages |
 | `template-parts/` | Site header and footer |
 | `assets/css/main.css` | Site styles, printed inline in `<head>` |
+| `assets/css/prose.css` | Article styles (tables, FAQ, sources, related links, guide boxes), printed inline on tool pages, guides and trust pages |
 | `assets/css/tools.css` | Tool styles, printed inline only on the tool pages and home |
 | `assets/css/nrr.css` | NRR, run rate and live tracker styles, printed inline only on those pages |
 | `assets/js/dls-engine.js` | DLS engine: ICC Standard Edition table (delta-encoded), targets, par scores, par tables |
@@ -45,7 +50,7 @@ The theme sends `noindex` on every page until launch. Phase 4 sets `DLSCALC_LAUN
 | `assets/img/` | Favicon, Apple touch icon, app icons, logo and per-page Open Graph images |
 | `dev/tests/run.sh` | Engine tests: the ICC DLS worked examples plus NRR and run rate examples in JS and PHP, JS and PHP agreement on about 2,000 cases (DLS, live tracker, NRR, solver, run rate), and every table cell against the ICC table. Needs Node and PHP |
 | `dev/make-charts.mjs` | Redraws the SVG charts in `assets/img/dls/` from the engine (`node dev/make-charts.mjs`) |
-| `dev/make-images.mjs` | Regenerates the icons and Open Graph images (`node dev/make-images.mjs`, needs Playwright and Pillow). Blocked from the web by `dev/.htaccess` |
+| `dev/make-images.mjs` | Regenerates the icons and Open Graph images (`node dev/make-images.mjs`, needs Playwright and Pillow; add slugs to redraw only those share images). Blocked from the web by `dev/.htaccess` |
 
 ## Speed rules
 
@@ -54,7 +59,7 @@ The theme sends `noindex` on every page until launch. Phase 4 sets `DLSCALC_LAUN
 - Two self-hosted, preloaded WOFF2 fonts with `font-display: swap`.
 - Each calculator loads its own small script only on its own page.
 
-Lighthouse (mobile, local test server): Performance 100, Accessibility 100, Best Practices 100. SEO shows 66 only because of the pre-launch `noindex`.
+Lighthouse (mobile, local test server): Performance 99 to 100, Accessibility 100, Best Practices 100, SEO 100. WordPress's block preset CSS (global styles, about 11 KB) and the feed, oEmbed and REST links are removed from every page.
 
 ## Result permalinks
 

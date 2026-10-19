@@ -1,5 +1,6 @@
 // Regenerates the theme's icons and Open Graph images.
 // Run from the theme folder: node dev/make-images.mjs   (needs Playwright + Chromium, and python3 with Pillow for favicon.ico)
+// Pass slugs (node dev/make-images.mjs vjd-method) to redraw only those share images and leave the icons alone.
 import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -28,6 +29,7 @@ const pages = {
   'run-rate-calculator': ['Run Rate', 'Run Rate Calculator: current and required', 'CRR, RRR, runs per ball and projected score'],
   'dls-method': ['Guide', 'The DLS method explained', 'Resource table, formula and ICC worked examples'],
   'how-to-calculate-nrr': ['Guide', 'How to calculate net run rate', 'The NRR formula with a step-by-step example'],
+  'vjd-method': ['Guide', 'VJD method vs DLS', 'Jayadevan\'s rain rule, explained and compared'],
   about: ['About', 'About DLSCalc and Ch Alee', 'Cricketer and tournament organiser'],
 };
 
@@ -51,6 +53,12 @@ async function shot(html, w, h, out) {
   await page.screenshot({ path: out, clip: { x: 0, y: 0, width: w, height: h } });
 }
 
+const only = process.argv.slice(2);
+if (only.length) {
+  for (const slug of only) await shot(og(pages[slug]), 1200, 630, img(`og/${slug}.png`));
+  await browser.close();
+  process.exit(0);
+}
 await shot(icon(180, 0.14), 180, 180, img('apple-touch-icon.png'));
 await shot(icon(192, 0.1), 192, 192, img('icon-192.png'));
 await shot(icon(512, 0.1), 512, 512, img('icon-512.png'));

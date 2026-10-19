@@ -11,11 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Keeps the site out of search results until launch (phase 4 flips this).
+ * Pre-launch switch: false keeps the site out of search results. Launched on 19 October 2026 (phase 4).
  * Visitors can still open every page; only the robots meta changes.
  */
 if ( ! defined( 'DLSCALC_LAUNCHED' ) ) {
-	define( 'DLSCALC_LAUNCHED', false );
+	define( 'DLSCALC_LAUNCHED', true );
 }
 
 add_filter(
@@ -24,6 +24,9 @@ add_filter(
 		if ( ! DLSCALC_LAUNCHED ) {
 			$robots['noindex']  = true;
 			$robots['nofollow'] = true;
+		} elseif ( is_singular() && ! is_front_page() && ! isset( dlscalc_site_pages()[ dlscalc_current_slug() ] ) ) {
+			// WordPress's "Sample Page" and "Hello world!" are thin content; only the theme's pages are indexed.
+			$robots['noindex'] = true;
 		}
 		return $robots;
 	}
@@ -65,7 +68,7 @@ function dlscalc_site_footer() {
  * @return string[]
  */
 function dlscalc_authored_slugs() {
-	return array_merge( array_keys( dlscalc_tools() ), array( 'dls-par-score-table', 'live-dls-par-score', 'dls-method', 'how-to-calculate-nrr' ) );
+	return array_merge( array_keys( dlscalc_tools() ), array( 'dls-par-score-table', 'live-dls-par-score' ), array_keys( dlscalc_guides() ) );
 }
 
 /**

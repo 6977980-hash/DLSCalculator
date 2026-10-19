@@ -113,6 +113,15 @@ function dlscalc_cleanup() {
 	remove_action( 'wp_head', 'wlwmanifest_link' );
 	remove_action( 'wp_head', 'rsd_link' );
 	remove_action( 'wp_head', 'wp_shortlink_wp_head' );
+	// No blog posts or comments, so the feed, oEmbed and REST discovery links are noise in <head>.
+	remove_action( 'wp_head', 'feed_links', 2 );
+	remove_action( 'wp_head', 'feed_links_extra', 3 );
+	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
+	remove_action( 'wp_head', 'rest_output_link_wp_head' );
+	// WordPress prints about 11 KB of block preset CSS (global styles) on every page, even where
+	// dequeued; the theme's templates use no blocks, so it is removed at the source.
+	remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+	remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
 }
 add_action( 'init', 'dlscalc_cleanup' );
 

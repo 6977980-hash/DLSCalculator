@@ -106,6 +106,10 @@ get_header();
 				<span class="card-link__kicker">Guide</span>
 				<span class="card-link__title">How to calculate NRR, step by step</span>
 			</a>
+			<a class="card-link" href="<?php echo esc_url( dlscalc_page_url( 'vjd-method' ) ); ?>">
+				<span class="card-link__kicker">Guide</span>
+				<span class="card-link__title">VJD method vs DLS: India's other rain rule</span>
+			</a>
 			<div class="maker">
 				<div class="maker__badge" aria-hidden="true"><?php echo esc_html( $dlscalc_author['initials'] ); ?></div>
 				<p>Built by <a href="<?php echo esc_url( dlscalc_page_url( 'about' ) ); ?>"><?php echo esc_html( $dlscalc_author['name'] ); ?></a>, a cricketer and tournament organiser who needed accurate rain targets during live matches.</p>

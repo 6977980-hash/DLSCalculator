@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'DLSCALC_PAGES_VERSION', 3 );
+define( 'DLSCALC_PAGES_VERSION', 4 );
 
 /**
  * Pages the theme owns: slug => title. Content comes from theme templates, not the editor.
@@ -29,6 +29,7 @@ function dlscalc_site_pages() {
 			'live-dls-par-score'   => 'Live DLS Par Score',
 			'dls-method'           => 'DLS Method Explained',
 			'how-to-calculate-nrr' => 'How to Calculate NRR',
+			'vjd-method'           => 'VJD Method in Cricket',
 			'about'                => 'About DLSCalc',
 			'privacy-policy'       => 'Privacy Policy',
 			'contact'              => 'Contact',
@@ -42,8 +43,8 @@ function dlscalc_site_pages() {
 function dlscalc_create_pages() {
 	foreach ( dlscalc_site_pages() as $slug => $title ) {
 		$existing = get_page_by_path( $slug, OBJECT, 'page' );
-		// Never touch a page that already exists. WordPress's own draft Privacy Policy stays a
-		// draft until phase 4 replaces its sample text, so the footer hides that link until then.
+		// Never touch a page that already exists. WordPress's own draft Privacy Policy is published by
+		// the owner in WP admin; the theme template replaces its sample text, and the footer link appears then.
 		if ( $existing ) {
 			continue;
 		}
