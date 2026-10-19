@@ -319,7 +319,7 @@ export default [
 					const trs = [...document.querySelectorAll('.par tbody tr')];
 					return { first: top(trs[0]), last: top(trs[trs.length - 1]) + trs[trs.length - 1].offsetHeight, foot: top(document.querySelector('.sheet--foot')) + document.querySelector('.sheet--foot').offsetHeight };
 				});
-				await page.emulateMedia({ media: 'screen' });
+				await page.emulateMedia({ media: null });
 				await page.setViewportSize({ width: 1280, height: 800 });
 				return r;
 			};
