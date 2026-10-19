@@ -114,11 +114,13 @@ function dlscalc_indexnow_check() {
 add_action( 'wp_loaded', 'dlscalc_indexnow_check', 20 );
 
 /**
- * Send the URLs to IndexNow (runs in WP-Cron, so no visitor waits for it).
+ * Send the URLs to IndexNow (runs in WP-Cron, so no visitor waits for it). A failed ping, such as one sent
+ * while a deploy is still copying files, is tried once more ten minutes later.
  *
- * @param string[] $urls Absolute URLs on this site.
+ * @param string[] $urls  Absolute URLs on this site.
+ * @param bool     $retry Whether this is the second try.
  */
-function dlscalc_indexnow_ping( $urls ) {
+function dlscalc_indexnow_ping( $urls, $retry = false ) {
 	$response = wp_remote_post(
 		'https://api.indexnow.org/indexnow',
 		array(
@@ -134,14 +136,18 @@ function dlscalc_indexnow_ping( $urls ) {
 			),
 		)
 	);
+	$code = is_wp_error( $response ) ? $response->get_error_code() : wp_remote_retrieve_response_code( $response );
 	update_option(
 		'dlscalc_indexnow_last',
 		array(
 			'time' => time(),
-			'code' => is_wp_error( $response ) ? $response->get_error_code() : wp_remote_retrieve_response_code( $response ),
+			'code' => $retry ? $code . ' (retry)' : $code,
 			'urls' => count( $urls ),
 		),
 		false
 	);
+	if ( ! $retry && ! in_array( $code, array( 200, 202 ), true ) ) {
+		wp_schedule_single_event( time() + 10 * MINUTE_IN_SECONDS, 'dlscalc_indexnow_ping', array( $urls, true ) );
+	}
 }
-add_action( 'dlscalc_indexnow_ping', 'dlscalc_indexnow_ping' );
+add_action( 'dlscalc_indexnow_ping', 'dlscalc_indexnow_ping', 10, 2 );
