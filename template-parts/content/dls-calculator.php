@@ -37,7 +37,7 @@ $dlscalc_img = DLSCALC_URI . '/assets/img/dls/';
 <p>Resources are rounded to one decimal place after each innings, and every stoppage in the same innings is added up. That is exactly how the ICC playing conditions describe the Standard Edition, so the working on this page can be checked line by line against the table. For the background to resources and why wickets matter as much as overs, read <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>">the DLS method explained</a>.</p>
 
 <h2 id="icc-examples">Does this calculator match the ICC's own examples?</h2>
-<p>Yes. The ICC playing conditions include six worked examples of the Standard Edition, and this calculator gives the same resources, par scores and targets for all six. The default numbers when the page opens are Example 3: Team 1 scores 250 in 50 overs and Team 2 loses 10 overs at 40 for 1 after 12.</p>
+<p>Yes. The ICC playing conditions include six worked examples of the Standard Edition, and this calculator gives the same resources, par scores and targets for all six. The buttons above the calculator load four of them. "Rain during chase" is Example 3: Team 1 scores 250 in 50 overs and Team 2 loses 10 overs when it is 1 down after 12.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="ICC worked examples">
 <table class="data">
 	<caption>The six ICC worked examples, with G50 = 245</caption>

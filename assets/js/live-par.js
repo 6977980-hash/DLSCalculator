@@ -69,7 +69,7 @@
 	var params = function () {
 		return {
 			n: form.elements.n.value.trim(), r: form.elements.r.value.trim(), g: form.elements.g.value,
-			c: form.elements.c.value.trim(), x: log()
+			c: form.elements.c.value.trim(), f: form.elements.f.value, x: log()
 		};
 	};
 	var query = function (p) {
@@ -121,8 +121,9 @@
 		if (e.diff === 0) {
 			line = 'Team 2 has ' + score + ', exactly on par. If play stopped now, the match would be tied.';
 		} else {
-			line = 'Team 2 has ' + score + ', ' + runs + (e.diff > 0 ? ' above' : ' below') + ' par. If play stopped now, ' +
-				(e.diff > 0 ? 'Team 2 would win by ' + plural(10 - e.w, 'wicket') + ' (DLS method).' : 'Team 1 would win by ' + runs + ' (DLS method).');
+			// A match decided on DLS during the chase is won by runs either way (ICC DLS section 7, audit F23).
+			line = 'Team 2 has ' + score + ', ' + runs + (e.diff > 0 ? ' above' : ' below') + ' par. If play stopped now, Team ' +
+				(e.diff > 0 ? '2' : '1') + ' would win by ' + runs + ' (DLS method).';
 		}
 		return { label: 'DLS par at ' + at + ', ' + e.w + ' down', big: String(e.par), line: line, word: false };
 	};
@@ -133,7 +134,8 @@
 		text('err', err);
 		show(out('err'), !!err);
 		var h = headline(r), last = err ? null : r.log[r.log.length - 1];
-		var warn = last && last.warn ? last.warn : '';
+		// The latest entry's warning, or before any entry the one for the whole chase (audit F24).
+		var warn = err ? '' : (last ? last.warn || '' : r.warn);
 		text('warn', warn);
 		show(out('warn'), !!warn);
 		text('label', h.label);

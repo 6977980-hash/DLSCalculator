@@ -17,8 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * NRR page: u tab ("t" opens the qualification scenario), q overs per side and x matches for the
  * NRR calculator; t points table, y your team, v team to pass, o next opponent (0 = not in the
- * table), k bat first ("f") or chase ("c"), e score, h overs per side and d points for a win for
- * the scenario. Run rate page: u "c" chasing or "f" batting first, n overs per side, t target,
+ * table), k bat first ("f") or chase ("c"), e score, h overs per side, d points for a win and
+ * z tie-break ("w": wins before net run rate, as at ICC events; empty: net run rate) for the scenario. Run rate page: u "c" chasing or "f" batting first, n overs per side, t target,
  * r runs so far, o overs bowled. Strike rate page: r runs, b balls faced, i innings, o not outs,
  * f fours, x sixes, g target strike rate. Bowling page: o overs, r runs conceded, k wickets,
  * d dot balls. The stats pages have optional fields, so "blank" makes a link leave out what it
@@ -42,6 +42,7 @@ function dlscalc_nrr_tools() {
 				'e' => '180',
 				'h' => '20',
 				'd' => '2',
+				'z' => '',
 			),
 		),
 		'run-rate-calculator'        => array(
@@ -60,11 +61,11 @@ function dlscalc_nrr_tools() {
 			'defaults' => array(
 				'r' => '182',
 				'b' => '140',
-				'i' => '5',
-				'o' => '1',
-				'f' => '18',
-				'x' => '6',
-				'g' => '150',
+				'i' => '',
+				'o' => '',
+				'f' => '',
+				'x' => '',
+				'g' => '',
 			),
 		),
 		'bowling-average-calculator' => array(
@@ -74,7 +75,7 @@ function dlscalc_nrr_tools() {
 				'o' => '38.4',
 				'r' => '212',
 				'k' => '9',
-				'd' => '130',
+				'd' => '',
 			),
 		),
 	);
@@ -206,7 +207,7 @@ function dlscalc_nrr_inputs( $slug ) {
  * @return bool
  */
 function dlscalc_nrr_has_params() {
-	foreach ( array( 'u', 'q', 'x', 't', 'y', 'v', 'o', 'k', 'e', 'h', 'd', 'n', 'r', 'j', 'b', 'i', 'f', 'g', 'x_rf', 't_n' ) as $key ) {
+	foreach ( array( 'u', 'q', 'x', 't', 'y', 'v', 'o', 'k', 'e', 'h', 'd', 'z', 'n', 'r', 'j', 'b', 'i', 'f', 'g', 'x_rf', 't_n' ) as $key ) {
 		if ( isset( $_GET[ $key ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return true;
 		}
@@ -230,6 +231,7 @@ function dlscalc_nrr_solve_input( $in ) {
 		'e' => $in['e'],
 		'q' => $in['h'],
 		'd' => $in['d'],
+		'z' => $in['z'],
 	);
 }
 
@@ -404,7 +406,17 @@ function dlscalc_nrr_team_rows( $teams ) {
 }
 
 /**
- * Standings: teams sorted by points, then net run rate.
+ * Caption of the standings table, naming the tie-break in use.
+ *
+ * @param string $z "w" for wins before net run rate.
+ * @return string
+ */
+function dlscalc_nrr_standings_caption( $z ) {
+	return 'w' === $z ? 'Standings by points, then wins, then net run rate' : 'Standings by points, then net run rate';
+}
+
+/**
+ * Standings: teams sorted by points, then (if chosen) wins, then net run rate.
  *
  * @param array $s Solver result (teams and order).
  */
@@ -412,7 +424,7 @@ function dlscalc_nrr_standings_html( $s ) {
 	?>
 	<div class="table-wrap" tabindex="0" role="region" aria-label="Standings">
 		<table class="data data--num standings">
-			<caption>Standings by points, then net run rate</caption>
+			<caption data-out="scap"><?php echo esc_html( dlscalc_nrr_standings_caption( $s['z'] ?? '' ) ); ?></caption>
 			<thead><tr><th scope="col">Pos</th><th scope="col">Team</th><th scope="col">Played</th><th scope="col">Won</th><th scope="col">Points</th><th scope="col">NRR</th></tr></thead>
 			<tbody data-out="standings">
 				<?php

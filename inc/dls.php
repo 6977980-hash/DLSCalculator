@@ -172,6 +172,26 @@ function dlscalc_dls_f2( $x ) {
 }
 
 /**
+ * $num ÷ $den rounded half away from zero to $d decimals, as text. Works on whole numbers, so PHP
+ * and the browser always agree: as a float, 10.425 sits just under the half (audit F38). Copy of
+ * fxq() in assets/js/dls-engine.js and nrr-engine.js; inc/nrr.php uses this one.
+ *
+ * @param int $num Numerator.
+ * @param int $den Denominator, not 0.
+ * @param int $d   Decimals.
+ * @return string
+ */
+function dlscalc_fxq( $num, $den, $d ) {
+	if ( $den < 0 ) {
+		$num = -$num;
+		$den = -$den;
+	}
+	$v = intdiv( abs( $num ) * 10 ** $d * 2 + $den, 2 * $den );
+	$s = str_pad( (string) $v, $d + 1, '0', STR_PAD_LEFT );
+	return ( $num < 0 && $v ? '-' : '' ) . ( $d ? substr( $s, 0, -$d ) . '.' . substr( $s, -$d ) : $s );
+}
+
+/**
  * Raw par: Team 1's score scaled to the resources Team 2 used.
  *
  * @param int   $s    Team 1 score.
@@ -503,7 +523,7 @@ function dlscalc_dls_t20( $p ) {
 	}
 	$r['No']   = $no;
 	$r['L']    = $l;
-	$r['rr']   = $r['ended'] ? '' : number_format( $r['target'] / ( $r['allot'] / 6 ), 2, '.', '' );
+	$r['rr']   = $r['ended'] ? '' : dlscalc_fxq( $r['target'] * 6, $r['allot'], 2 );
 	$r['bars'] = array();
 	for ( $mo = 5; $mo <= $no; $mo++ ) {
 		$r['bars'][] = array(

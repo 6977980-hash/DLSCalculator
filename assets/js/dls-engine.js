@@ -107,6 +107,23 @@
 		return c2(x).toFixed(2);
 	}
 
+	/**
+	 * num ÷ den rounded half away from zero to d decimals, as text. Works on whole numbers, so the
+	 * browser and PHP always agree: as a float, 10.425 sits just under the half (audit F38). The same
+	 * helper is in nrr-engine.js and inc/dls.php (dlscalc_fxq).
+	 */
+	function fxq(num, den, d) {
+		if (den < 0) {
+			num = -num;
+			den = -den;
+		}
+		var a = Math.abs(num) * Math.pow(10, d) * 2 + den, v = (a - a % (2 * den)) / (2 * den), s = String(v);
+		while (s.length <= d) {
+			s = '0' + s;
+		}
+		return (num < 0 && v ? '-' : '') + (d ? s.slice(0, -d) + '.' + s.slice(-d) : s);
+	}
+
 	/** Raw par: Team 1's score scaled to the resources Team 2 used. */
 	function scale(S, used, R1, G) {
 		return used <= R1 ? S * used / R1 : S + G * (used - R1) / 100;
@@ -311,7 +328,7 @@
 		}
 		r.No = No;
 		r.L = L;
-		r.rr = r.ended ? '' : (r.target / (r.allot / 6)).toFixed(2);
+		r.rr = r.ended ? '' : fxq(r.target * 6, r.allot, 2);
 		r.bars = [];
 		for (var mo = 5; mo <= No; mo++) {
 			r.bars.push({ overs: mo, target: floorPar(scale(S, res(mo * 6, 0), r.R1, 245)) + 1 });
@@ -400,7 +417,7 @@
 	}
 
 	return {
-		res: res, balls: balls, overs: overs, oversHelp: oversHelp, scale: scale, innings: innings, match: match,
+		res: res, balls: balls, overs: overs, oversHelp: oversHelp, fxq: fxq, scale: scale, innings: innings, match: match,
 		parRows: parRows, parseStops: parseStops, calc: calc, t20: t20, parTable: parTable, live: live, STOPS_MAX: STOPS_MAX, LIVE_MAX: LIVE_MAX
 	};
 }));

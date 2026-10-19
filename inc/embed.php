@@ -26,17 +26,20 @@ function dlscalc_embed_path() {
  * @return string
  */
 function dlscalc_embed_code() {
-	return '<iframe src="' . esc_url( home_url( '/' . dlscalc_embed_path() ) ) . '" title="DLS calculator" width="100%" height="460" style="border:0;max-width:480px" loading="lazy"></iframe>' . "\n"
+	return '<iframe src="' . esc_url( home_url( '/' . dlscalc_embed_path() ) ) . '" title="DLS calculator" width="100%" height="500" style="border:0;max-width:480px" loading="lazy"></iframe>' . "\n"
 		. '<p style="font-size:13px"><a href="' . esc_url( dlscalc_page_url( 'dls-calculator' ) ) . '">DLS calculator</a> by DLSCalc</p>';
 }
 
 /**
- * Widget inputs from the address (n overs per side, r Team 1 score, c Team 2 overs), as in calc().
+ * Widget inputs from the address (f format, n overs per side, r Team 1 score, c Team 2 overs), as in
+ * calc(). The format sets the minimum overs for a result, so a short chase gets the same warning as
+ * on the full calculator (audit F24).
  *
- * @return array{n: string, r: string, c: string}
+ * @return array{f: string, n: string, r: string, c: string}
  */
 function dlscalc_embed_inputs() {
 	$in = array(
+		'f' => '',
 		'n' => '20',
 		'r' => '160',
 		'c' => '',
@@ -47,6 +50,16 @@ function dlscalc_embed_inputs() {
 		}
 	}
 	return $in;
+}
+
+/**
+ * The minimum-overs warning in a few words, so the widget fits its iframe. embed.js shortens it the same way.
+ *
+ * @param string $warn Engine warning, e.g. "Team 2 can face fewer than 5 overs, so ...".
+ * @return string
+ */
+function dlscalc_embed_warn( $warn ) {
+	return preg_replace( '/^Team 2 (?:can face|faced) fewer than (\S+) overs.*$/', 'Fewer than $1 overs for Team 2: no result under ICC rules.', $warn );
 }
 
 /**

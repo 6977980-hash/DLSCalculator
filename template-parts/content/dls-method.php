@@ -109,6 +109,7 @@ $dlscalc_head .= '</tr></thead>';
 
 <h2 id="minimum-overs">What is the minimum number of overs for a DLS result?</h2>
 <p>For a match to have a result, Team 2 must be able to face at least <strong>20 overs in a 50-over match</strong> and <strong>5 overs in a 20-over match</strong>, unless the result is already decided. Other formats, such as T10 or local 8 and 12-over matches, set their own minimum in their playing conditions.</p>
+<p>Some knockout matches ask for more. At the ICC Men's T20 World Cup, the semi-finals and the final need at least 10 overs a side for a result, double the usual T20 minimum. Always check the playing conditions of the event.</p>
 <p>If play is abandoned after the minimum has been reached, the par score at that moment decides the match. Team 2 wins if its score is above par, loses if it is below, and the match is tied if it is exactly on par. If the minimum has not been reached, the match is a no result, unless Team 2 has already passed the target or been bowled out.</p>
 <p>The match officials decide how many overs each side gets after a stoppage, using the time lost and the playing conditions. DLS only sets the target for the overs they decide.</p>
 

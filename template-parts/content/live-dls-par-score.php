@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>The tracker keeps the match on your phone, so a reload or a dropped signal loses nothing. Share the link with the other dressing room or the umpires and they see the same numbers.</p>
 
 <h2 id="t20-example">How does the par move in a T20 chase?</h2>
-<p>Take a 20-over match where Team 1 makes 160, so Team 2 needs 161. This is the example already loaded above.</p>
+<p>Take a 20-over match where Team 1 makes 160, so Team 2 needs 161. The tracker opens on this match with no score yet; <a href="<?php echo esc_url( dlscalc_dls_permalink( 'live-dls-par-score', array( 'f' => 't20', 'n' => '20', 'r' => '160', 'g' => '245', 'x' => '1-6-0_2-15-0_3-21-1_4-30-1_5-41-1_6-49-2' ) ) ); ?>" rel="nofollow">load the score below</a> to follow it over by over.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="T20 live par example">
 <table class="data data--num">
 	<caption>Chasing 161 in 20 overs</caption>
@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 </table>
 </div>
 <p>Look at the third over. Team 2 scored 6 runs, but the par rose by 10, from 12 to 22: 6 for the over and 4 more for the first wicket, so Team 1 went ahead. Two good overs later Team 2 was 6 runs clear. That swing is exactly what a captain needs to know before deciding whether to attack or protect wickets with rain coming.</p>
-<p>Under ICC rules a T20 needs 5 overs in the chase for a result, so until then the tracker warns that a stoppage would mean no result.</p>
+<p>Under ICC rules a T20 needs 5 overs in the chase for a result, so until then the tracker warns that a stoppage would mean no result. If play had ended for good after 5 overs, Team 2 on 41 against a par of 35 would have won by 6 runs: a match decided on DLS during the chase is always won by runs, whichever side wins.</p>
 
 <h2 id="odi-example">How does the par move in an ODI chase?</h2>
 <p>In a 50-over match where Team 1 makes 250, the target is 251. Team 2 on 95 for 2 after 20 overs is 14 runs ahead of a par of 81. Five overs later on 118 for 4, it is 7 runs behind a par of 125: two wickets cost it more than 20 runs of par. By 30 overs, on 140 for 4, it is back in front of a par of 138.</p>

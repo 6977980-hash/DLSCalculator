@@ -58,7 +58,7 @@ $dlscalc_overs  = array( 5, 6, 8, 10, 12, 14, 15, 16, 18 );
 <p>Team 2 needs whatever it has not yet scored of those 136 runs from the 5 overs that are left. The par table on this page then shows where Team 2 stands after each of those overs, in case it rains again.</p>
 
 <h2 id="abandoned">Who wins if a T20 is abandoned in the chase?</h2>
-<p>If Team 2 has faced at least 5 overs, the match goes to the DLS par score at the moment play ended. Team 2 wins with more runs than the par, loses with fewer and ties on the par exactly. If Team 2 has faced fewer than 5 overs, there is no result.</p>
+<p>If Team 2 has faced at least 5 overs, the match goes to the DLS par score at the moment play ended. Team 2 wins with more runs than the par, loses with fewer and ties on the par exactly. If Team 2 has faced fewer than 5 overs, there is no result. At the ICC Men's T20 World Cup, the semi-finals and the final need at least 10 overs a side instead.</p>
 <p>Team 1 makes 160 and rain ends the match with Team 2 at 12 overs, 3 down. The 8 overs left with 3 down were worth 24.8%, so Team 2 used 56.6 − 24.8 = 31.8%. The par is 160 × 31.8 ÷ 56.6 = 89.89, rounded down to 89. On 90 or more Team 2 wins. To get this in the calculator, add a stoppage at 12 overs, 3 down, with 8 overs lost.</p>
 <figure class="figure">
 	<img src="<?php echo esc_url( $dlscalc_img . 't20-par-160.svg' ); ?>" width="760" height="440" loading="lazy" decoding="async" alt="Line chart of the DLS par score in a 20-over chase of 160, after each over from 1 to 19, with lines for 0, 3 and 6 wickets down. After 10 overs the par is 69 with no wickets down, 75 with 3 down and 95 with 6 down.">

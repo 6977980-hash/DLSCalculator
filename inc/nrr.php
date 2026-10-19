@@ -24,51 +24,38 @@ function dlscalc_nrr_num( $x ) {
 }
 
 /**
- * Round the way the JS engine does and format with $d decimals, never "-0.000".
+ * Runs an over, from runs and balls, 3 decimals.
  *
- * @param float $x Value.
- * @param int   $d Decimals.
+ * @param int $runs Runs.
+ * @param int $b    Balls.
  * @return string
  */
-function dlscalc_nrr_fx( $x, $d ) {
-	$k = 10 ** $d;
-	$v = floor( $x * $k + 0.5 ) / $k;
-	return number_format( 0.0 === (float) $v ? 0 : $v, $d, '.', '' );
+function dlscalc_nrr_rate3( $runs, $b ) {
+	return dlscalc_fxq( $runs * 6, $b, 3 );
 }
 
 /**
- * Net run rate with a sign, 3 decimals: "+0.350", "-1.025", "0.000".
+ * Net run rate with a sign, 3 decimals: "+0.350", "-1.025", "0.000". See nrrText() in assets/js/nrr-engine.js.
  *
- * @param float $x Value.
+ * @param int[] $t Runs for, balls faced, runs against, balls bowled.
  * @return string
  */
-function dlscalc_nrr_sign3( $x ) {
-	$s = dlscalc_nrr_fx( $x, 3 );
+function dlscalc_nrr_text( $t ) {
+	$s = dlscalc_fxq( 6 * ( $t[0] * $t[3] - $t[2] * $t[1] ), $t[1] * $t[3], 3 );
 	return '-' === $s[0] || '0.000' === $s ? $s : '+' . $s;
 }
 
 /**
- * Runs an over, from runs and balls.
+ * Compares two net run rates exactly with whole-number cross products (audit F25). See cmpNrr()
+ * in assets/js/nrr-engine.js.
  *
- * @param int $runs Runs.
- * @param int $b    Balls.
- * @return float
+ * @param int[] $a Runs for, balls faced, runs against, balls bowled.
+ * @param int[] $b The same for the other team.
+ * @return int 1 when $a is higher, -1 when lower, 0 when equal.
  */
-function dlscalc_nrr_rate( $runs, $b ) {
-	return $runs * 6 / $b;
-}
-
-/**
- * Net run rate, or null when either side has no overs yet.
- *
- * @param int $rf Runs for.
- * @param int $bf Balls faced.
- * @param int $ra Runs against.
- * @param int $ba Balls bowled.
- * @return float|null
- */
-function dlscalc_nrr_of( $rf, $bf, $ra, $ba ) {
-	return $bf > 0 && $ba > 0 ? dlscalc_nrr_rate( $rf, $bf ) - dlscalc_nrr_rate( $ra, $ba ) : null;
+function dlscalc_nrr_cmp( $a, $b ) {
+	$x = ( $a[0] * $a[3] - $a[2] * $a[1] ) * ( $b[1] * $b[3] ) - ( $b[0] * $b[3] - $b[2] * $b[1] ) * ( $a[1] * $a[3] );
+	return $x <=> 0;
 }
 
 /**
@@ -171,10 +158,10 @@ function dlscalc_nrr_calc( $p ) {
 	if ( ! $counted ) {
 		return array( 'err' => 'Enter at least one match with a result.' );
 	}
-	$nrr     = dlscalc_nrr_of( $rf, $bf, $ra, $ba );
-	$steps[] = 'Runs scored: ' . $rf . ' in ' . dlscalc_dls_overs( $bf ) . ' overs = ' . dlscalc_nrr_fx( dlscalc_nrr_rate( $rf, $bf ), 3 ) . ' an over.';
-	$steps[] = 'Runs conceded: ' . $ra . ' in ' . dlscalc_dls_overs( $ba ) . ' overs = ' . dlscalc_nrr_fx( dlscalc_nrr_rate( $ra, $ba ), 3 ) . ' an over.';
-	$steps[] = 'Net run rate = ' . dlscalc_nrr_fx( dlscalc_nrr_rate( $rf, $bf ), 3 ) . ' − ' . dlscalc_nrr_fx( dlscalc_nrr_rate( $ra, $ba ), 3 ) . ' = ' . dlscalc_nrr_sign3( $nrr ) . '.';
+	$nrr     = dlscalc_nrr_text( array( $rf, $bf, $ra, $ba ) );
+	$steps[] = 'Runs scored: ' . $rf . ' in ' . dlscalc_dls_overs( $bf ) . ' overs = ' . dlscalc_nrr_rate3( $rf, $bf ) . ' an over.';
+	$steps[] = 'Runs conceded: ' . $ra . ' in ' . dlscalc_dls_overs( $ba ) . ' overs = ' . dlscalc_nrr_rate3( $ra, $ba ) . ' an over.';
+	$steps[] = 'Net run rate = ' . dlscalc_nrr_rate3( $rf, $bf ) . ' − ' . dlscalc_nrr_rate3( $ra, $ba ) . ' = ' . $nrr . '.';
 	return array(
 		'Q'       => $q,
 		'rows'    => $rows,
@@ -183,9 +170,9 @@ function dlscalc_nrr_calc( $p ) {
 		'bf'      => $bf,
 		'ra'      => $ra,
 		'ba'      => $ba,
-		'nrr'     => dlscalc_nrr_sign3( $nrr ),
-		'forRate' => dlscalc_nrr_fx( dlscalc_nrr_rate( $rf, $bf ), 3 ),
-		'agRate'  => dlscalc_nrr_fx( dlscalc_nrr_rate( $ra, $ba ), 3 ),
+		'nrr'     => $nrr,
+		'forRate' => dlscalc_nrr_rate3( $rf, $bf ),
+		'agRate'  => dlscalc_nrr_rate3( $ra, $ba ),
 		'steps'   => $steps,
 	);
 }
@@ -234,24 +221,26 @@ function dlscalc_nrr_parse_teams( $str ) {
 			'oa'  => $x[7] ?? '',
 		);
 		$t['ok']  = null !== $t['rf'] && null !== $t['ra'] && $t['bf'] > 0 && $t['ba'] > 0;
-		$t['val'] = $t['ok'] ? dlscalc_nrr_of( $t['rf'], $t['bf'], $t['ra'], $t['ba'] ) : null;
-		$t['nrr'] = $t['ok'] ? dlscalc_nrr_sign3( $t['val'] ) : '–';
+		$t['tot'] = $t['ok'] ? array( $t['rf'], $t['bf'], $t['ra'], $t['ba'] ) : null;
+		$t['nrr'] = $t['ok'] ? dlscalc_nrr_text( $t['tot'] ) : '–';
 		$out[]    = $t;
 	}
 	return $out;
 }
 
 /**
- * Teams in table order: points, then net run rate. Teams without numbers go last.
+ * Teams in table order: points, then wins when $z is "w" (ICC events), then net run rate.
+ * Teams without numbers go last.
  *
  * @param array[] $teams Teams.
+ * @param string  $z     "w" for wins before net run rate.
  * @return int[] Indexes into $teams.
  */
-function dlscalc_nrr_standings( $teams ) {
+function dlscalc_nrr_standings( $teams, $z = '' ) {
 	$order = array_keys( $teams );
 	usort(
 		$order,
-		function ( $i, $j ) use ( $teams ) {
+		function ( $i, $j ) use ( $teams, $z ) {
 			$a  = $teams[ $i ];
 			$b  = $teams[ $j ];
 			$pa = null === $a['pts'] ? -1 : $a['pts'];
@@ -259,9 +248,16 @@ function dlscalc_nrr_standings( $teams ) {
 			if ( $pa !== $pb ) {
 				return $pb - $pa;
 			}
-			$na = $a['ok'] ? $a['val'] : -1e9;
-			$nb = $b['ok'] ? $b['val'] : -1e9;
-			return $na !== $nb ? ( $nb > $na ? 1 : -1 ) : $i - $j;
+			$wa = null === $a['w'] ? -1 : $a['w'];
+			$wb = null === $b['w'] ? -1 : $b['w'];
+			if ( 'w' === $z && $wa !== $wb ) {
+				return $wb - $wa;
+			}
+			if ( $a['ok'] !== $b['ok'] ) {
+				return $a['ok'] ? -1 : 1;
+			}
+			$c = $a['ok'] ? dlscalc_nrr_cmp( $b['tot'], $a['tot'] ) : 0;
+			return $c ? $c : $i - $j;
 		}
 	);
 	return $order;
@@ -270,7 +266,7 @@ function dlscalc_nrr_standings( $teams ) {
 /**
  * Qualification solver. See solve() in assets/js/nrr-engine.js.
  *
- * @param array $p Inputs: t teams, y, v, o, k, e, q, d.
+ * @param array $p Inputs: t teams, y, v, o, k, e, q, d, z.
  * @return array
  */
 function dlscalc_nrr_solve( $p ) {
@@ -282,9 +278,11 @@ function dlscalc_nrr_solve( $p ) {
 	$e     = dlscalc_dls_int( $p['e'] ?? '' );
 	$d     = dlscalc_dls_blank( $p['d'] ?? '' ) ? 2 : dlscalc_dls_int( $p['d'] );
 	$bat   = 'c' === ( $p['k'] ?? '' ) ? 'c' : 'f';
+	$z     = 'w' === ( $p['z'] ?? '' ) ? 'w' : '';
 	$res   = array(
 		'teams' => $teams,
-		'order' => dlscalc_nrr_standings( $teams ),
+		'order' => dlscalc_nrr_standings( $teams, $z ),
+		'z'     => $z,
 	);
 	if ( count( $teams ) < 2 ) {
 		$res['err'] = 'Add at least two teams to the points table.';
@@ -323,7 +321,7 @@ function dlscalc_nrr_solve( $p ) {
 	$vs    = $o === $v;
 	$n     = $q * 6;
 	$ov    = 'dlscalc_dls_overs';
-	$s3    = 'dlscalc_nrr_sign3';
+	$s3    = 'dlscalc_nrr_text';
 	$steps = array(
 		$me['name'] . ' now: ' . $me['rf'] . ' runs in ' . $ov( $me['bf'] ) . ' overs, ' . $me['ra'] . ' conceded in ' . $ov( $me['ba'] ) . ' overs, NRR ' . $me['nrr'] . '.',
 		$rv['name'] . ' now: ' . $rv['rf'] . ' runs in ' . $ov( $rv['bf'] ) . ' overs, ' . $rv['ra'] . ' conceded in ' . $ov( $rv['ba'] ) . ' overs, NRR ' . $rv['nrr'] . '.',
@@ -332,7 +330,8 @@ function dlscalc_nrr_solve( $p ) {
 	$res['rv']   = $rv['name'];
 	$res['vs']   = $vs;
 	$res['bat']  = $bat;
-	$res['note'] = $vs ? 'Your opponent is ' . $rv['name'] . ', so its net run rate changes too.' : 'Assumes ' . $rv['name'] . ' does not play again before your match.';
+	$res['note'] = ( $z ? 'Level on points: most wins, then net run rate. ' : 'Level on points: net run rate decides. ' )
+		. ( $vs ? 'Your opponent is ' . $rv['name'] . ', so its net run rate changes too.' : 'Assumes ' . $rv['name'] . ' does not play again before your match.' );
 
 	if ( null !== $me['pts'] && null !== $rv['pts'] ) {
 		$after   = $me['pts'] + $d;
@@ -347,21 +346,44 @@ function dlscalc_nrr_solve( $p ) {
 			$res['steps'] = $steps;
 			return $res;
 		}
-		$steps[] = 'Level on points after a win, so net run rate decides.';
+		if ( $z ) {
+			if ( null === $me['w'] || null === $rv['w'] ) {
+				$res['err'] = 'Fill in wins for ' . ( null === $me['w'] ? $me['name'] : $rv['name'] ) . ' in the points table: teams level on points are split by wins first.';
+				return $res;
+			}
+			$won     = $me['w'] + 1;
+			$steps[] = 'Level on points after a win, so wins come next: ' . $me['name'] . ' would have ' . $won . ', ' . $rv['name'] . ' has ' . $rv['w'] . '.';
+			if ( $won !== $rv['w'] ) {
+				$res['kind']  = $won > $rv['w'] ? 'points' : 'short';
+				$res['big']   = $won > $rv['w'] ? 'Any win' : 'Not on wins';
+				$res['line']  = $won > $rv['w']
+					? 'A win puts ' . $me['name'] . ' level with ' . $rv['name'] . ' on ' . $after . ' points but ahead on wins, ' . $won . ' to ' . $rv['w'] . ', so the margin does not matter.'
+					: 'A win puts ' . $me['name'] . ' level with ' . $rv['name'] . ' on ' . $after . ' points, but behind on wins, ' . $won . ' to ' . $rv['w'] . '. Net run rate only counts when wins are level too.';
+				$steps[]      = $won > $rv['w'] ? 'More wins than ' . $rv['name'] . ', so net run rate is not needed.' : 'Fewer wins than ' . $rv['name'] . ', so net run rate cannot help.';
+				$res['steps'] = $steps;
+				return $res;
+			}
+			$steps[] = 'Level on wins too, so net run rate decides.';
+		} else {
+			$steps[] = 'Level on points after a win, so net run rate decides.';
+		}
 	}
 
-	// Your new NRR and the rival's, for your runs and balls and the opponent's runs.
+	// Your runs and balls for and against after the match, and the rival's, as [rf, bf, ra, ba].
 	$mine   = function ( $runs, $b, $opp ) use ( $me, $n ) {
-		return dlscalc_nrr_of( $me['rf'] + $runs, $me['bf'] + $b, $me['ra'] + $opp, $me['ba'] + $n );
+		return array( $me['rf'] + $runs, $me['bf'] + $b, $me['ra'] + $opp, $me['ba'] + $n );
 	};
 	$theirs = function ( $runs, $b, $opp ) use ( $rv, $n, $vs ) {
-		return $vs ? dlscalc_nrr_of( $rv['rf'] + $opp, $rv['bf'] + $n, $rv['ra'] + $runs, $rv['ba'] + $b ) : $rv['val'];
+		return $vs ? array( $rv['rf'] + $opp, $rv['bf'] + $n, $rv['ra'] + $runs, $rv['ba'] + $b ) : $rv['tot'];
+	};
+	$above  = function ( $runs, $b, $opp ) use ( $mine, $theirs ) {
+		return dlscalc_nrr_cmp( $mine( $runs, $b, $opp ), $theirs( $runs, $b, $opp ) ) > 0;
 	};
 
 	if ( 'f' === $bat ) {
 		$ymax = -1;
 		for ( $yy = $e - 1; $yy >= 0; $yy-- ) {
-			if ( $mine( $e, $n, $yy ) > $theirs( $e, $n, $yy ) ) {
+			if ( $above( $e, $n, $yy ) ) {
 				$ymax = $yy;
 				break;
 			}
@@ -387,7 +409,7 @@ function dlscalc_nrr_solve( $p ) {
 		$t    = $e + 1;
 		$bmax = 0;
 		for ( $b = $n; $b >= 1; $b-- ) {
-			if ( $mine( $t, $b, $e ) > $theirs( $t, $b, $e ) ) {
+			if ( $above( $t, $b, $e ) ) {
 				$bmax = $b;
 				break;
 			}
@@ -443,9 +465,9 @@ function dlscalc_nrr_run_rate( $p ) {
 		return array( 'err' => 'Overs bowled cannot be more than ' . $nn . ' overs per side.' );
 	}
 	$left    = $n - $b;
-	$crr     = $b > 0 ? dlscalc_nrr_rate( $r, $b ) : 0;
+	$crr     = $b > 0 ? $r * 6 / $b : 0;
 	$lines   = array();
-	$lines[] = array( 'Current run rate', $b > 0 ? dlscalc_nrr_fx( $crr, 2 ) : '–' );
+	$lines[] = array( 'Current run rate', $b > 0 ? dlscalc_fxq( $r * 6, $b, 2 ) : '–' );
 	if ( $chase ) {
 		$need = $t - $r;
 		if ( $need <= 0 ) {
@@ -468,20 +490,20 @@ function dlscalc_nrr_run_rate( $p ) {
 				'lines' => $lines,
 			);
 		}
-		$rrr     = dlscalc_nrr_rate( $need, $left );
+		$rrr     = dlscalc_fxq( $need * 6, $left, 2 );
 		$lines[] = array( 'Runs needed', (string) $need );
 		$lines[] = array( 'Balls left', $left . ' (' . dlscalc_dls_overs( $left ) . ' overs)' );
-		$lines[] = array( 'Runs needed per ball', dlscalc_nrr_fx( $need / $left, 2 ) );
+		$lines[] = array( 'Runs needed per ball', dlscalc_fxq( $need, $left, 2 ) );
 		if ( $b > 0 ) {
-			$lines[] = array( 'Required minus current', ( $rrr >= $crr ? '+' : '' ) . dlscalc_nrr_fx( $rrr - $crr, 2 ) . ' an over' );
+			$lines[] = array( 'Required minus current', ( $need * $b >= $r * $left ? '+' : '' ) . dlscalc_fxq( 6 * ( $need * $b - $r * $left ), $left * $b, 2 ) . ' an over' );
 		}
 		return array(
 			'mode'  => 'c',
 			'state' => 'on',
 			'label' => 'Required run rate',
-			'big'   => dlscalc_nrr_fx( $rrr, 2 ),
-			'rrr'   => dlscalc_nrr_fx( $rrr, 2 ),
-			'crr'   => dlscalc_nrr_fx( $crr, 2 ),
+			'big'   => $rrr,
+			'rrr'   => $rrr,
+			'crr'   => $b > 0 ? dlscalc_fxq( $r * 6, $b, 2 ) : '0.00',
 			'need'  => $need,
 			'left'  => $left,
 			'line'  => 'Need ' . $need . ( 1 === $need ? ' run' : ' runs' ) . ' off ' . $left . ( 1 === $left ? ' ball' : ' balls' ) . ' (' . dlscalc_dls_overs( $left ) . ' overs)',
@@ -495,7 +517,7 @@ function dlscalc_nrr_run_rate( $p ) {
 		return (string) (int) floor( $r + $rate * $left / 6 + 0.5 );
 	};
 	for ( $d = 1; $d <= 3; $d++ ) {
-		$lines[] = array( 'At ' . dlscalc_nrr_fx( $crr + $d, 2 ) . ' an over (+' . $d . ')', $proj( $crr + $d ) );
+		$lines[] = array( 'At ' . dlscalc_fxq( $r * 6 + $d * $b, $b, 2 ) . ' an over (+' . $d . ')', $proj( $crr + $d ) );
 	}
 	foreach ( array( 6, 8, 10, 12 ) as $rate ) {
 		$lines[] = array( 'At ' . $rate . ' an over', $proj( $rate ) );
@@ -505,9 +527,9 @@ function dlscalc_nrr_run_rate( $p ) {
 		'state' => 'on',
 		'label' => 'Projected score at the current rate',
 		'big'   => $proj( $crr ),
-		'crr'   => dlscalc_nrr_fx( $crr, 2 ),
+		'crr'   => dlscalc_fxq( $r * 6, $b, 2 ),
 		'left'  => $left,
-		'line'  => $left ? dlscalc_dls_overs( $left ) . ' overs left at ' . dlscalc_nrr_fx( $crr, 2 ) . ' an over' : 'Innings complete',
+		'line'  => $left ? dlscalc_dls_overs( $left ) . ' overs left at ' . dlscalc_fxq( $r * 6, $b, 2 ) . ' an over' : 'Innings complete',
 		'lines' => $lines,
 	);
 }
@@ -598,21 +620,21 @@ function dlscalc_nrr_batting( $p ) {
 			'field' => 'g',
 		);
 	}
-	$sr      = $r * 100 / $b;
+	$sr      = dlscalc_fxq( $r * 100, $b, 2 );
 	$outs    = null === $i ? null : $i - $o;
-	$avg     = $outs ? dlscalc_nrr_fx( $r / $outs, 2 ) : null;
+	$avg     = $outs ? dlscalc_fxq( $r, $outs, 2 ) : null;
 	$lines   = array();
 	$lines[] = array( 'Batting average', null !== $avg ? $avg : ( null === $i ? 'Add innings and not outs' : 'None yet: never out' ) );
-	$lines[] = array( 'Runs per ball', dlscalc_nrr_fx( $r / $b, 2 ) );
+	$lines[] = array( 'Runs per ball', dlscalc_fxq( $r, $b, 2 ) );
 	if ( $i ) {
-		$lines[] = array( 'Runs per innings', dlscalc_nrr_fx( $r / $i, 2 ) );
+		$lines[] = array( 'Runs per innings', dlscalc_fxq( $r, $i, 2 ) );
 	}
 	if ( $outs ) {
-		$lines[] = array( 'Balls per dismissal', dlscalc_nrr_fx( $b / $outs, 1 ) );
+		$lines[] = array( 'Balls per dismissal', dlscalc_fxq( $b, $outs, 1 ) );
 	}
 	if ( $f + $x > 0 ) {
-		$lines[] = array( 'Runs in fours and sixes', ( $f * 4 + $x * 6 ) . ' (' . dlscalc_nrr_fx( ( $f * 4 + $x * 6 ) * 100 / $r, 1 ) . '%)' );
-		$lines[] = array( 'Balls per boundary', dlscalc_nrr_fx( $b / ( $f + $x ), 1 ) );
+		$lines[] = array( 'Runs in fours and sixes', ( $f * 4 + $x * 6 ) . ' (' . dlscalc_fxq( ( $f * 4 + $x * 6 ) * 100, $r, 1 ) . '%)' );
+		$lines[] = array( 'Balls per boundary', dlscalc_fxq( $b, $f + $x, 1 ) );
 	}
 	if ( null !== $g ) {
 		// Whole-number sum, so the rounding up is exact in both engines.
@@ -623,8 +645,8 @@ function dlscalc_nrr_batting( $p ) {
 	}
 	return array(
 		'label' => 'Strike rate',
-		'big'   => dlscalc_nrr_fx( $sr, 2 ),
-		'sr'    => dlscalc_nrr_fx( $sr, 2 ),
+		'big'   => $sr,
+		'sr'    => $sr,
 		'avg'   => $avg,
 		'outs'  => $outs,
 		'line'  => $r . ( 1 === $r ? ' run' : ' runs' ) . ' off ' . $b . ( 1 === $b ? ' ball' : ' balls' ) . ( null !== $avg ? ', average ' . $avg . ' (' . $outs . ( 1 === $outs ? ' dismissal)' : ' dismissals)' ) : '' ),
@@ -670,16 +692,16 @@ function dlscalc_nrr_bowling( $p ) {
 			'field' => 'd',
 		);
 	}
-	$econ    = dlscalc_nrr_fx( $r * 6 / $b, 2 );
-	$avg     = $k ? dlscalc_nrr_fx( $r / $k, 2 ) : null;
-	$sr      = $k ? dlscalc_nrr_fx( $b / $k, 1 ) : null;
+	$econ    = dlscalc_fxq( $r * 6, $b, 2 );
+	$avg     = $k ? dlscalc_fxq( $r, $k, 2 ) : null;
+	$sr      = $k ? dlscalc_fxq( $b, $k, 1 ) : null;
 	$lines   = array();
 	$lines[] = array( 'Economy rate', $econ );
 	$lines[] = array( 'Bowling strike rate', null !== $sr ? $sr : 'None yet: no wickets' );
 	$lines[] = array( 'Balls bowled', $b . ' (' . dlscalc_dls_overs( $b ) . ' overs)' );
-	$lines[] = array( 'Runs per ball', dlscalc_nrr_fx( $r / $b, 2 ) );
+	$lines[] = array( 'Runs per ball', dlscalc_fxq( $r, $b, 2 ) );
 	if ( null !== $d ) {
-		$lines[] = array( 'Dot balls', $d . ' (' . dlscalc_nrr_fx( $d * 100 / $b, 1 ) . '%)' );
+		$lines[] = array( 'Dot balls', $d . ' (' . dlscalc_fxq( $d * 100, $b, 1 ) . '%)' );
 	}
 	return array(
 		'label' => $k ? 'Bowling average' : 'Economy rate',
@@ -702,7 +724,7 @@ function dlscalc_nrr_convert( $p ) {
 	$b = dlscalc_dls_balls( $p['v'] ?? '' );
 	$n = dlscalc_dls_int( $p['j'] ?? '' );
 	return array(
-		'ov' => is_nan( (float) $b ) ? '' : $b . ( 1 === $b ? ' ball' : ' balls' ) . ' (' . dlscalc_nrr_fx( $b / 6, 2 ) . ' overs in decimal)',
+		'ov' => is_nan( (float) $b ) ? '' : $b . ( 1 === $b ? ' ball' : ' balls' ) . ' (' . dlscalc_fxq( $b, 6, 2 ) . ' overs in decimal)',
 		'bl' => is_nan( (float) $n ) ? '' : dlscalc_dls_overs( $n ) . ' overs',
 	);
 }
