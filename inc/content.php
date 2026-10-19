@@ -186,6 +186,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'What if rain has already cut the overs?', 'If overs were lost before the chase began, enter the reduced overs for Team 2 and the target and every par are worked out for the shorter chase. If rain has interrupted the chase itself, the target changes, so use the <a href="' . $calc . '">DLS calculator</a> for that stoppage.' ),
 			array( 'Is there a minimum number of overs for a result?', 'Yes. Team 2 must have faced at least 20 overs in a 50-over match, or 5 overs in a 20-over match, for DLS to decide the result. Before that point the tracker warns that a stoppage would mean no result.' ),
 			array( 'Will I lose the score if I close the page?', 'No. The tracker keeps the match on this device, so a reload or a closed tab picks up where you left off. Use "Start a new match" to clear it, or share the link so another scorer can follow the same match.' ),
+			array( 'Does it work with no signal at the ground?', 'Yes. After you open DLSCalc once with a connection, your phone keeps the calculators, the par table and this tracker, so they open and work offline. On most phones you can also add DLSCalc to the home screen from the browser menu, and it opens like an app.' ),
 			array( 'Is this the same par that appears on TV?', 'International matches use the DLS Professional Edition, which runs on ICC software and is not published. This tracker uses the published Standard Edition, so the par is usually the same and sometimes differs by a run or two.' ),
 		),
 		'dls-method'                => array(
