@@ -91,7 +91,7 @@ get_header();
 			</div>
 			<div>
 				<h3>For leagues and fans</h3>
-				<p>Scorers in local leagues get the same method the big tournaments use, explained step by step.</p>
+				<p>Scorers in local leagues get the ICC Standard Edition, the official DLS method for matches played without the ICC software, explained step by step.</p>
 			</div>
 		</div>
 	</section>

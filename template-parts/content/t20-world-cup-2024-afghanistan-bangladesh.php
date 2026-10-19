@@ -21,7 +21,8 @@ $dlscalc_before = dlscalc_dls_calc(
 ?>
 <h2 id="what-happened">What happened in St Vincent?</h2>
 <p>Afghanistan played Bangladesh in the last Super 8 match of Group 1 at the 2024 T20 World Cup, at Arnos Vale in Kingstown, St Vincent, on 24 June. The result would decide whether Afghanistan, Australia or Bangladesh reached the semi-finals. Afghanistan batted first and made only <strong>115 for 5 in 20 overs</strong>, with Rahmanullah Gurbaz top-scoring on 43.</p>
-<p>Bangladesh needed 116 to win, and to win inside 12.1 overs to go through themselves. Rain interrupted their chase three times:</p>
+<p>Bangladesh needed 116 to win, and to win inside 12.1 overs to go through themselves: only a win that fast would have lifted their net run rate above Afghanistan's and Australia's. The <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> works out targets like this for any points table.</p>
+<p>Rain interrupted Bangladesh's chase three times:</p>
 <ol>
 	<li>At 31 for 3 after 3.2 overs. The break lasted about half an hour, but it used up the extra time allowed, so <strong>no overs were lost</strong>.</li>
 	<li>At 81 for 7 after 11.4 overs, as Gulbadin Naib went down with cramp. Afghanistan were two runs ahead of the DLS par. <strong>One over was lost</strong> and the target became <strong>114 in 19 overs</strong>.</li>

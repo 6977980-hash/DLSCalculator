@@ -105,6 +105,7 @@ function dlscalc_serve_txt_files() {
 	$map  = array(
 		$base . '/llms.txt' => 'dlscalc_llms_txt',
 		$base . '/ads.txt'  => 'dlscalc_ads_txt',
+		$base . '/' . DLSCALC_INDEXNOW_KEY . '.txt' => 'dlscalc_indexnow_key_txt',
 	);
 	if ( ! isset( $map[ $path ] ) ) {
 		return;

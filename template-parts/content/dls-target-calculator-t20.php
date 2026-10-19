@@ -75,7 +75,8 @@ $dlscalc_overs  = array( 5, 6, 8, 10, 12, 14, 15, 16, 18 );
 
 <h2 id="leagues">Do the IPL, PSL and T20 World Cup use this method?</h2>
 <p>All three use Duckworth-Lewis-Stern, through the Professional Edition software operated by the match officials. This page uses the published Standard Edition, the ICC's official method when the software is not available, so it is the right tool for club, school and tournament T20s and a close guide for televised matches.</p>
-<p>For the big leagues, expect the official target to match or be within a run or two of this calculator for typical scores. The editions differ most in very high-scoring matches.</p>
+<p>For the big leagues, expect the official target to match or be within a run or two of this calculator for typical scores. The editions differ most in very high-scoring matches. Two televised examples where this calculator gives the official figure exactly: the <a href="<?php echo esc_url( dlscalc_page_url( 'ipl-2023-final-csk-gt' ) ); ?>">IPL 2023 final</a>, where Chennai chased 171 in 15 overs, and <a href="<?php echo esc_url( dlscalc_page_url( 't20-world-cup-2022-england-ireland' ) ); ?>">England vs Ireland at the 2022 T20 World Cup</a>, decided on a par of 110.</p>
+<p>A rain-hit result also counts in the points table. Team 1 is credited with the revised target minus one run off the overs Team 2 was given, and the <a href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">net run rate calculator</a> explains how to enter it.</p>
 
 <h2 id="faq">T20 DLS FAQ</h2>
 <?php dlscalc_faq_html( 'dls-target-calculator-t20' ); ?>

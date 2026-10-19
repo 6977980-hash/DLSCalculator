@@ -199,6 +199,23 @@ function dlscalc_head_meta() {
 add_action( 'wp_head', 'dlscalc_head_meta', 3 );
 
 /**
+ * Profiles elsewhere for the schema's sameAs, so search and AI engines tie the brand and author to them.
+ * Add the brand's own profiles (Facebook page, X, YouTube) to 'organization' when they exist.
+ *
+ * @param string $who 'organization' or 'person'.
+ * @return string[]
+ */
+function dlscalc_same_as( $who ) {
+	$profiles = array(
+		'organization' => array(),
+		'person'       => array(
+			'https://www.linkedin.com/in/ali-ahmad-chaudhry-12777486/',
+		),
+	);
+	return $profiles[ $who ] ?? array();
+}
+
+/**
  * Base schema: Organization and WebSite on every page, BreadcrumbList and WebPage on inner pages.
  * Tool pages add WebApplication and FAQPage; guides add Article and FAQPage.
  */
@@ -221,6 +238,7 @@ function dlscalc_head_schema() {
 				'height' => 512,
 			),
 			'founder'  => array( '@id' => $home . '#author' ),
+			'sameAs'   => dlscalc_same_as( 'organization' ),
 		),
 		array(
 			'@type'       => 'Person',
@@ -229,16 +247,23 @@ function dlscalc_head_schema() {
 			'jobTitle'    => $author['role'],
 			'description' => $author['bio'],
 			'url'         => dlscalc_page_url( 'about' ),
+			'sameAs'      => dlscalc_same_as( 'person' ),
 		),
 		array(
-			'@type'      => 'WebSite',
-			'@id'        => $home . '#website',
-			'name'       => 'DLSCalc',
-			'url'        => $home,
-			'inLanguage' => 'en',
-			'publisher'  => array( '@id' => $home . '#organization' ),
+			'@type'         => 'WebSite',
+			'@id'           => $home . '#website',
+			'name'          => 'DLSCalc',
+			'alternateName' => 'DLS Calculator',
+			'url'           => $home,
+			'inLanguage'    => 'en',
+			'publisher'     => array( '@id' => $home . '#organization' ),
 		),
 	);
+	foreach ( $graph as $i => $node ) {
+		if ( isset( $node['sameAs'] ) && ! $node['sameAs'] ) {
+			unset( $graph[ $i ]['sameAs'] );
+		}
+	}
 
 	if ( is_singular() && ! is_front_page() ) {
 		$seo   = dlscalc_seo_current();
