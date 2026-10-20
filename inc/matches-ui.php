@@ -257,7 +257,7 @@ function dlscalc_match_cards() {
 function dlscalc_match_tail( $slug, $sources ) {
 	echo '<h2 id="recalculated">What does our DLS calculator give for this match?</h2>';
 	dlscalc_match_box( $slug );
-	echo '<p>Our calculator uses the published ICC Standard Edition table. International matches and big franchise leagues use the Professional Edition, which runs on ICC software and is not published, so a gap of up to 3 runs is normal in T20s, and high-scoring ODIs can differ by 10 runs or more. The <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '#accuracy">famous matches page</a> compares every match side by side.</p>';
+	echo '<p>Our calculator uses the published ICC Standard Edition table. International matches and big franchise leagues use the Professional Edition, which runs on ICC software and is not published, so official figures can differ. ' . esc_html( dlscalc_accuracy_line() ) . ' The <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '#accuracy">famous matches page</a> compares every match side by side.</p>';
 	echo '<h2 id="faq">FAQ</h2>';
 	dlscalc_faq_html( $slug );
 	echo '<h2 id="sources">Sources</h2>';

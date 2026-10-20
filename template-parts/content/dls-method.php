@@ -141,7 +141,7 @@ $dlscalc_head .= '</tr></thead>';
 	<li><strong>T20 chases are hard to model.</strong> In a short chase, teams with wickets in hand attack from the first ball, and critics argue the method can favour the chasing side in some situations.</li>
 	<li><strong>The Professional Edition is a black box.</strong> Because it is not published, players and fans cannot check international targets themselves.</li>
 </ul>
-<p>Alternatives have been proposed, most notably the <a href="<?php echo esc_url( dlscalc_page_url( 'vjd-method' ) ); ?>">VJD method</a> by V. Jayadevan, which India's BCCI used in domestic cricket. The ICC has kept DLS for international cricket.</p>
+<p>Alternatives have been proposed, most notably the <a href="<?php echo esc_url( dlscalc_page_url( 'vjd-method' ) ); ?>">VJD method</a> by V. Jayadevan, which India's BCCI uses in domestic cricket. The ICC has kept DLS for international cricket.</p>
 
 <h2 id="faq">DLS method FAQ</h2>
 <?php dlscalc_faq_html( 'dls-method' ); ?>

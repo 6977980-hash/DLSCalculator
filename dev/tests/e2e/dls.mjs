@@ -269,7 +269,7 @@ export default [
 		name: 'widget: result, warning and links inside a page on another site',
 		run: async ({ ctx, base }) => {
 			const page = await ctx.newPage();
-			await page.route('https://club.example/', (r) => r.fulfill({ contentType: 'text/html', body: `<h1>Club</h1><iframe src="${base}/embed/dls/" width="100%" height="500" style="border:0;max-width:480px" title="DLS target calculator"></iframe>` }));
+			await page.route('https://club.example/', (r) => r.fulfill({ contentType: 'text/html', body: `<h1>Club</h1><iframe src="${base}/embed/dls/" width="100%" height="540" style="border:0;max-width:480px" title="DLS target calculator"></iframe>` }));
 			await page.goto('https://club.example/');
 			const frame = page.frameLocator('iframe');
 			await frame.locator('[name=r]').fill('140');

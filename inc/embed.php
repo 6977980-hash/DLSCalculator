@@ -26,7 +26,7 @@ function dlscalc_embed_path() {
  * @return string
  */
 function dlscalc_embed_code() {
-	return '<iframe src="' . esc_url( home_url( '/' . dlscalc_embed_path() ) ) . '" title="DLS calculator" width="100%" height="500" style="border:0;max-width:480px" loading="lazy"></iframe>' . "\n"
+	return '<iframe src="' . esc_url( home_url( '/' . dlscalc_embed_path() ) ) . '" title="DLS calculator" width="100%" height="540" style="border:0;max-width:480px" loading="lazy"></iframe>' . "\n"
 		. '<p style="font-size:13px"><a href="' . esc_url( dlscalc_page_url( 'dls-calculator' ) ) . '">DLS calculator</a> by DLSCalc</p>';
 }
 

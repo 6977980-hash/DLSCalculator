@@ -30,7 +30,7 @@ function dlscalc_seo_plugin_active() {
 function dlscalc_seo_pages() {
 	return array(
 		'home'                       => array(
-			'title'       => 'DLSCalc: Free Cricket Calculators for Rain Targets, NRR & Run Rate',
+			'title'       => 'DLSCalc: Free Cricket Calculators for Rain Targets & NRR',
 			'description' => 'Free DLS calculator for rain targets and par scores in T20, ODI and local matches, plus a net run rate calculator with qualification scenarios.',
 		),
 		'dls-calculator'             => array(
@@ -54,15 +54,15 @@ function dlscalc_seo_pages() {
 			'description' => 'Calculate net run rate across every match, with the all-out rule built in. Then see the win margin or chase overs your team needs to pass a rival. Free.',
 		),
 		'run-rate-calculator'        => array(
-			'title'       => 'Run Rate Calculator: Current & Required Run Rate | DLSCalc',
-			'description' => 'Current run rate, required run rate, runs needed per ball and projected score for any cricket innings. Overs counted in balls, so 12.4 overs is handled correctly.',
+			'title'       => 'Run Rate Calculator (Cricket): Current & Required | DLSCalc',
+			'description' => 'Current run rate, required run rate, runs needed per ball and projected score for any cricket innings. Overs count in balls, so 12.4 overs is handled right.',
 		),
 		'strike-rate-calculator'     => array(
 			'title'       => 'Strike Rate & Batting Average Calculator (Cricket) | DLSCalc',
 			'description' => 'Strike rate and batting average calculator for cricket. Enter runs, balls, innings and not outs for one innings or a season, plus boundaries and a target rate.',
 		),
 		'bowling-average-calculator' => array(
-			'title'       => 'Bowling Average & Economy Rate Calculator (Cricket) | DLSCalc',
+			'title'       => 'Bowling Average & Economy Rate Calculator Cricket | DLSCalc',
 			'description' => 'Free bowling average calculator with economy rate and bowling strike rate. Enter overs like 38.4, runs conceded and wickets for a spell, a match or a career.',
 		),
 		'dls-method'                 => array(
@@ -75,7 +75,7 @@ function dlscalc_seo_pages() {
 		),
 		'vjd-method'                 => array(
 			'title'       => 'VJD Method in Cricket: Jayadevan System vs DLS Explained',
-			'description' => 'What the VJD method is, who V. Jayadevan is, how his rain rule sets targets, where the BCCI used it, and how it differs from DLS and the old D/L method.',
+			'description' => 'What the VJD method is, who V. Jayadevan is, how his rain rule sets targets, where the BCCI uses it, and how it differs from DLS and the old D/L method.',
 		),
 		'about'                      => array(
 			'title'       => 'About DLSCalc and Ch Alee | DLSCalc',
@@ -450,6 +450,24 @@ add_filter(
 );
 
 /**
+ * Sitemap lastmod follows the theme's content dates, so a text change in the theme shows up there too
+ * (audit F83), not only edits made in WP admin.
+ */
+add_filter(
+	'wp_sitemaps_posts_entry',
+	function ( $entry, $post ) {
+		$slug = (int) get_option( 'page_on_front' ) === $post->ID ? 'home' : $post->post_name;
+		$time = dlscalc_content_time( $slug, $post );
+		if ( null !== $time ) {
+			$entry['lastmod'] = gmdate( 'c', $time );
+		}
+		return $entry;
+	},
+	10,
+	2
+);
+
+/**
  * Author, date, category, tag and attachment archives are thin duplicate pages on a site like this;
  * send them home (attachments to their parent). Runs before WordPress's own canonical redirect,
  * which would otherwise send ?author=1 to /author/<username>/ and give the login name away.
@@ -462,6 +480,12 @@ function dlscalc_redirect_thin_archives() {
 	if ( is_attachment() ) {
 		$parent = wp_get_post_parent_id( get_queried_object_id() );
 		wp_safe_redirect( $parent ? get_permalink( $parent ) : home_url( '/' ), 301 );
+		exit;
+	}
+	// Nothing on the site is paginated, so /page/2/ or /some-page/2/ would only copy a page under a
+	// wrong canonical (audit F89). Send them to the page itself.
+	if ( is_paged() || ( is_singular() && (int) get_query_var( 'page' ) > 1 ) ) {
+		wp_safe_redirect( is_front_page() || ! is_singular() ? home_url( '/' ) : get_permalink(), 301 );
 		exit;
 	}
 }

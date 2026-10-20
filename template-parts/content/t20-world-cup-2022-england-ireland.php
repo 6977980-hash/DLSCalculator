@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <h2 id="what-happened">What happened at the MCG?</h2>
-<p>England played Ireland in the Super 12 stage of the 2022 T20 World Cup at the Melbourne Cricket Ground on 26 October. Rain delayed the start, and England chose to bowl. Ireland had another short break at 11 for 0, with no overs lost, and went on to make <strong>157 all out in 19.2 overs</strong>, led by Andrew Balbirnie's 62.</p>
+<p>England played Ireland in the Super 12 stage of the 2022 T20 World Cup at the Melbourne Cricket Ground on 26 October. Rain delayed the start by 18 minutes, and England chose to bowl. Ireland faced only nine balls before another shower took the players off, but no overs were lost, and Ireland went on to make <strong>157 all out in 19.2 overs</strong>, led by Andrew Balbirnie's 62.</p>
 <p>England lost early wickets in the chase. They were <strong>105 for 5 after 14.3 overs</strong>, needing 53 off 33 balls, when heavy rain came. The ground did not dry in time for a restart before the cut-off, so play was abandoned.</p>
 <p>Because the chase never restarted, there was no revised target. The result came from the DLS par score at the moment play stopped: <strong>110</strong>. England were 5 runs short of it, so Ireland won by 5 runs.</p>
 
@@ -35,6 +35,7 @@ dlscalc_match_tail(
 	't20-world-cup-2022-england-ireland',
 	array(
 		array( 'ICC: rain interferes late as Ireland hold off strong England challenge', 'https://www.icc-cricket.com/news/rain-interferes-late-as-ireland-hold-off-strong-england-challenge' ),
+		array( 'Al Jazeera: Ireland seal shock T20 World Cup win over England', 'https://www.aljazeera.com/sports/2022/10/26/ireland-win-shock-t20-victory-against-england-in-the-rain' ),
 		array( 'Wikipedia: 2022 ICC Men\'s T20 World Cup', 'https://en.wikipedia.org/wiki/2022_ICC_Men%27s_T20_World_Cup' ),
 	)
 );

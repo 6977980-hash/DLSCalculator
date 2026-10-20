@@ -59,7 +59,7 @@ a{color:#13452f;font-weight:600}
 <body>
 <main class="w">
 	<h1>DLS target calculator</h1>
-	<p class="sub">Rain before the chase? Enter the overs Team 2 gets. ICC DLS Standard Edition.</p>
+	<p class="sub">Rain before the chase? Enter the overs Team 2 gets. Uses the DLS Standard Edition. Independent tool, not ICC software: official targets can differ.</p>
 	<form method="get" action="" data-embed>
 		<div class="f">
 			<label>Format<select name="f">

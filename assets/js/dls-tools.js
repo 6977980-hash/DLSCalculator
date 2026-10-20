@@ -396,9 +396,11 @@
 			});
 		});
 	});
-	// The printed par sheet ends with the link that reopens this result.
+	// The printed par sheet ends with the link that reopens this result: the tool's own one-letter
+	// params only, so tags such as fbclid, utm_source or nc are not printed (audit F87).
 	window.addEventListener('beforeprint', function () {
-		$$('[data-sheet-url]').forEach(function (el) { el.textContent = location.href.replace(/#.*$/, ''); });
+		var own = location.search.slice(1).split('&').filter(function (kv) { return /^[a-z]=/.test(kv); }).join('&');
+		$$('[data-sheet-url]').forEach(function (el) { el.textContent = location.origin + location.pathname + (own ? '?' + own : ''); });
 	});
 
 	update();

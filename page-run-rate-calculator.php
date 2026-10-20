@@ -31,7 +31,7 @@ if ( $dlscalc_err ) {
 
 get_header();
 dlscalc_tool_page_open(
-	'Run Rate Calculator: Current and Required Run Rate',
+	'Run Rate Calculator for Cricket: Current and Required Run Rate',
 	'Get the current run rate, the required run rate and how many runs are needed off how many balls. Batting first? See the projected score at different scoring rates.'
 );
 ?>

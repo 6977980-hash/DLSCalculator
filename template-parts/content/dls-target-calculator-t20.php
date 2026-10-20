@@ -18,10 +18,9 @@ $dlscalc_overs  = array( 5, 6, 8, 10, 12, 14, 15, 16, 18 );
 <p>This page assumes Team 1 batted its full overs, which is how most rain-hit T20s play out: the weather arrives during the break or the chase. If Team 1's innings was interrupted, use the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">full DLS calculator</a>, which handles stoppages in both innings. Overs are written as a scorer writes them, so 8.3 means 8 overs and 3 balls.</p>
 <p>Every result has a link of its own. The page address updates as you change the inputs, so the WhatsApp button and the copy link button share the exact target, and opening the link shows the same numbers and par table.</p>
 
-<h2 id="how-t20-target-is-calculated">How is a T20 DLS target calculated?</h2>
-<p>A full 20-over innings with 10 wickets is worth 56.6% of the resources of a 50-over innings. When Team 2 loses overs, its share falls, and Team 1's score is scaled by the same ratio. The result is rounded down and one run is added to give the target.</p>
-<p>For a chase cut to 15 overs before it starts: 15 overs with no wickets lost are worth 45.2%. Team 1 scored 180 with 56.6%, so the par score is 180 × 45.2 ÷ 56.6 = 143.75, rounded down to 143. The target is <strong>144 in 15 overs</strong>, a required rate of 9.60 an over against 9.05 for the full chase.</p>
-<p>The required rate goes up because Team 2 has the same 10 wickets for fewer overs, so it can take more risks. That is the core idea of DLS: wickets and overs together are the resources, and a team with wickets in hand is expected to score faster. The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>">DLS method guide</a> explains the idea in full.</p>
+<h2 id="how-t20-target-is-calculated">How much do lost overs change a T20 target?</h2>
+<p>A full 20-over innings is worth 56.6% on the DLS scale. For a chase cut to 15 overs before it starts, 15 overs with no wickets lost are worth 45.2%, so Team 1's 180 becomes 180 × 45.2 ÷ 56.6 = 143.75, rounded down to a par of 143. The target is <strong>144 in 15 overs</strong>, a required rate of 9.60 an over against 9.05 for the full chase.</p>
+<p>The rate goes up because Team 2 keeps all 10 wickets for fewer overs. The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>#formula">DLS method guide</a> explains the formula and why wickets count as resources.</p>
 
 <h2 id="common-targets">What are common T20 DLS targets?</h2>
 <p>The table below gives the revised target for common first-innings scores when the chase is shortened before it starts and no more overs are lost. A 160 chase cut to 10 overs needs 91, cut to 12 overs it needs 107, and cut to 15 overs it needs 128. Each figure comes from the same calculation as the calculator.</p>
@@ -58,8 +57,8 @@ $dlscalc_overs  = array( 5, 6, 8, 10, 12, 14, 15, 16, 18 );
 <p>Team 2 needs whatever it has not yet scored of those 136 runs from the 5 overs that are left. The par table on this page then shows where Team 2 stands after each of those overs, in case it rains again.</p>
 
 <h2 id="abandoned">Who wins if a T20 is abandoned in the chase?</h2>
-<p>If Team 2 has faced at least 5 overs, the match goes to the DLS par score at the moment play ended. Team 2 wins with more runs than the par, loses with fewer and ties on the par exactly. If Team 2 has faced fewer than 5 overs, there is no result. At the ICC Men's T20 World Cup, the semi-finals and the final need at least 10 overs a side instead.</p>
-<p>Team 1 makes 160 and rain ends the match with Team 2 at 12 overs, 3 down. The 8 overs left with 3 down were worth 24.8%, so Team 2 used 56.6 − 24.8 = 31.8%. The par is 160 × 31.8 ÷ 56.6 = 89.89, rounded down to 89. On 90 or more Team 2 wins. To get this in the calculator, add a stoppage at 12 overs, 3 down, with 8 overs lost.</p>
+<p>It goes to the DLS par score when play ended, as long as Team 2 has faced at least 5 overs (10 in T20 World Cup knockouts); the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>#minimum-overs">minimum overs rules</a> cover the rest.</p>
+<p>For example, Team 1 makes 160 and rain ends the match with Team 2 at 12 overs, 3 down. The 8 overs left with 3 down were worth 24.8%, so Team 2 used 56.6 − 24.8 = 31.8%. The par is 160 × 31.8 ÷ 56.6 = 89.89, rounded down to 89. On 90 or more Team 2 wins. To get this in the calculator, add a stoppage at 12 overs, 3 down, with 8 overs lost.</p>
 <figure class="figure">
 	<img src="<?php echo esc_url( $dlscalc_img . 't20-par-160.svg' ); ?>" width="760" height="440" loading="lazy" decoding="async" alt="Line chart of the DLS par score in a 20-over chase of 160, after each over from 1 to 19, with lines for 0, 3 and 6 wickets down. After 10 overs the par is 69 with no wickets down, 75 with 3 down and 95 with 6 down.">
 	<figcaption>Par score through a 20-over chase of 160. Each wicket that falls pushes the par up.</figcaption>

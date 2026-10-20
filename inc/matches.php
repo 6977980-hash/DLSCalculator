@@ -29,9 +29,9 @@ function dlscalc_matches() {
 			'h1'       => '1992 World Cup Semi-Final Rain Rule: 22 Off 13 Balls Became 21 Off 1',
 			'seo'      => array(
 				'title'       => '1992 World Cup Semi-Final Rain Rule: What DLS Would Have Set',
-				'description' => 'How the most productive overs rule left South Africa needing 21 off 1 ball against England in Sydney in 1992, and the target the DLS method would have set instead.',
+				'description' => 'How the most productive overs rule left South Africa needing 21 off 1 ball against England in Sydney in 1992, and the target DLS would have set instead.',
 			),
-			'answer'   => 'South Africa needed 22 off 13 balls against England in the 1992 World Cup semi-final when a 12-minute shower cost two overs. The rain rule of the day, "most productive overs", cut the target by just one run, so the equation became 21 off 1 ball. Under DLS the equation would have been a few runs off the last ball: our calculator gives a target of 235 in 43 overs (4 to win), and the D/L figure usually quoted is 236 (5 to win). Both are estimates, since the real overs were cut during England\'s innings.',
+			'answer'   => 'South Africa needed 22 off 13 balls against England in the 1992 World Cup semi-final when a 12-minute shower cost two overs. The rain rule of the day, "most productive overs", cut the target by just one run, so the equation became 21 off 1 ball. Under DLS South Africa would have needed 4 to win off the last ball by our calculator (a target of 235 in 43 overs), or 5 by the usual D/L figure of 236. Both are estimates, since the real overs were cut during England\'s innings.',
 			'card'     => '22 off 13 became 21 off 1. DLS would have asked for 4 or 5.',
 			'format'   => 'odi',
 			'rule'     => 'Most productive overs',
@@ -106,7 +106,7 @@ function dlscalc_matches() {
 			'title'    => 'New Zealand vs South Africa, 2015 World Cup semi-final',
 			'h1'       => '2015 World Cup Semi-Final: How New Zealand\'s DLS Target Became 298 in 43 Overs',
 			'seo'      => array(
-				'title'       => '2015 World Cup Semi-Final DLS Target: 298 in 43 Overs Explained',
+				'title'       => '2015 World Cup Semi-Final DLS Target: 298 in 43 Overs',
 				'description' => 'Why New Zealand had to chase 298 in 43 overs after South Africa made 281 for 5 in Auckland in 2015, and what the published DLS table gives for the same match.',
 			),
 			'answer'   => 'Rain cut South Africa\'s innings to 43 overs at Eden Park in 2015, and they finished on 281 for 5. New Zealand were set 298 in 43 overs, more than South Africa scored, because the rain came when South Africa had wickets and overs in hand. Grant Elliott won it with a six off the second-last ball. The published Standard Edition gives 307, nine more than the official target.',
@@ -148,7 +148,7 @@ function dlscalc_matches() {
 			'h1'       => '2019 World Cup Semi-Final DLS: The Targets India Never Had to Chase',
 			'seo'      => array(
 				'title'       => '2019 World Cup Semi Final DLS: India vs New Zealand Targets',
-				'description' => 'Rain stopped New Zealand on 211 for 5 at Old Trafford in 2019. The DLS targets India would have faced in 20 to 46 overs, and why the match went to a reserve day instead.',
+				'description' => 'Rain stopped New Zealand on 211 for 5 at Old Trafford in 2019. The DLS targets India would have faced in 20 to 46 overs, and why it went to a reserve day.',
 			),
 			'answer'   => 'Rain stopped the 2019 World Cup semi-final with New Zealand on 211 for 5 after 46.1 overs. Targets for India were worked out in case more rain came, from 148 in 20 overs to 237 in 46. None of them was used: the match resumed on the reserve day with no overs lost, New Zealand made 239 for 8, and India were bowled out for 221.',
 			'card'     => 'DLS targets for a chase that never came. Reserve day instead.',
@@ -228,7 +228,7 @@ function dlscalc_matches() {
 			'h1'       => 'England vs Ireland 2022 T20 World Cup: Ireland Win by 5 Runs on DLS',
 			'seo'      => array(
 				'title'       => 'England vs Ireland 2022 T20 World Cup DLS: The Par of 110',
-				'description' => 'England were 105 for 5 after 14.3 overs, five runs behind the DLS par of 110, when rain ended the match at the MCG in 2022. How Ireland\'s famous win was worked out.',
+				'description' => 'England were 105 for 5 after 14.3 overs, five runs behind the DLS par of 110, when rain ended the match at the MCG in 2022. How Ireland\'s win was worked out.',
 			),
 			'answer'   => 'Ireland made 157 all out at the MCG in 2022, and England were 105 for 5 after 14.3 overs when rain ended the match. The DLS par at that moment was 110, so Ireland won by 5 runs, one of the biggest upsets of the tournament. Our calculator gives the same par, 110.',
 			'card'     => '105 for 5 against a par of 110. The upset at the MCG.',
@@ -266,7 +266,7 @@ function dlscalc_matches() {
 			'title'    => 'Pakistan vs South Africa, 2022 T20 World Cup',
 			'h1'       => 'Pakistan vs South Africa 2022 T20 World Cup: 142 in 14 Overs on DLS',
 			'seo'      => array(
-				'title'       => 'Pakistan vs South Africa 2022 DLS Target: 142 in 14 Explained',
+				'title'       => 'Pakistan vs South Africa 2022 DLS Target: 142 in 14 Overs',
 				'description' => 'South Africa were 69 for 4 after 9 overs, behind the DLS par, when rain hit Sydney in 2022. How their target became 142 in 14 overs and Pakistan won by 33 runs.',
 			),
 			'answer'   => 'Pakistan made 185 for 9 in Sydney, and South Africa were 69 for 4 after 9 overs, 15 behind the DLS par of 84, when rain came. Six overs were lost and the target became 142 in 14 overs, leaving 73 off 5. South Africa finished on 108 for 9 and Pakistan won by 33 runs, a result that kept them alive on the way to the final. Our calculator gives 139.',
@@ -344,7 +344,7 @@ function dlscalc_matches() {
 			'title'    => 'Afghanistan vs Bangladesh, 2024 T20 World Cup',
 			'h1'       => 'Afghanistan vs Bangladesh 2024 T20 World Cup: 114 in 19 Overs on DLS',
 			'seo'      => array(
-				'title'       => 'Afghanistan vs Bangladesh 2024 DLS: 114 in 19 Overs Explained',
+				'title'       => 'Afghanistan vs Bangladesh 2024 DLS Target: 114 in 19 Overs',
 				'description' => 'Three rain breaks, a target of 114 in 19 overs and Afghanistan\'s first World Cup semi-final. How DLS worked in St Vincent in 2024, and the Gulbadin cramp row.',
 			),
 			'answer'   => 'Afghanistan made 115 for 5 in St Vincent at the 2024 T20 World Cup. Rain stopped Bangladesh\'s chase three times, and after the second break, at 81 for 7 in 11.4 overs, one over was lost and the target became 114 in 19 overs. Bangladesh were all out for 105 and Afghanistan won by 8 runs, reaching their first World Cup semi-final. Our calculator gives 113.',

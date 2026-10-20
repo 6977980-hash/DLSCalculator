@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $dlscalc_nrr = dlscalc_page_url( 'net-run-rate-calculator' );
 ?>
-<h2 id="full-form">What is the full form of NRR in cricket?</h2>
+<h2 id="full-form">What is NRR in cricket, and what is its full form?</h2>
 <p>NRR stands for <strong>net run rate</strong>. It measures how much faster a team scores than the teams it plays against, across a whole tournament. A positive NRR means a team scores faster than its opponents do against it; a negative NRR means it scores slower.</p>
 <p>NRR matters because points tables in cricket are often tight. When two teams finish level on points, net run rate is the usual way to separate them, so it decides who reaches the semi-finals or the playoffs in the IPL, the PSL, the T20 World Cup and most local leagues. Some competitions, including ICC events, compare the number of wins first and use NRR after that.</p>
 
