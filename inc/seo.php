@@ -83,7 +83,11 @@ function dlscalc_seo_pages() {
 		),
 		'privacy-policy'             => array(
 			'title'       => 'Privacy Policy | DLSCalc',
-			'description' => 'How DLSCalc handles data. The calculators run in your browser and nothing you type is sent to us.',
+			'description' => 'How DLSCalc handles data: the calculators run in your browser, nothing you type is stored, and your rights under data protection law.',
+		),
+		'terms'                      => array(
+			'title'       => 'Terms and Disclaimer | DLSCalc',
+			'description' => 'The terms for using DLSCalc: an independent tool, not ICC software. Official targets are final, results come with no warranty, and how the widget may be used.',
 		),
 		'contact'                    => array(
 			'title'       => 'Contact | DLSCalc',

@@ -80,7 +80,7 @@
 			form.elements.c.value = got('c', '');
 			form.elements.g.value = got('g', '') === '200' ? '200' : '245';
 			var fmt = got('f', '');
-			form.elements.f.value = ['odi', 't20', 't20ko', 't10', 'custom'].indexOf(fmt) > -1 ? fmt : ({ 50: 'odi', 20: 't20', 10: 't10' }[form.elements.n.value] || 'custom');
+			form.elements.f.value = ['odi', 't20', 't20ko', 't10', 'custom'].indexOf(fmt) > -1 ? fmt : DLS.fmtOf(form.elements.n.value);
 			$$('.lrow:not(.lrow--spare)', box).forEach(function (row) { box.removeChild(row); });
 			got('x', '').split('_').filter(Boolean).forEach(function (part) {
 				var row = spare.cloneNode(true), v = part.split('-');
@@ -205,9 +205,14 @@
 		out('steps').innerHTML = (err ? ['Fix the inputs above to see the working.'] : r.steps.concat(r.nowSteps)).map(function (s) {
 			return '<li>' + esc(s) + '</li>';
 		}).join('');
+		// Same markup as dlscalc_dls_par_row_html(): rows before the minimum overs are grey (audit F74).
 		out('rows').innerHTML = err ? '' : r.rows.map(function (row) {
-			return '<tr><th scope="row">' + row.over + '</th>' + row.cells.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
+			return '<tr' + (row.nr ? ' class="par__nr"' : '') + '><th scope="row">' + row.over + (row.nr ? '<span class="screen-reader-text"> (no result)</span>' : '') + '</th>' +
+				row.cells.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
 		}).join('');
+		var nr = out('nrnote');
+		nr.textContent = err ? '' : DLS.nrNote(r);
+		nr.hidden = !nr.textContent;
 		var note = out('tablenote');
 		note.textContent = note.getAttribute(err ? 'data-off' : 'data-on');
 
@@ -289,6 +294,8 @@
 		box.removeChild(row);
 		update();
 		offerUndo('Score entry removed.', before);
+		// Keyboard focus goes to Undo, not back to the top of the page (audit F101).
+		$('[data-undo-btn]', undo).focus();
 	};
 	$('[data-reset]', form).addEventListener('click', function () {
 		var before = log();

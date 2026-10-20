@@ -511,17 +511,30 @@ function dlscalc_dls_par_table_html( $r, $caption ) {
 			<tbody data-out="rows">
 				<?php
 				foreach ( empty( $r['err'] ) ? $r['rows'] : array() as $row ) {
-					echo '<tr><th scope="row">' . (int) $row['over'] . '</th>';
-					foreach ( $row['cells'] as $cell ) {
-						echo '<td>' . (int) $cell . '</td>';
-					}
-					echo '</tr>';
+					echo dlscalc_dls_par_row_html( $row ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- whole numbers only.
 				}
 				?>
 			</tbody>
 		</table>
 	</div>
+	<?php $note = dlscalc_dls_nr_note( $r ); ?>
+	<p class="hint par-note" data-out="nrnote"<?php echo $note ? '' : ' hidden'; ?>><?php echo esc_html( $note ); ?></p>
 	<?php
+}
+
+/**
+ * One par table row. A row before the minimum overs for a result is grey and says so to screen
+ * readers too (audit F74). Same markup as parRow() in dls-tools.js and live-par.js.
+ *
+ * @param array $row Row from dlscalc_dls_par_rows().
+ * @return string
+ */
+function dlscalc_dls_par_row_html( $row ) {
+	$html = '<tr' . ( $row['nr'] ? ' class="par__nr"' : '' ) . '><th scope="row">' . (int) $row['over'] . ( $row['nr'] ? '<span class="screen-reader-text"> (no result)</span>' : '' ) . '</th>';
+	foreach ( $row['cells'] as $cell ) {
+		$html .= '<td>' . (int) $cell . '</td>';
+	}
+	return $html . '</tr>';
 }
 
 /**

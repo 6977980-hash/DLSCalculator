@@ -3,4 +3,5 @@
 const DLS = require('../../assets/js/dls-engine.js');
 const NRR = require('../../assets/js/nrr-engine.js');
 const cases = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
-process.stdout.write(JSON.stringify(cases.map((c) => (c.fn.startsWith('nrr.') ? NRR[c.fn.slice(4)] : DLS[c.fn])(c.p))));
+const extra = { fmt: (p) => ({ f: DLS.fmtOf(p.n) }) };
+process.stdout.write(JSON.stringify(cases.map((c) => (extra[c.fn] || (c.fn.startsWith('nrr.') ? NRR[c.fn.slice(4)] : DLS[c.fn]))(c.p))));

@@ -21,22 +21,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 function dlscalc_content_dates() {
 	// Audit F79-F90 (20 Oct 2026): accuracy sentence, titles, FAQs and match notes.
 	$f79 = '2026-10-20 08:30';
+	// Audit F74-F94 (20 Oct 2026): grey no-result rows in par tables, T20 rate label, Privacy and Terms.
+	$f74 = '2026-10-20 16:00';
 	return array(
 		'home'                       => $f79,
-		'dls-calculator'             => $f79,
-		'dls-target-calculator-t20'  => $f79,
-		'dls-par-score-table'        => $f79,
+		'dls-calculator'             => $f74,
+		'dls-target-calculator-t20'  => $f74,
+		'dls-par-score-table'        => $f74,
 		'net-run-rate-calculator'    => '2026-10-19 21:31',
 		'run-rate-calculator'        => $f79,
 		'strike-rate-calculator'     => '2026-10-19 17:49',
 		'bowling-average-calculator' => $f79,
-		'live-dls-par-score'         => $f79,
+		'live-dls-par-score'         => $f74,
 		'dls-method'                 => $f79,
 		'how-to-calculate-nrr'       => $f79,
 		'vjd-method'                 => $f79,
-		'about'                      => $f79,
+		'about'                      => $f74,
 		'contact'                    => '2026-10-19',
-		'privacy-policy'             => '2026-10-19',
+		'privacy-policy'             => $f74,
+		'terms'                      => $f74,
 		'famous-dls-matches'         => '2026-10-19 21:22',
 	) + array_fill_keys( array_keys( dlscalc_matches() ), $f79 );
 }
@@ -205,7 +208,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'How is the par score table calculated?', 'Each cell takes the resources Team 2 has used by that over with that many wickets down, divides them by Team 1\'s resources and multiplies by Team 1\'s score, rounded down. All values come from the ICC Standard Edition table.' ),
 			array( 'Why does the par score rise so much with wickets?', 'Wickets are resources too. A team that is 4 down has less batting left than a team that is 1 down after the same overs, so it is judged to have used more of its resources and must have scored more to be ahead.' ),
 			array( 'Is the par score the same as the target?', 'No. The target is the par score for the whole chase plus one run. The par score at each over is what Team 2 needs if play ends at that point, so it changes over by over and wicket by wicket.' ),
-			array( 'Can I use the table for an ODI?', 'Yes. Choose 50 overs and enter Team 1\'s score to get the par after every over from 1 to 49, for 0 to 9 wickets down. Shorter matches from 5 overs upwards work the same way.' ),
+			array( 'Can I use the table for an ODI?', 'Yes. Choose 50 overs and enter Team 1\'s score to get the par after every over from 1 to 49, for 0 to 9 wickets down. Overs 1 to 19 are grey, because an ODI chase needs 20 overs for a result. Shorter matches from 5 overs upwards work the same way.' ),
 			array( 'What if Team 1\'s innings was interrupted?', 'This table assumes Team 1 batted its full overs. If Team 1 lost overs or Team 2\'s chase has already been cut, use the <a href="' . $calc . '">DLS calculator</a>, which gives the par table for the rest of the chase after every stoppage.' ),
 		),
 		'net-run-rate-calculator'    => array(

@@ -81,7 +81,7 @@ function dlscalc_guides() {
  * @return string[]
  */
 function dlscalc_trust_slugs() {
-	return array( 'about', 'contact', 'privacy-policy' );
+	return array( 'about', 'contact', 'privacy-policy', 'terms' );
 }
 
 /**

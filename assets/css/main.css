@@ -118,7 +118,15 @@ h1, h2, h3, h4 {
 
 a { color: var(--green); }
 a:hover, a:focus { color: var(--green-dark); }
-:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+/*
+ * Focus ring: dark green on the light pages, gold only on the green areas, so it keeps 3:1 against
+ * what is around it (WCAG 1.4.11; gold on cream was 1.68:1, audit F92). A white box inside a green
+ * area (the home quick box) goes back to green.
+ */
+:root { --focus: var(--green); }
+.site-head, .site-foot, .hero, .maker, .cta, .result, .stick { --focus: var(--gold); }
+.quick { --focus: var(--green); }
 
 .wrap {
 	max-width: var(--wrap);

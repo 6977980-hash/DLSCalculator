@@ -70,7 +70,7 @@ dlscalc_par_sheet_head();
 </section>
 <?php dlscalc_par_sheet_foot(); ?>
 
-<section class="panel block">
+<section class="panel block sheet-steps">
 	<h2>How the par scores were worked out</h2>
 	<?php dlscalc_dls_steps( $dlscalc_r ); ?>
 </section>

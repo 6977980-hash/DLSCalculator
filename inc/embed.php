@@ -77,6 +77,10 @@ function dlscalc_serve_embed() {
 	header( 'Content-Type: text/html; charset=utf-8' );
 	header( 'X-Robots-Tag: noindex, follow' );
 	header( 'Cache-Control: public, max-age=3600' );
+	// The same nosniff, referrer and permissions headers as every page, without the framing rules (audit F97).
+	foreach ( dlscalc_base_security_headers() as $name => $value ) {
+		header( $name . ': ' . $value );
+	}
 	require DLSCALC_DIR . '/template-parts/embed-dls.php';
 	exit;
 }

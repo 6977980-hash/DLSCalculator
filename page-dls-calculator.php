@@ -25,7 +25,7 @@ $dlscalc_fmts = array(
 	't10'    => array( '10', 'T10 (10 overs)' ),
 	'custom' => array( '', 'Other format' ),
 );
-$dlscalc_f    = isset( $dlscalc_fmts[ $dlscalc_in['f'] ] ) ? $dlscalc_in['f'] : ( array( '50' => 'odi', '20' => 't20', '10' => 't10' )[ $dlscalc_n ] ?? 'custom' );
+$dlscalc_f    = isset( $dlscalc_fmts[ $dlscalc_in['f'] ] ) ? $dlscalc_in['f'] : dlscalc_dls_fmt_of( $dlscalc_n );
 
 get_header();
 dlscalc_tool_page_open(

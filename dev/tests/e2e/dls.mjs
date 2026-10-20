@@ -213,7 +213,8 @@ export default [
 			eq((await outs(page)).big, want.target, 'target');
 			const rows = await page.$$eval('[data-out="rows"] tr', (trs) => trs.map((t) => t.innerText.trim().split(/\s+/).join(' ')));
 			eq(rows.length, want.rows.length, 'row count');
-			want.rows.forEach((r, i) => eq(rows[i], [r.over].concat(r.cells).join(' '), 'row ' + r.over));
+			// Rows before the 5-over minimum carry a screen-reader "(no result)" (audit F74).
+			want.rows.forEach((r, i) => eq(rows[i], [r.over + (r.nr ? ' (no result)' : '')].concat(r.cells).join(' '), 'row ' + r.over));
 		}
 	},
 	{

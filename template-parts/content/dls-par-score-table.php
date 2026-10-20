@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h2 id="how-to-use">How do you use this par score table?</h2>
 <p>Pick the overs per side with a quick button or type any number from 5 to 50, then enter Team 1's final score. The table lists the par after every completed over of the chase, with one column for each number of wickets down, from 0 to 9. Print it and give a copy to the scorers.</p>
+<p>The first rows are grey when they come before the minimum overs for a result: 5 overs for Team 2 in matches of up to 20 overs a side, and 20 overs in longer matches. If play ends for good before then, there is no result, so those pars do not decide the match. For a T20 knockout with a 10-over minimum, use the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a> and choose that format.</p>
 <p>To read it during a match, find the overs Team 2 has completed in the left column and the wickets it has lost across the top. If Team 2's score is above the number in that cell, it is ahead on DLS. If rain arrives in the middle of an over, use the row for the overs already completed, or enter the exact stoppage in the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">DLS calculator</a> for a ball-by-ball answer.</p>
 <p>If overs were lost before the chase began, enter the reduced overs for Team 2. The target and every par score in the table are then worked out for that shorter chase.</p>
 
@@ -48,11 +49,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 <p>Look at how little the par changes between 0 and 2 wickets early on, and how sharply it climbs after 6 wickets. Late in a T20 chase, with few overs left, wickets matter less, so the columns move closer together again.</p>
 
 <h2 id="odi-par">What is the DLS par score in an ODI?</h2>
-<p>In a 50-over match where Team 1 scores 250, the par after 20 overs is 62 with no wickets down, 81 with 2 down and 114 with 4 down. After 30 overs it is 108 with no wickets down and 138 with 4 down. The full ODI table runs from over 1 to over 49.</p>
+<p>In a 50-over match where Team 1 scores 250, the par after 20 overs is 62 with no wickets down, 81 with 2 down and 114 with 4 down. After 30 overs it is 108 with no wickets down and 138 with 4 down. The full ODI table runs from over 1 to over 49, with overs 1 to 19 in grey because an ODI chase needs 20 overs for a result.</p>
 <p>ODI pars move further from the plain run rate than T20 pars, because a team has so many overs left to use its wickets. That is why a side 2 down after 20 overs can be behind the required rate yet comfortably ahead on DLS.</p>
 
 <h2 id="short-matches">What are DLS par scores for 8, 10, 12 and 15-over matches?</h2>
-<p>Short matches use the same table, starting from fewer resources. In a 10-over match where Team 1 scores 100, the par after 5 overs is 46 with no wickets down and 52 with 5 down. In an 8-over match of 90, the par after 4 overs is 42 with no wickets down.</p>
+<p>Short matches use the same table, starting from fewer resources. In a 10-over match where Team 1 scores 100, the par after 5 overs is 46 with no wickets down and 52 with 5 down. In an 8-over match of 90, the par after 5 overs, the fewest for a result, is 53 with no wickets down.</p>
 <p>The quick buttons above cover the lengths that rain-shortened club and tournament games most often start with: 8, 10, 12, 15 and 20 overs, plus a full 50-over ODI. Any other length from 5 to 50 overs works too, so a 30-over or 40-over league match is one number away.</p>
 <p>Short matches are where the par table helps most. With only a few overs in the chase, one shower can decide the game, and in a 12-over match of 120 the par after 6 overs climbs from 55 with no wickets down to 67 with 6 down. Knowing that before the umpires take the players off tells a batting side whether to attack or protect wickets.</p>
 

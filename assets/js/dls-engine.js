@@ -294,12 +294,16 @@
 		}
 		return {
 			N: o.N, F: o.F || '', S: o.S, G: o.G, M: o.M, R1: a.R, R2: b.R, raw: c2(raw), par: par, target: par + 1,
-			allot: b.allot, lastAt: b.lastAt, ended: b.ended, steps: steps, warn: warn, rows: parRows(o.S, a.R, o.G, b, P)
+			allot: b.allot, lastAt: b.lastAt, ended: b.ended, steps: steps, warn: warn, min: minB, rows: parRows(o.S, a.R, o.G, b, P, minB)
 		};
 	}
 
-	/** Par after each completed over left in the chase, for 0 to 9 wickets down, plus penalty runs P. */
-	function parRows(S, R1, G, b, P) {
+	/**
+	 * Par after each completed over left in the chase, for 0 to 9 wickets down, plus penalty runs P.
+	 * Rows before the minimum overs for a result (minB balls, see minBalls()) are marked nr: if play
+	 * ends there, there is no result, so their par decides nothing (audit F74).
+	 */
+	function parRows(S, R1, G, b, P, minB) {
 		var rows = [];
 		if (b.ended) {
 			return rows;
@@ -309,16 +313,45 @@
 			for (var w = 0; w < 10; w++) {
 				cells.push(floorPar(scale(S, r1(b.R - res(b.allot - ov * 6, w)), R1, G)) + (P || 0));
 			}
-			rows.push({ over: ov, cells: cells });
+			rows.push({ over: ov, cells: cells, nr: ov * 6 < (minB || 0) });
 		}
 		return rows;
+	}
+
+	/**
+	 * G50 as typed: tidied like overs, so "245." and "245,5" read as 245 and 245.5 (audit F78).
+	 * NaN unless it is a number with up to 2 decimals. PHP: dlscalc_dls_g50().
+	 */
+	function g50(v) {
+		var s = oversIn(v);
+		return /^\d{1,3}(\.\d{1,2})?$/.test(s) ? parseFloat(s) : NaN;
+	}
+
+	/**
+	 * Format implied by the overs per side, for links and forms without one: 50 overs is an ODI, 20 a
+	 * T20 and 10 a T10, however the overs are written ("50.0", "050"; audit F76). PHP: dlscalc_dls_fmt_of().
+	 */
+	function fmtOf(n) {
+		return { 300: 'odi', 120: 't20', 60: 't10' }[balls(n)] || 'custom';
+	}
+
+	/**
+	 * Note under a par table whose first rows come before the minimum overs (audit F74), or ''.
+	 * PHP: dlscalc_dls_nr_note().
+	 */
+	function nrNote(r) {
+		if (!r.rows || !r.rows.length || !r.rows[0].nr) {
+			return '';
+		}
+		var o = overs(r.min);
+		return 'Grey rows: no result. If play ends before Team 2 has faced ' + o + ' overs, there is no result under ICC rules, so the par only counts from over ' + o + '.';
 	}
 
 	function check(S, G, raw) {
 		if (isNaN(S) || S > 999) {
 			return fail(runsErr(raw, 'Team 1\'s score', 'Enter Team 1\'s final score.'), 'r');
 		}
-		if (!(G > 0 && G <= 500)) {
+		if (!(G >= 1 && G <= 500)) {
 			return fail('Enter a G50 value between 1 and 500, for example 245.', 'g');
 		}
 		return null;
@@ -332,7 +365,7 @@
 	 */
 	function calc(p) {
 		var N = balls(p.n), S = int(p.r), P = blank(p.k) ? 0 : int(p.k);
-		var G = /^\d{1,3}(\.\d{1,2})?$/.test(String(p.g == null ? '' : p.g).trim()) ? parseFloat(p.g) : NaN;
+		var G = g50(p.g);
 		var M = blank(p.c) ? N : balls(p.c);
 		if (isNaN(N) && !blank(p.n)) {
 			return fail(oversHelp('Overs per side', p.n), 'n');
@@ -407,7 +440,9 @@
 		if (M < 6 || M > No * 6) {
 			return fail('Overs for Team 2 must be between 1 and ' + No + '.', 'c');
 		}
-		var r = match({ N: No * 6, S: S, G: 245, t1: [], M: M, t2: [] });
+		// No format box here: up to 20 overs a side counts as a T20 (5 overs for a result), more as a
+		// one-day match (20 overs), so a short chase gets the minimum-overs warning (audit F75).
+		var r = match({ N: No * 6, S: S, G: 245, t1: [], M: M, t2: [], F: No > 20 ? 'odi' : 't20' });
 		r.No = No;
 		return r;
 	}
@@ -479,6 +514,6 @@
 
 	return {
 		res: res, balls: balls, overs: overs, oversHelp: oversHelp, fxq: fxq, scale: scale, innings: innings, match: match,
-		parRows: parRows, parseStops: parseStops, calc: calc, t20: t20, parTable: parTable, live: live, STOPS_MAX: STOPS_MAX, LIVE_MAX: LIVE_MAX
+		parRows: parRows, parseStops: parseStops, fmtOf: fmtOf, minBalls: minBalls, nrNote: nrNote, calc: calc, t20: t20, parTable: parTable, live: live, STOPS_MAX: STOPS_MAX, LIVE_MAX: LIVE_MAX
 	};
 }));

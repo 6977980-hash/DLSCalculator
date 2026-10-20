@@ -23,6 +23,7 @@ $map   = array(
 	'nrr.batting' => 'dlscalc_nrr_batting',
 	'nrr.bowling' => 'dlscalc_nrr_bowling',
 	'nrr.convert' => 'dlscalc_nrr_convert',
+	'fmt'         => fn( $p ) => array( 'f' => dlscalc_dls_fmt_of( $p['n'] ) ),
 );
 $cases = json_decode( file_get_contents( $argv[1] ), true );
 $out   = array();
