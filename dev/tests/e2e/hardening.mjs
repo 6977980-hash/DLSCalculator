@@ -132,7 +132,6 @@ export default [
 	},
 	{
 		name: 'security: readme.txt and install.php refused, /favicon.ico answers (audit F95, F98)',
-		known: 'F95',
 		run: async ({ base }) => {
 			eq((await head(base + '/wp-content/themes/generatepress/readme.txt')).status, 403, 'parent theme readme.txt');
 			eq((await head(base + '/wp-admin/install.php')).status, 403, 'install.php');
@@ -153,7 +152,6 @@ export default [
 	},
 	{
 		name: 'legal: Terms and Disclaimer page with a footer link (audit F94, page made in WP admin)',
-		known: 'F94',
 		run: async ({ base }) => {
 			const res = await fetch(fresh(base + '/terms/'));
 			eq(res.status, 200, '/terms/');
