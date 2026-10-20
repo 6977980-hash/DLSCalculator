@@ -408,7 +408,7 @@ function dlscalc_dls_result_panel( $r, $slug, $in, $stats ) {
 			<button type="button" class="btn btn--ghost js-only" data-copy>Copy link</button>
 			<button type="button" class="btn btn--ghost js-only" data-print>Print par sheet</button>
 		</div>
-		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ: usually by 3 runs or fewer in T20s, more in high-scoring ODIs. <a href="<?php echo esc_url( dlscalc_page_url( 'contact' ) ); ?>">Found a wrong answer? Tell us.</a></p>
+		<p class="result__note">DLSCalc is an independent tool, not ICC software. It uses the DLS Standard Edition, the ICC's published method. International matches use the Professional Edition software, so official targets can differ. <?php echo esc_html( dlscalc_accuracy_line() ); ?> <a href="<?php echo esc_url( dlscalc_page_url( 'contact' ) ); ?>">Found a wrong answer? Tell us.</a></p>
 	</aside>
 	<?php
 }
@@ -640,7 +640,14 @@ function dlscalc_par_sheet_head() {
  * dls-tools.js and live-par.js keep the link current before printing.
  */
 function dlscalc_par_sheet_foot() {
-	$url = home_url( add_query_arg( array() ) );
+	// Only the tools' own one-letter params, so fbclid, utm_* or nc never reach the paper (audit F87).
+	$own = array();
+	foreach ( $_GET as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only link.
+		if ( is_string( $key ) && is_string( $value ) && preg_match( '/^[a-z]$/', $key ) ) {
+			$own[ $key ] = wp_unslash( $value );
+		}
+	}
+	$url = add_query_arg( array_map( 'rawurlencode', $own ), get_permalink() );
 	?>
 	<div class="sheet sheet--foot" aria-hidden="true">
 		<div class="sheet__lines sheet__lines--sign">

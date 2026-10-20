@@ -27,7 +27,7 @@ get_header();
 			<div class="hero__copy">
 				<p class="eyebrow">Free cricket calculators</p>
 				<h1>Rain stopped play? Get the DLS target in seconds.</h1>
-				<p class="hero__lede">Accurate DLS revised targets, par scores and net run rate scenarios for T20, ODI and local league matches. No sign-up, works on your phone.</p>
+				<p class="hero__lede">DLS revised targets and par scores from the published ICC Standard Edition, plus net run rate scenarios for T20, ODI and local league matches. No sign-up, works on your phone.</p>
 				<div class="hero__actions">
 					<a class="btn btn--gold" href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">Open the DLS Calculator</a>
 					<a class="btn btn--ghost" href="<?php echo esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) ); ?>">Net Run Rate Calculator</a>
@@ -91,7 +91,7 @@ get_header();
 		<div class="wrap feature-grid">
 			<div>
 				<h3>Standard Edition tables</h3>
-				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition: in T20s the official target is usually within 3 runs of ours, but high-scoring ODIs can differ by up to about 23 runs.</p>
+				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition, so official figures can differ. <?php echo esc_html( dlscalc_accuracy_line() ); ?></p>
 			</div>
 			<div>
 				<h3>Fast on any phone</h3>

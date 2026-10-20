@@ -58,3 +58,9 @@ None left from the keyword research. The stats keywords got their pages in audit
 - Testing audit F53 (19 Oct): the 34-figure real-match accuracy table is one H2 on `/famous-dls-matches/` ("How close is it across 32 recent rain-hit matches?", `#real-matches`), the "dls calculator accuracy" owner. Other pages give the T20/ODI numbers in a sentence and link there; none repeats the table.
 
 Checked and left as they are: the NRR calculator only summarises the formula and links to `/how-to-calculate-nrr/`; tool pages link to `/dls-method/` for the method; the run rate page's "How is run rate different from net run rate?" is a short contrast with a link.
+
+## Fixes made on 20 October 2026 (full site audit, content phase)
+
+- F80: on `/dls-target-calculator-t20/`, "How is a T20 DLS target calculated?" is now "How much do lost overs change a T20 target?" with T20 numbers only, and "Who wins if a T20 is abandoned in the chase?" is one sentence plus a link to `/dls-method/#minimum-overs` before its T20 example. "How is dls target calculated" stays with `/dls-method/`.
+- F81: owner pages now carry their variants: `/dls-calculator/` FAQ "Is this a Duckworth-Lewis calculator or a DLS method calculator?", `/how-to-calculate-nrr/` H2 "What is NRR in cricket, and what is its full form?", `/run-rate-calculator/` title "Run Rate Calculator (Cricket): Current & Required" and H1 "Run Rate Calculator for Cricket: Current and Required Run Rate", `/live-dls-par-score/` FAQ "Is this a live DLS calculator?".
+- F82: home title is now "DLSCalc: Free Cricket Calculators for Rain Targets & NRR" (no tool keyword); match page and bowling titles under 60 characters, long descriptions under 160. `/dls-calculator/` stays at 61 (F26).

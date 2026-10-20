@@ -33,6 +33,8 @@ const pages = {
   'how-to-calculate-nrr': ['Guide', 'How to calculate net run rate', 'The NRR formula with a step-by-step example'],
   'vjd-method': ['Guide', 'VJD method vs DLS', 'Jayadevan\'s rain rule, explained and compared'],
   about: ['About', 'About DLSCalc and Ch Alee', 'Cricketer and tournament organiser'],
+  contact: ['Contact', 'Contact DLSCalc', 'Report a wrong answer or suggest a calculator'],
+  'privacy-policy': ['Privacy', 'DLSCalc privacy policy', 'The calculators run in your browser; nothing you type is sent to us'],
   'famous-dls-matches': ['Famous DLS matches', 'Rain-hit classics, recalculated', 'Official targets vs our DLS calculator, match by match'],
   '1992-world-cup-semi-final-england-south-africa': ['1992 World Cup', '22 off 13 became 21 off 1 ball', 'England vs South Africa, and what DLS would have set'],
   '2003-world-cup-south-africa-sri-lanka': ['2003 World Cup', 'The par score that knocked out the hosts', 'South Africa vs Sri Lanka in Durban: why 229 only tied'],

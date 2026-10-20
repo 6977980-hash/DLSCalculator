@@ -38,7 +38,7 @@ dlscalc_trust_page_open( 'About DLSCalc', 'Built and run by ' . $dlscalc_author[
 <p>Everything runs in your browser. There is no sign-up and nothing you type is sent to us. The guides explain the rules behind the tools: the <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>">DLS method</a>, <a href="<?php echo esc_url( dlscalc_page_url( 'how-to-calculate-nrr' ) ); ?>">how to calculate NRR</a> and the <a href="<?php echo esc_url( dlscalc_page_url( 'vjd-method' ) ); ?>">VJD method</a> used in Indian domestic cricket.</p>
 
 <h2 id="limits">What these tools cannot do</h2>
-<p>International and major league matches use the DLS Professional Edition, which runs on ICC software and is not published. In 34 checks from 32 recent rain-hit matches, every T20 target came within 3 runs of the Standard Edition, while ODIs differed by up to 23 runs after big first innings. For official results in those matches, the match officials' figure is final.</p>
+<p>International and major league matches use the DLS Professional Edition, which runs on ICC software and is not published. <?php echo esc_html( dlscalc_accuracy_line() ); ?> For official results in those matches, the match officials' figure is final.</p>
 
 <h2 id="sources">Sources</h2>
 <?php dlscalc_sources_html( array_merge( dlscalc_dls_sources(), dlscalc_nrr_sources() ) ); ?>

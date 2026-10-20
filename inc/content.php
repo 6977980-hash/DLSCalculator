@@ -10,29 +10,63 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * When each theme-written page's content last changed. The byline and schema use this instead of
- * the WordPress post date, because the text lives in the theme, not in the editor.
+ * When each theme-written page's content last changed, in UTC. The byline, schema, article:modified_time
+ * and the sitemap's lastmod use this instead of the WordPress post date, because the text lives in the
+ * theme, not in the editor. Update a page's entry in the same commit that changes its text (FAQs in this
+ * file, notes in inc/*-ui.php and inc/matches*.php count too); IndexNow pings the changed pages after the
+ * deploy (inc/indexnow.php). A date without a time means noon UTC.
  *
- * @return array<string, string> Slug => Y-m-d.
+ * @return array<string, string> Slug => 'Y-m-d H:i' (UTC).
  */
 function dlscalc_content_dates() {
+	// Audit F79-F90 (20 Oct 2026): accuracy sentence, titles, FAQs and match notes.
+	$f79 = '2026-10-20 08:30';
 	return array(
-		'dls-calculator'             => '2026-10-19',
-		'dls-target-calculator-t20'  => '2026-10-19',
-		'dls-par-score-table'        => '2026-10-19',
-		'net-run-rate-calculator'    => '2026-10-19',
-		'run-rate-calculator'        => '2026-10-19',
-		'strike-rate-calculator'     => '2026-10-19',
-		'bowling-average-calculator' => '2026-10-19',
-		'live-dls-par-score'         => '2026-10-19',
-		'dls-method'                 => '2026-10-19',
-		'how-to-calculate-nrr'       => '2026-10-19',
-		'vjd-method'                 => '2026-10-19',
-		'about'                      => '2026-10-19',
+		'home'                       => $f79,
+		'dls-calculator'             => $f79,
+		'dls-target-calculator-t20'  => $f79,
+		'dls-par-score-table'        => $f79,
+		'net-run-rate-calculator'    => '2026-10-19 21:31',
+		'run-rate-calculator'        => $f79,
+		'strike-rate-calculator'     => '2026-10-19 17:49',
+		'bowling-average-calculator' => $f79,
+		'live-dls-par-score'         => $f79,
+		'dls-method'                 => $f79,
+		'how-to-calculate-nrr'       => $f79,
+		'vjd-method'                 => $f79,
+		'about'                      => $f79,
 		'contact'                    => '2026-10-19',
 		'privacy-policy'             => '2026-10-19',
-		'famous-dls-matches'         => '2026-10-19',
-	) + array_fill_keys( array_keys( dlscalc_matches() ), '2026-10-19' );
+		'famous-dls-matches'         => '2026-10-19 21:22',
+	) + array_fill_keys( array_keys( dlscalc_matches() ), $f79 );
+}
+
+/**
+ * Unix time a page last changed: its theme content date or the WordPress edit, whichever is later.
+ *
+ * @param string       $slug Page slug ('home' for the front page).
+ * @param WP_Post|null $post The page, or null for the current one.
+ * @return int|null Null when the theme does not write that page.
+ */
+function dlscalc_content_time( $slug, $post = null ) {
+	$dates = dlscalc_content_dates();
+	if ( ! isset( $dates[ $slug ] ) ) {
+		return null;
+	}
+	$date  = $dates[ $slug ];
+	$theme = strtotime( $date . ( strlen( $date ) > 10 ? ':00' : ' 12:00:00' ) . ' UTC' );
+	return max( $theme, (int) get_post_modified_time( 'U', true, $post ) );
+}
+
+/**
+ * The one accuracy sentence used wherever a page compares this calculator with official targets, so the
+ * T20 and ODI figures never drift apart. Numbers come from dev/tests/real-matches.json (table on
+ * /famous-dls-matches/#real-matches); update both together.
+ *
+ * @return string Plain text, one sentence.
+ */
+function dlscalc_accuracy_line() {
+	return 'In 34 checks from 32 recent rain-hit matches, every T20 target and par came within 3 runs of this calculator, while ODIs differed by up to 23 runs after a big first innings.';
 }
 
 /**
@@ -42,14 +76,8 @@ function dlscalc_content_dates() {
  * @return string
  */
 function dlscalc_updated_date( $format ) {
-	$dates = dlscalc_content_dates();
-	$slug  = dlscalc_current_slug();
-	if ( isset( $dates[ $slug ] ) ) {
-		$theme = strtotime( $dates[ $slug ] . ' 12:00:00 UTC' );
-		$post  = (int) get_the_modified_date( 'U' );
-		return wp_date( $format, max( $theme, $post ) );
-	}
-	return get_the_modified_date( $format );
+	$time = dlscalc_content_time( dlscalc_current_slug() );
+	return null === $time ? get_the_modified_date( $format ) : wp_date( $format, $time );
 }
 
 /**
@@ -153,10 +181,11 @@ function dlscalc_faqs( $slug ) {
 	$nrr  = esc_url( dlscalc_page_url( 'net-run-rate-calculator' ) );
 	$faqs = array(
 		'dls-calculator'             => array(
-			array( 'Is this the official ICC DLS calculator?', 'No. DLSCalc is an independent calculator, not an ICC product. It uses the DLS Standard Edition resource table and formulas that the ICC publishes in its playing conditions, the official method when the ICC\'s Professional Edition software is not available. International matches use that software, so an official target can differ from ours: usually by 3 runs or fewer in T20s, more in high-scoring ODIs.' ),
+			array( 'Is this the official ICC DLS calculator?', 'No. DLSCalc is an independent calculator, not an ICC product. It uses the DLS Standard Edition resource table and formulas that the ICC publishes in its playing conditions, the official method when the ICC\'s Professional Edition software is not available. International matches use that software, so an official target can differ from ours. ' . dlscalc_accuracy_line() ),
+			array( 'Is this a Duckworth-Lewis calculator or a DLS method calculator?', 'Both. The Duckworth-Lewis (D/L) method became Duckworth-Lewis-Stern in 2014, when Steven Stern updated it, so a Duckworth-Lewis calculator, a D/L calculator and a DLS method calculator all mean a tool like this one. It uses the current DLS Standard Edition table, not the old D/L figures.' ),
 			array( 'How many overs are needed for a DLS result?', 'Team 2 must be able to face at least 20 overs in an ODI and 5 overs in a T20, even if the match started with fewer overs. If fewer are possible, there is no result, unless Team 2 has already passed the target or been bowled out. Some knockout matches ask for more: at the ICC Men\'s T20 World Cup, the semi-finals and the final need at least 10 overs a side. The calculator warns you when the chase falls below the usual minimum for the format you pick.' ),
 			array( 'Can I add more than one rain break?', 'Yes. Add a row for every stoppage in either innings, up to ten per innings. The resources lost in each stoppage are added together, which is how the ICC playing conditions handle several interruptions.' ),
-			array( 'Why can my answer differ from the official target?', 'International matches and big franchise leagues use the DLS Professional Edition, which runs on ICC software and is not published. This calculator uses the published Standard Edition table, the ICC\'s official fallback, so targets usually match or come close: within 3 runs in every T20 we checked, but up to 23 runs apart in high-scoring ODIs. See how close it comes in <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '">famous rain-hit matches</a>.' ),
+			array( 'Why can my answer differ from the official target?', 'International matches and big franchise leagues use the DLS Professional Edition, which runs on ICC software and is not published. This calculator uses the published Standard Edition table, the ICC\'s official fallback, so targets usually match or come close. ' . dlscalc_accuracy_line() . ' See how close it comes in <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '">famous rain-hit matches</a>.' ),
 			array( 'What is the par to tie?', 'It is one run less than the target. If the match ends with Team 2 exactly on the par score, the match is tied. When Team 2\'s innings is cut short for good, the par score decides the winner.' ),
 			array( 'Which G50 should I use?', 'The ICC sets 245 for matches involving full-member nations and between first-class teams, and 200 for women\'s internationals, Under-19 and Under-15 internationals and matches between associate members, but the ECB\'s 2026 methodology lists 245 for Under-19 internationals, so check your competition\'s rules. Local leagues may set their own average first-innings score.' ),
 			array( 'How do penalty runs change the DLS target?', 'Only penalty runs given to Team 1 while Team 2 is batting change it: the target and every par score go up by that many runs, with no new calculation (ICC DLS rules, section 6). Enter them in the penalty runs box. Penalty runs Team 1 earned while batting are already in its score, and penalty runs to Team 2 at any time go on Team 2\'s score without changing the target.' ),
@@ -166,7 +195,7 @@ function dlscalc_faqs( $slug ) {
 		'dls-target-calculator-t20'  => array(
 			array( 'What is the minimum for a result in a T20?', 'Team 2 must be able to face at least 5 overs for a result in a 20-over match. If rain cuts the chase below 5 overs, there is no result unless Team 2 has already passed the target or been bowled out. Knockout matches can ask for more: at the ICC Men\'s T20 World Cup, the semi-finals and the final need at least 10 overs a side.' ),
 			array( 'How do I read the T20 par score table?', 'Find the completed overs down the left and the wickets Team 2 has lost across the top. If play stops for good at that point, Team 2 wins with more runs than that number and the match is tied on it.' ),
-			array( 'Do the IPL, PSL and T20 World Cup use DLS?', 'Yes, all three use Duckworth-Lewis-Stern. Their official targets come from the Professional Edition software, so they can differ from this Standard Edition calculator, usually by 3 runs or fewer in T20 matches.' ),
+			array( 'Do the IPL, PSL and T20 World Cup use DLS?', 'Yes, all three use Duckworth-Lewis-Stern. Their official targets come from the Professional Edition software, so they can differ from this Standard Edition calculator. ' . dlscalc_accuracy_line() ),
 			array( 'Can the T20 target be more than Team 1\'s score plus one?', 'Yes, but only when Team 1 lost overs during its own innings and Team 2 did not lose as many. This page assumes Team 1 batted its full overs, so use the <a href="' . $calc . '">full DLS calculator</a> for a stoppage in the first innings.' ),
 			array( 'Does this work for T10 and other short formats?', 'Yes. Set the overs per side to any number from 5 to 20, such as 10 for a T10 match. This page keeps the T20 rule that Team 2 must be able to face at least 5 overs, whatever the overs per side. The minimum for a result in T10 leagues is set by each competition, so if yours allows fewer, use the <a href="' . $calc . '">DLS calculator</a> with the T10 format, which sets no minimum.' ),
 			array( 'Why does a 15-over chase not need three quarters of the runs?', 'Team 2 keeps all 10 wickets for fewer overs, so it can bat more aggressively. A 15-over innings is worth 45.2% against 56.6% for 20 overs, about 80% of the resources, so the target falls to about 80% of the score.' ),
@@ -221,7 +250,8 @@ function dlscalc_faqs( $slug ) {
 			array( 'Is there a minimum number of overs for a result?', 'Yes. Team 2 must have faced at least 20 overs in an ODI, or 5 overs in a T20, for DLS to decide the result, even if the match started with fewer overs, so pick the format as well as the overs. Before that point the tracker warns that a stoppage would mean no result. At the ICC Men\'s T20 World Cup, the semi-finals and the final need at least 10 overs a side.' ),
 			array( 'Will I lose the score if I close the page?', 'No. The tracker keeps the match on this device, so a reload or a closed tab picks up where you left off. Use "Start a new match" to clear it, or share the link so another scorer can follow the same match.' ),
 			array( 'Does it work with no signal at the ground?', 'Yes. After you open DLSCalc once with a connection, your phone keeps the calculators, the par table and this tracker, so they open and work offline. On most phones you can also add DLSCalc to the home screen from the browser menu, and it opens like an app.' ),
-			array( 'Is this the same par that appears on TV?', 'International matches use the DLS Professional Edition, which runs on ICC software and is not published. This tracker uses the published Standard Edition, so the par is usually the same or within 3 runs in T20s, and can be 10 runs or more apart in high-scoring ODIs.' ),
+			array( 'Is this a live DLS calculator?', 'Yes. It is a live DLS calculator for the chase: enter Team 1\'s score once, then add Team 2\'s score and wickets as the overs go by, and it shows the par and who is ahead at every point. For the revised target after a stoppage, use the <a href="' . $calc . '">DLS calculator</a>.' ),
+			array( 'Is this the same par that appears on TV?', 'International matches use the DLS Professional Edition, which runs on ICC software and is not published. This tracker uses the published Standard Edition, so the TV par can differ. ' . dlscalc_accuracy_line() ),
 		),
 		'dls-method'                 => array(
 			array( 'Why is DLS used instead of the average run rate?', 'Run rate ignores wickets. A team on 100 for 0 and a team on 100 for 8 after 20 overs are in very different positions, and DLS accounts for that by treating wickets in hand as part of a team\'s resources.' ),
