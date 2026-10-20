@@ -56,7 +56,9 @@ dlscalc_par_sheet_head();
 		$dlscalc_in,
 		array(
 			'tie' => 'Par to tie',
-			'rr'  => 'Required rate',
+			// The target over all of Team 2's overs: after a stoppage in the chase it is not the rate from
+			// the restart, which depends on the runs already scored (audit F77).
+			'rr'  => 'Required rate, whole chase',
 		)
 	);
 	?>

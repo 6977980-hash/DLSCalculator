@@ -24,7 +24,7 @@
 .mrow__end { display: flex; flex-wrap: wrap; gap: 0 18px; align-items: center; flex: 1 1 100%; }
 .mrow__end .xbtn { margin-left: auto; }
 .data input { width: 100%; min-width: 64px; height: 40px; padding: 0 8px; border: 1px solid #8a8577; border-radius: 6px; background: var(--white); font-size: 16px; }
-.data input:focus { outline: 3px solid var(--gold); outline-offset: 1px; }
+.data input:focus { outline: 3px solid var(--focus); outline-offset: 1px; }
 .data td { vertical-align: middle; }
 .ptable { min-width: 860px; }
 .ptable td { padding: 6px 4px; }
@@ -42,7 +42,7 @@
 .seg input { position: absolute; opacity: 0; }
 .seg span { display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 16px; border: 1px solid var(--green); border-radius: 10px; color: var(--green); font-weight: 700; cursor: pointer; }
 .seg input:checked + span { background: var(--green); color: var(--cream); }
-.seg input:focus-visible + span { outline: 3px solid var(--gold); outline-offset: 2px; }
+.seg input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 .conv { display: flex; flex-wrap: wrap; gap: 16px 32px; margin-top: 12px; }
 .conv__pair { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; flex: 1 1 320px; }
 .conv__pair .fld { flex: 0 1 180px; }

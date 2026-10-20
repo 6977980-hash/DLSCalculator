@@ -22,7 +22,7 @@
 .tool__group > .fld { flex: none; max-width: 320px; }
 .fld[hidden] { display: none; }
 .fld input, .fld select { width: 100%; height: 46px; min-width: 0; padding: 0 12px; border: 1px solid #8a8577; border-radius: 8px; background: var(--white); font-size: 17px; font-weight: 400; }
-.fld input:focus, .fld select:focus { outline: 3px solid var(--gold); outline-offset: 1px; }
+.fld input:focus, .fld select:focus { outline: 3px solid var(--focus); outline-offset: 1px; }
 .hint { margin: 0; font-size: 15px; color: var(--muted); }
 .btn--green { background: var(--green); color: var(--cream); }
 .btn--green:hover, .btn--green:focus { background: var(--green-dark); color: var(--cream); }
@@ -129,6 +129,14 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 	.block, .panel { margin: 4pt 0; }
 	.block, .steps li { font-size: 9pt; }
 	.steps li { margin: 2pt 0; }
+	/* Working in two columns, and on the par table page printed above the table, so a T20 live tracker
+	   sheet fits one A4 page and a 50-over par sheet two, with nothing left over for a last page (audit F102). */
+	.steps { columns: 2; column-gap: 16pt; line-height: 1.35; }
+	.steps li { break-inside: avoid; }
+	.tool-main article:has(.sheet-steps) { display: flex; flex-direction: column; }
+	.tool-main article:has(.sheet-steps) > * { order: 2; }
+	.tool-main article:has(.sheet-steps) > .entry-header, .tool-main article:has(.sheet-steps) > .sheet--head, .tool-main article:has(.sheet-steps) > .tool { order: 0; }
+	.tool-main article > .sheet-steps { order: 1; }
 	body { background: #fff; font-size: 12pt; }
 	.result { background: #fff; color: #000; border: 1px solid #000; }
 	.result__big { color: #000; }
@@ -136,9 +144,15 @@ html:not(.js) .js-only, html:not(.js) [data-add], html:not(.js) [data-remove], .
 	.par-wrap { max-height: none; overflow: visible; }
 	.par { min-width: 0; }
 	.par thead th { position: static; color: #000; background: #eee; }
+	.par .par__nr th, .par .par__nr td { color: #666; background: #fff; }
+	.par-note { font-size: 8.5pt; }
 }
 
 /* Field errors and scenario buttons */
 .fld__err { font-size: 14px; font-weight: 600; color: #8a1c12; }
 .fld input[aria-invalid="true"] { border: 2px solid #b3261e; }
 .scenarios { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 18px; }
+
+/* Sticky answer bar: its focus ring sits inside it, and fields scrolled to with the keyboard stay above it, at 200% zoom too (audit F100). */
+.stick:focus-visible { outline-offset: -5px; }
+.has-stick { scroll-padding-bottom: 80px; }

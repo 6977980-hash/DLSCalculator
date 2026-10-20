@@ -13,6 +13,7 @@ import nrr from './nrr.mjs';
 import offline from './offline.mjs';
 import matchday from './matchday.mjs';
 import content from './content.mjs';
+import hardening from './hardening.mjs';
 
 // Service worker requests only go through context.route() with this switch (offline tests).
 process.env.PW_EXPERIMENTAL_SERVICE_WORKER_NETWORK_EVENTS = '1';
@@ -25,7 +26,7 @@ const headed = args.includes('--headed');
 
 const phone = { ...devices['Pixel 5'] };
 const desktop = { viewport: { width: 1280, height: 800 } };
-const tests = [...pages, ...dls, ...nrr, ...offline, ...matchday, ...content].filter((t) => !only || t.name.includes(only));
+const tests = [...pages, ...dls, ...nrr, ...offline, ...matchday, ...content, ...hardening].filter((t) => !only || t.name.includes(only));
 
 const browser = await chromium.launch({ headless: !headed });
 const tally = { pass: 0, fail: 0, known: 0, fixed: 0 };

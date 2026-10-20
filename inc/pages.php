@@ -32,6 +32,8 @@ function dlscalc_site_pages() {
 			'vjd-method'           => 'VJD Method in Cricket',
 			'about'                => 'About DLSCalc',
 			'privacy-policy'       => 'Privacy Policy',
+			// Made by the owner in WP admin, not by dlscalc_create_pages() (no version bump for it, audit F94).
+			'terms'                => 'Terms',
 			'contact'              => 'Contact',
 			'famous-dls-matches'   => 'Famous DLS Matches',
 		),

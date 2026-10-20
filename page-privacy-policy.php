@@ -13,20 +13,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 dlscalc_trust_page_open( 'Privacy Policy', 'Last updated ' . dlscalc_updated_date( 'j F Y' ) );
 ?>
-<p>DLSCalc (dlscalculator.com) is a free set of cricket calculators run by Ch Alee. This page explains what data the site handles. In short: the calculators work in your browser, there are no accounts, and nothing you type into a calculator is sent to us.</p>
+<p>DLSCalc (dlscalculator.com) is a free set of cricket calculators run by Ch Alee. This page explains what data the site handles. In short: the calculators work in your browser, there are no accounts, and we store nothing you type.</p>
+
+<h2 id="who">Who runs the site</h2>
+<p>DLSCalc is run by Ali Ahmad Chaudhry, who writes as Ch Alee, a cricketer and tournament organiser in Pakistan. He decides how the site handles data and is the person to contact about it (the "controller" under data protection laws such as the GDPR). Email <?php echo dlscalc_contact_link( 'Privacy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in the helper. ?>.</p>
 
 <h2 id="calculators">What happens to the numbers you enter</h2>
-<p>Every calculation runs on your own device. Scores, overs, points tables and team names stay in your browser. When you press Calculate without JavaScript, or open a shared result link, the inputs travel in the page address to our server so it can show the result; they are not stored in a database or linked to you.</p>
+<p>Every calculation runs on your own device. Scores, overs, points tables and team names stay in your browser. When you press Calculate without JavaScript, or open a shared result link, the inputs travel in the page address to our server so it can show the result; they are not stored in a database or linked to you. Like the address of any page, a result link, including any team names in it, appears in the server logs described below.</p>
 <p>Result links contain your inputs in the address. Anyone you send a link to can see those inputs, so share links only with people you want to see them.</p>
 
 <h2 id="local-storage">Data saved on your device</h2>
 <p>The net run rate calculator's points table and the live DLS par tracker save your latest entries in your browser's local storage, so they are still there when you come back. This data never leaves your device. You can clear it with the "Start a new match" or reset buttons, or by clearing your browser's site data.</p>
+<p>So that the calculators still open without a signal, your browser also keeps an offline copy of the site's pages and files (about half a megabyte), managed by a small script called a service worker. It holds only the site's own pages, never what you type, and it is removed when you clear the site's data.</p>
 
 <h2 id="cookies">Cookies</h2>
 <p>The site itself does not set cookies for visitors and does not use advertising or tracking cookies. WordPress sets cookies only for people who log in to manage the site. Our hosting provider's network may set a short-lived security cookie to protect the site from automated attacks.</p>
 
 <h2 id="logs">Server logs and hosting</h2>
-<p>The site is hosted by Hostinger. Like any web server, it records basic technical information about each request, such as the IP address, browser type, the page requested and the time, to keep the site secure and working. These logs are kept for a limited time by the host and are not used to identify you.</p>
+<p>The site is hosted by Hostinger. Like any web server, it records basic technical information about each request, such as the IP address, browser type, the page requested and the time, to keep the site secure and working. These logs are kept for a limited time under Hostinger's own policy. We do not copy, analyse or combine them with anything else, and they are not used to identify you.</p>
+
+<h2 id="rights">Legal basis and your rights</h2>
+<p>The only personal data the site handles is the technical information in the server logs, and an email if you write to us. The logs are kept because the site has a legitimate interest in staying secure and working. Emails are used only to answer you and are deleted when they are no longer needed.</p>
+<p>You can ask for a copy of any personal data we hold about you, ask for it to be corrected or deleted, or object to how it is used, by emailing the address above. If you live in the UK or the European Union, you can also complain to your data protection authority.</p>
 
 <h2 id="third-parties">Third parties</h2>
 <p>The site loads no third-party scripts, fonts or analytics. Links to other sites, such as the ICC playing conditions or a WhatsApp share, take you to those services, and their own privacy policies apply there.</p>

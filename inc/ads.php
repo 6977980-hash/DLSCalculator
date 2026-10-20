@@ -48,7 +48,7 @@ function dlscalc_ads_on() {
 		&& (bool) preg_match( '/^ca-pub-\d{10,20}$/', DLSCALC_ADSENSE_CLIENT )
 		&& ! is_admin()
 		&& ! is_404()
-		&& ! is_page( array( 'privacy-policy', 'contact', 'about' ) );
+		&& ! is_page( array( 'privacy-policy', 'terms', 'contact', 'about' ) );
 }
 
 /**

@@ -29,7 +29,7 @@ Volumes are Google Keyword Planner averages per month, Oct 2025 to Sep 2026 (glo
 | `/vjd-method/` | **vjd method** | vjd method in cricket (5K), vjd vs dls (50), jayadevan method | 5K / 5K | dls method |
 | `/famous-dls-matches/` | **famous dls matches** | dls controversy matches, famous rain-affected matches, dls calculator accuracy (official vs our target table) | no data | "dls calculator" in title or H1 |
 | `/famous-dls-matches/<match>/` (9 pages) | the match name + dls, e.g. **2019 world cup semi final dls**, **ipl 2023 final dls target**, **india vs bangladesh dls 2022** | that match's targets, par and story | no data | "dls calculator", "dls method" in title or H1; the general method (link to `/dls-method/`) |
-| `/about/`, `/contact/`, `/privacy-policy/` | brand and trust | – | – | – |
+| `/about/`, `/contact/`, `/privacy-policy/`, `/terms/` | brand and trust | – | – | – |
 
 ## Old plan URLs that are now sections (do not create these pages)
 

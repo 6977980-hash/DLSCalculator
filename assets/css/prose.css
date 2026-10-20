@@ -6,6 +6,9 @@
 .par th, .par td, .data th, .data td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); font-size: 15px; text-align: center; }
 .par thead th, .data thead th { position: sticky; top: 0; background: var(--green); color: var(--cream); font-size: 14px; }
 .par tbody th, .data tbody th { background: #efebe0; }
+/* Overs before the minimum for a result (audit F74): grey, with the reason in the note under the table. */
+.par .par__nr th, .par .par__nr td { color: var(--muted); background: #f3f1ea; font-style: italic; }
+.par-note { margin-top: 8px; }
 .data td { text-align: left; }
 .data--num td { text-align: center; }
 .data caption { padding: 10px 12px; font-size: 14px; color: var(--muted); text-align: left; }

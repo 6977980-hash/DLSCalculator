@@ -28,7 +28,7 @@ $dlscalc_fmts = array(
 	't10'    => 'T10',
 	'custom' => 'Other format',
 );
-$dlscalc_fmt  = isset( $dlscalc_fmts[ $dlscalc_in['f'] ] ) ? $dlscalc_in['f'] : ( array( '50' => 'odi', '20' => 't20', '10' => 't10' )[ $dlscalc_in['n'] ] ?? 'custom' );
+$dlscalc_fmt  = isset( $dlscalc_fmts[ $dlscalc_in['f'] ] ) ? $dlscalc_in['f'] : dlscalc_dls_fmt_of( $dlscalc_in['n'] );
 $dlscalc_rows = array();
 // The score log uses the stoppage format (three fields per entry): overs, runs, wickets.
 foreach ( dlscalc_dls_stop_fields( $dlscalc_in['x'] ) as $dlscalc_i => $dlscalc_f ) {

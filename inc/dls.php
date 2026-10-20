@@ -402,7 +402,8 @@ function dlscalc_dls_match( $o ) {
 		'ended'  => $b['ended'],
 		'steps'  => $steps,
 		'warn'   => $warn,
-		'rows'   => dlscalc_dls_par_rows( $o['S'], $a['R'], $o['G'], $b, $pen ),
+		'min'    => $min_b,
+		'rows'   => dlscalc_dls_par_rows( $o['S'], $a['R'], $o['G'], $b, $pen, $min_b ),
 	);
 }
 
@@ -417,16 +418,18 @@ function dlscalc_dls_num( $x ) {
 }
 
 /**
- * Par after each completed over left in the chase, for 0 to 9 wickets down.
+ * Par after each completed over left in the chase, for 0 to 9 wickets down. Rows before the minimum
+ * overs for a result are marked nr: if play ends there, there is no result (audit F74).
  *
  * @param int   $s  Team 1 score.
  * @param float $r1 Team 1 resources.
  * @param float $g  G50.
  * @param array $b  Team 2 innings.
  * @param int   $p  Penalty runs to Team 1 during the chase, added to every par.
- * @return array<int, array{over: int, cells: int[]}>
+ * @param int   $min_b Fewest balls Team 2 must face for a result (0: no minimum).
+ * @return array<int, array{over: int, cells: int[], nr: bool}>
  */
-function dlscalc_dls_par_rows( $s, $r1, $g, $b, $p = 0 ) {
+function dlscalc_dls_par_rows( $s, $r1, $g, $b, $p = 0, $min_b = 0 ) {
 	$rows = array();
 	if ( $b['ended'] ) {
 		return $rows;
@@ -439,9 +442,51 @@ function dlscalc_dls_par_rows( $s, $r1, $g, $b, $p = 0 ) {
 		$rows[] = array(
 			'over'  => $ov,
 			'cells' => $cells,
+			'nr'    => $ov * 6 < $min_b,
 		);
 	}
 	return $rows;
+}
+
+/**
+ * Note under a par table whose first rows come before the minimum overs (audit F74), or ''. As nrNote() in the JS engine.
+ *
+ * @param array $r Engine result.
+ * @return string
+ */
+function dlscalc_dls_nr_note( $r ) {
+	if ( ! empty( $r['err'] ) || empty( $r['rows'] ) || empty( $r['rows'][0]['nr'] ) ) {
+		return '';
+	}
+	$o = dlscalc_dls_overs( $r['min'] );
+	return 'Grey rows: no result. If play ends before Team 2 has faced ' . $o . ' overs, there is no result under ICC rules, so the par only counts from over ' . $o . '.';
+}
+
+/**
+ * G50 as typed, tidied like overs: "245." and "245,5" read as 245 and 245.5 (audit F78). As g50() in the JS engine.
+ *
+ * @param mixed $v Value as typed.
+ * @return float NAN unless a number with up to 2 decimals.
+ */
+function dlscalc_dls_g50( $v ) {
+	$s = dlscalc_dls_overs_in( $v );
+	return preg_match( '/^\d{1,3}(\.\d{1,2})?$/', $s ) ? (float) $s : NAN;
+}
+
+/**
+ * Format implied by the overs per side, for links and forms without one: 50 overs is an ODI, 20 a T20
+ * and 10 a T10, however the overs are written ("50.0", "050"; audit F76). As fmtOf() in the JS engine.
+ *
+ * @param mixed $n Overs per side as typed.
+ * @return string
+ */
+function dlscalc_dls_fmt_of( $n ) {
+	$b = dlscalc_dls_balls( $n );
+	return array(
+		300 => 'odi',
+		120 => 't20',
+		60  => 't10',
+	)[ is_nan( (float) $b ) ? 0 : $b ] ?? 'custom';
 }
 
 /**
@@ -455,7 +500,7 @@ function dlscalc_dls_check( $s, $g, $raw = '' ) {
 	if ( is_nan( (float) $s ) || $s > 999 ) {
 		return dlscalc_dls_fail( dlscalc_dls_runs_err( $raw, 'Team 1\'s score', 'Enter Team 1\'s final score.' ), 'r' );
 	}
-	if ( ! ( $g > 0 && $g <= 500 ) ) {
+	if ( ! ( $g >= 1 && $g <= 500 ) ) {
 		return dlscalc_dls_fail( 'Enter a G50 value between 1 and 500, for example 245.', 'g' );
 	}
 	return null;
@@ -525,7 +570,7 @@ function dlscalc_dls_calc( $p ) {
 	$n   = dlscalc_dls_balls( $p['n'] ?? '' );
 	$s   = dlscalc_dls_int( $p['r'] ?? '' );
 	$pen = dlscalc_dls_blank( $p['k'] ?? null ) ? 0 : dlscalc_dls_int( $p['k'] );
-	$g   = preg_match( '/^\d{1,3}(\.\d{1,2})?$/', trim( (string) ( $p['g'] ?? '' ) ) ) ? (float) $p['g'] : NAN;
+	$g   = dlscalc_dls_g50( $p['g'] ?? '' );
 	$m   = dlscalc_dls_blank( $p['c'] ?? null ) ? $n : dlscalc_dls_balls( $p['c'] );
 	if ( is_nan( (float) $n ) && ! dlscalc_dls_blank( $p['n'] ?? null ) ) {
 		return dlscalc_dls_fail( dlscalc_dls_overs_help( 'Overs per side', $p['n'] ), 'n' );
@@ -634,6 +679,8 @@ function dlscalc_dls_par_table( $p ) {
 	if ( $m < 6 || $m > $no * 6 ) {
 		return dlscalc_dls_fail( 'Overs for Team 2 must be between 1 and ' . $no . '.', 'c' );
 	}
+	// No format box here: up to 20 overs a side counts as a T20 (5 overs for a result), more as a
+	// one-day match (20 overs), so a short chase gets the minimum-overs warning (audit F75).
 	$r       = dlscalc_dls_match(
 		array(
 			'N'  => $no * 6,
@@ -642,6 +689,7 @@ function dlscalc_dls_par_table( $p ) {
 			't1' => array(),
 			'M'  => $m,
 			't2' => array(),
+			'F'  => $no > 20 ? 'odi' : 't20',
 		)
 	);
 	$r['No'] = $no;

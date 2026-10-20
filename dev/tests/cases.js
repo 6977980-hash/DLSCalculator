@@ -246,4 +246,20 @@ cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_
 cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_--_22-3-2' }, expect: { R2: 83.2, target: 209 } });
 cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '50', b: '12-1-10_22.9-3-2_' }, expect: { field: 'b-2-at' } });
 
+// Audit F74-F78: par rows before the minimum overs are marked; the par table's format follows its
+// overs; "50.0" is an ODI; G50 is tidied like overs and starts at 1.
+const MIN20 = 'Team 2 can face fewer than 20 overs, so under ICC rules there is no result unless the match was already decided.';
+const MIN5 = 'Team 2 can face fewer than 5 overs, so under ICC rules there is no result unless the match was already decided.';
+cases.push({ fn: 'parTable', p: { o: '45', r: '250', c: '15' }, expect: { target: 119, warn: MIN20, min: 120 } });
+cases.push({ fn: 'parTable', p: { o: '10', r: '90', c: '4' }, expect: { warn: MIN5, min: 30 } });
+cases.push({ fn: 'parTable', p: { o: '20', r: '160' }, expect: { warn: '', min: 30 } });
+cases.push({ fn: 'parTable', p: { o: '50', r: '280' }, expect: { warn: '', min: 120 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245', c: '30', f: 'custom' }, expect: { min: 0 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245.' }, expect: { G: 245, target: 251 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '245,5' }, expect: { G: 245.5 } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '0.5' }, expect: { field: 'g' } });
+cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '1' }, expect: { G: 1 } });
+['50', '50.0', '050', '50.'].forEach((n) => cases.push({ fn: 'fmt', p: { n }, expect: { f: 'odi' } }));
+[['20.0', 't20'], ['10', 't10'], ['45', 'custom'], ['abc', 'custom'], ['', 'custom']].forEach(([n, f]) => cases.push({ fn: 'fmt', p: { n }, expect: { f } }));
+
 process.stdout.write(JSON.stringify(cases));

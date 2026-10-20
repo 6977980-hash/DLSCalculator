@@ -146,6 +146,7 @@ function dlscalc_default_footer_links() {
 		'vjd-method'                 => 'VJD method',
 		'famous-dls-matches'         => 'Famous DLS matches',
 		'privacy-policy'             => 'Privacy Policy',
+		'terms'                      => 'Terms',
 		'contact'                    => 'Contact',
 	);
 }

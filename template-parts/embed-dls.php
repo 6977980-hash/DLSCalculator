@@ -23,7 +23,7 @@ $dlscalc_fmts = array(
 	't10'    => 'T10',
 	'custom' => 'Other',
 );
-$dlscalc_fmt  = isset( $dlscalc_fmts[ $in['f'] ] ) ? $in['f'] : ( array( '50' => 'odi', '20' => 't20', '10' => 't10' )[ $in['n'] ] ?? 'custom' );
+$dlscalc_fmt  = isset( $dlscalc_fmts[ $in['f'] ] ) ? $in['f'] : dlscalc_dls_fmt_of( $in['n'] );
 $dlscalc_full = dlscalc_dls_permalink( 'dls-calculator', $in + array( 'g' => '245' ) );
 ?>
 <!doctype html>

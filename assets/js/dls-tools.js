@@ -54,7 +54,7 @@
 				} else if (el && el.tagName === 'SELECT' && k === 'f') {
 					// Links without a format go by the overs, as on the server.
 					var known = v !== '' && $$('option', el).some(function (o) { return o.value === v; });
-					el.value = known ? v : ({ 50: 'odi', 20: 't20', 10: 't10' }[form.elements.n.value.trim()] || 'custom');
+					el.value = known ? v : DLS.fmtOf(form.elements.n.value);
 				} else if (el && el.tagName) {
 					el.value = v;
 				}
@@ -84,9 +84,16 @@
 		};
 		var wire = function (row) {
 			$('[data-remove]', row).addEventListener('click', function () {
+				// Focus moves to the row that takes its place, the one before or the add button, not
+				// back to the top of the page (audit F101).
+				var near = row.nextElementSibling || row.previousElementSibling;
 				box.removeChild(row);
 				renumber();
 				update();
+				var to = near ? $('[data-remove]', near) : box.parentNode.querySelector('[data-add]');
+				if (to) {
+					to.focus();
+				}
 			});
 		};
 		$$('.stop', box).forEach(wire);
@@ -139,9 +146,11 @@
 
 	var engine = { calc: DLS.calc, quick: DLS.calc, t20: DLS.t20, parTable: DLS.parTable };
 
+	// Same markup as dlscalc_dls_par_row_html(): rows before the minimum overs are grey (audit F74).
 	var rowsHtml = function (rows) {
 		return rows.map(function (row) {
-			return '<tr><th scope="row">' + row.over + '</th>' + row.cells.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
+			return '<tr' + (row.nr ? ' class="par__nr"' : '') + '><th scope="row">' + row.over + (row.nr ? '<span class="screen-reader-text"> (no result)</span>' : '') + '</th>' +
+				row.cells.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
 		}).join('');
 	};
 
@@ -217,7 +226,8 @@
 		bar.className = 'stick noprint';
 		bar.href = '#result';
 		bar.hidden = true;
-		document.body.appendChild(bar);
+		// Inside <main>, so the bar sits in a landmark like the rest of the content (audit F99).
+		(document.querySelector('main') || document.body).appendChild(bar);
 		new IntersectionObserver(function (entries) {
 			var e = entries[entries.length - 1];
 			below = !e.isIntersecting && e.boundingClientRect.top > 0;
@@ -289,6 +299,11 @@
 		var note = out('tablenote');
 		if (note) {
 			note.textContent = !err && r.rows.length ? note.getAttribute('data-on') : note.getAttribute('data-off');
+		}
+		var nr = out('nrnote');
+		if (nr) {
+			nr.textContent = err ? '' : DLS.nrNote(r);
+			show(nr, !!nr.textContent);
 		}
 		var bars = out('bars');
 		if (bars && !err) {

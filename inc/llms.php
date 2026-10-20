@@ -45,7 +45,7 @@ function dlscalc_llms_sections() {
 			$group = 'Famous DLS matches';
 		} elseif ( in_array( $slug, $guides, true ) ) {
 			$group = 'Guides';
-		} elseif ( in_array( $slug, array( 'about', 'contact' ), true ) ) {
+		} elseif ( in_array( $slug, array( 'about', 'contact', 'terms' ), true ) ) {
 			$group = 'About';
 		} else {
 			$group = 'More pages';
@@ -78,7 +78,7 @@ function dlscalc_llms_txt() {
 		'',
 		'- DLS calculator: `n` overs per side, `r` Team 1 runs, `g` G50, `c` Team 2 overs at the start of the chase, `a` and `b` stoppages for Team 1 and Team 2 as `overs-wickets-lost`, joined with `_`, optional `f` format (`odi`, `t20`, `t20ko` for a T20 knockout with a 10-over minimum, `t10`, `custom`) for the minimum overs, optional `k` penalty runs awarded to Team 1 during the chase (they raise the target and every par score). Example: ' . dlscalc_page_url( 'dls-calculator' ) . '?n=50&r=250&g=245&c=50&b=12-1-10_22-3-2 (Team 2 stopped at 12 overs, 1 wicket down, 10 overs lost; then at 22 overs, 3 down, 2 overs lost).',
 		'- T20 DLS target: `n` overs per side (5 to 20), `r`, `l` overs lost before the chase (0 when left out; 0 to `n` minus 5: Team 2 needs at least 5 overs, the T20 rule, also when `n` is 10), `b`. Example: ' . dlscalc_page_url( 'dls-target-calculator-t20' ) . '?n=20&r=180&l=5',
-		'- DLS par score table: `o` overs per side, `r` Team 1 runs, optional `c` Team 2 overs when the chase was cut before it began. Example: ' . dlscalc_page_url( 'dls-par-score-table' ) . '?o=20&r=160&c=15',
+		'- DLS par score table: `o` overs per side, `r` Team 1 runs, optional `c` Team 2 overs when the chase was cut before it began. Up to 20 overs a side the minimum for a result is 5 overs, above 20 it is 20 overs (rows before it are marked no result). Example: ' . dlscalc_page_url( 'dls-par-score-table' ) . '?o=20&r=160&c=15',
 		'- Live DLS par score: `n`, `r`, `g`, `c` and `f` as on the DLS calculator, `x` Team 2 score log as `overs-runs-wickets` joined with `_`. It assumes Team 1 batted its full overs and no penalty runs (use the DLS calculator for those). Example: ' . dlscalc_page_url( 'live-dls-par-score' ) . '?n=20&r=160&g=245&f=t20&x=5-38-1_10-71-2',
 		'- Embeddable DLS widget (' . home_url( '/' . dlscalc_embed_path() ) . '): `f` format, `n` overs per side, `r` Team 1 runs, `c` Team 2 overs.',
 		'- Net run rate: `q` overs per side, `x` matches as `scored-overs-conceded-overs` joined with `_` (add `a` after overs for all out, `-15` for a match cut to 15 overs a side, `-n` for a no result). Example: ' . dlscalc_page_url( 'net-run-rate-calculator' ) . '?q=20&x=180-20-150-20_140-18.3-145-20',

@@ -129,9 +129,12 @@
 		};
 		var wire = function (row) {
 			$('[data-remove]', row).addEventListener('click', function () {
+				// Focus moves to the row that takes its place, the one before or the add button (audit F101).
+				var near = row.nextElementSibling || row.previousElementSibling;
 				box.removeChild(row);
 				renumber();
 				onChange();
+				(near ? $('[data-remove]', near) : add).focus();
 			});
 		};
 		$$(':scope > *', box).forEach(wire);
@@ -296,7 +299,8 @@
 			bar = document.createElement('a');
 			bar.className = 'stick noprint';
 			bar.hidden = true;
-			document.body.appendChild(bar);
+			// Inside <main>, so the bar sits in a landmark like the rest of the content (audit F99).
+			(document.querySelector('main') || document.body).appendChild(bar);
 			var io = new IntersectionObserver(function (entries) {
 				entries.forEach(function (e) {
 					below[e.target === panels.c ? 'c' : 't'] = !e.isIntersecting && e.boundingClientRect.top > 0;
