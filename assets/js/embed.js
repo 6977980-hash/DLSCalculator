@@ -24,7 +24,7 @@
 			return;
 		}
 		out('target').textContent = r.target;
-		out('line').textContent = 'in ' + window.DLS.overs(r.allot) + ' overs · par to tie ' + r.par;
+		out('line').textContent = 'to win in ' + window.DLS.overs(r.allot) + ' overs; ' + r.par + ' ties';
 		var q = ['f', 'n', 'r', 'g', 'c'].filter(function (k) { return String(p[k]).trim() !== ''; }).map(function (k) {
 			return k + '=' + encodeURIComponent(String(p[k]).trim());
 		}).join('&');

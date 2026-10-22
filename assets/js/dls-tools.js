@@ -165,7 +165,7 @@
 	var shareText = function (r) {
 		var what = tool === 't20' ? 'T20 DLS' : 'DLS';
 		return r.ended ? what + ' par score: ' + r.par + '. Full working:' :
-			what + ' target: ' + r.target + ' in ' + DLS.overs(r.allot) + ' overs (par ' + r.par + '). Full working:';
+			what + ' target: ' + r.target + ' in ' + DLS.overs(r.allot) + ' overs (' + r.par + ' ties). Full working:';
 	};
 
 	// The input an error belongs to: "n", "c" and the like, or "b-2-at" for the second Team 2
@@ -272,7 +272,7 @@
 
 		if (tool === 'quick') {
 			text('big', err ? '–' : String(r.target));
-			text('line', err ? err : 'in ' + DLS.overs(r.allot) + ' overs (par ' + r.par + ')');
+			text('line', err ? err : 'to win in ' + DLS.overs(r.allot) + ' overs; ' + r.par + ' ties');
 			return;
 		}
 
@@ -281,7 +281,7 @@
 		}
 		text('label', !err && r.ended ? 'Match ended: Team 2 par score' : 'Team 2 revised target');
 		text('big', err ? '–' : String(r.ended ? r.par : r.target));
-		text('line', err ? 'Check the inputs.' : (r.ended ? 'Team 2 wins with more than ' + r.par + ' and ties on ' + r.par + '.' : 'to win in ' + DLS.overs(r.allot) + ' overs'));
+		text('line', err ? 'Check the inputs.' : (r.ended ? 'Team 2 wins with more than ' + r.par + ' and ties on ' + r.par + '.' : 'to win in ' + DLS.overs(r.allot) + ' overs; ' + r.par + ' ties'));
 		text('tie', err ? '–' : String(r.par));
 		text('t2overs', err ? '–' : DLS.overs(r.allot));
 		text('r1', err ? '–' : r.R1.toFixed(1) + '%');

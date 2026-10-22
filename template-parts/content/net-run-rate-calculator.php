@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <h2 id="how-it-works">How does the calculator work out NRR?</h2>
 <p>Net run rate is the runs a team scores per over across the whole competition, minus the runs scored against it per over. The calculator adds up runs and balls for every match with a result before it divides, so a big win in a short match does not count for more than it should. The <a href="<?php echo esc_url( dlscalc_page_url( 'how-to-calculate-nrr' ) ); ?>">NRR guide</a> walks through the formula itself step by step.</p>
+<p>We test it on a real tournament too. Entering every Super 12 match of the 2022 T20 World Cup this way, including bowled-out sides, two DLS finishes, England against Ireland abandoned with a DLS result and four no-results, gives all 12 teams exactly the net run rate in the official table, from New Zealand's +2.113 to Ireland's −1.615.</p>
 <p>Take the example already in the calculator, three T20 matches:</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Example matches">
 <table class="data data--num">
