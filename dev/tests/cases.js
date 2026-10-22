@@ -262,4 +262,16 @@ cases.push({ fn: 'calc', p: { n: '50', r: '250', g: '1' }, expect: { G: 1 } });
 ['50', '50.0', '050', '50.'].forEach((n) => cases.push({ fn: 'fmt', p: { n }, expect: { f: 'odi' } }));
 [['20.0', 't20'], ['10', 't10'], ['45', 'custom'], ['abc', 'custom'], ['', 'custom']].forEach(([n, f]) => cases.push({ fn: 'fmt', p: { n }, expect: { f } }));
 
+// Real tournament (ChatGPT review 4, F109): T20 World Cup 2022 Super 12, every team's NRR from its
+// matches entered as the NRR page says, against the official table. Covers all out, a DLS finish,
+// a DLS abandonment with a result and no-results.
+for (const g of require('./real-nrr.json').groups) {
+	for (const [team, want] of Object.entries(g.official)) {
+		const x = g.matches.filter((m) => m[0] === team || m[2] === team)
+			.map((m) => (m[0] === team ? m[1] + '-' + m[3] : m[3] + '-' + m[1]) + (m[5] ? '-' + m[5] : ''));
+		cases.push({ fn: 'nrr.calc', p: { q: '20', x: x.join('_') }, expect: { nrr: want } });
+	}
+}
+
 process.stdout.write(JSON.stringify(cases));
+

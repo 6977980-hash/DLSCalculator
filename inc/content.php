@@ -23,12 +23,14 @@ function dlscalc_content_dates() {
 	$f79 = '2026-10-20 08:30';
 	// Audit F74-F94 (20 Oct 2026): grey no-result rows in par tables, T20 rate label, Privacy and Terms.
 	$f74 = '2026-10-20 16:00';
+	// ChatGPT review 4, F106-F110 (22 Oct 2026): real-match list, home independence line, NRR real-tournament check, FAQ openers.
+	$f106 = '2026-10-22 10:45';
 	return array(
-		'home'                       => $f79,
-		'dls-calculator'             => $f74,
+		'home'                       => $f106,
+		'dls-calculator'             => $f106,
 		'dls-target-calculator-t20'  => $f74,
 		'dls-par-score-table'        => $f74,
-		'net-run-rate-calculator'    => '2026-10-19 21:31',
+		'net-run-rate-calculator'    => $f106,
 		'run-rate-calculator'        => $f79,
 		'strike-rate-calculator'     => '2026-10-19 17:49',
 		'bowling-average-calculator' => $f79,
@@ -40,7 +42,8 @@ function dlscalc_content_dates() {
 		'contact'                    => '2026-10-19',
 		'privacy-policy'             => $f74,
 		'terms'                      => $f74,
-		'famous-dls-matches'         => '2026-10-19 21:22',
+		'famous-dls-matches'         => $f106,
+		'2003-world-cup-south-africa-sri-lanka' => $f106,
 	) + array_fill_keys( array_keys( dlscalc_matches() ), $f79 );
 }
 
@@ -63,7 +66,7 @@ function dlscalc_content_time( $slug, $post = null ) {
 
 /**
  * The one accuracy sentence used wherever a page compares this calculator with official targets, so the
- * T20 and ODI figures never drift apart. Numbers come from dev/tests/real-matches.json (table on
+ * T20 and ODI figures never drift apart. Numbers come from inc/real-matches.json (table on
  * /famous-dls-matches/#real-matches); update both together.
  *
  * @return string Plain text, one sentence.
@@ -190,7 +193,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Can I add more than one rain break?', 'Yes. Add a row for every stoppage in either innings, up to ten per innings. The resources lost in each stoppage are added together, which is how the ICC playing conditions handle several interruptions.' ),
 			array( 'Why can my answer differ from the official target?', 'International matches and big franchise leagues use the DLS Professional Edition, which runs on ICC software and is not published. This calculator uses the published Standard Edition table, the ICC\'s official fallback, so targets usually match or come close. ' . dlscalc_accuracy_line() . ' See how close it comes in <a href="' . esc_url( dlscalc_page_url( 'famous-dls-matches' ) ) . '">famous rain-hit matches</a>.' ),
 			array( 'What is the par to tie?', 'It is one run less than the target. If the match ends with Team 2 exactly on the par score, the match is tied. When Team 2\'s innings is cut short for good, the par score decides the winner.' ),
-			array( 'Which G50 should I use?', 'The ICC sets 245 for matches involving full-member nations and between first-class teams, and 200 for women\'s internationals, Under-19 and Under-15 internationals and matches between associate members, but the ECB\'s 2026 methodology lists 245 for Under-19 internationals, so check your competition\'s rules. Local leagues may set their own average first-innings score.' ),
+			array( 'Which G50 should I use?', 'Use 245 for men\'s matches between full-member nations or first-class teams, and 200 for women\'s internationals, associate matches and Under-15 internationals: those are the ICC\'s values. For Under-19 internationals the ICC says 200 but the ECB\'s 2026 methodology lists 245, so check your competition\'s rules. Local leagues may set their own average first-innings score.' ),
 			array( 'How do penalty runs change the DLS target?', 'Only penalty runs given to Team 1 while Team 2 is batting change it: the target and every par score go up by that many runs, with no new calculation (ICC DLS rules, section 6). Enter them in the penalty runs box. Penalty runs Team 1 earned while batting are already in its score, and penalty runs to Team 2 at any time go on Team 2\'s score without changing the target.' ),
 			array( 'What if rain ends Team 1\'s innings early?', 'Add a Team 1 stoppage at the overs bowled when play stopped, with the wickets down, and enter every remaining over as overs lost. The calculator then treats Team 1\'s innings as finished and usually sets Team 2 a target above Team 1\'s score.' ),
 			array( 'Can I save or share a result?', 'Yes. The page address updates with your inputs, so the link reproduces the same result. Use the WhatsApp button, copy the link, or print the page with the par table for the scorers.' ),

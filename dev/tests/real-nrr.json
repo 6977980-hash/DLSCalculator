@@ -1,0 +1,47 @@
+{
+	"about": "ICC Men's T20 World Cup 2022, Super 12 groups 1 and 2: every match entered the way the NRR page tells users to (all out = 'a' after the overs, DLS finish = Team 1 on target minus 1 off Team 2's overs, DLS abandonment = Team 1 on Team 2's par off the overs Team 2 faced, no result = 'n'), checked against the official final NRR. Scores from Cricsheet (cricsheet.org, ball by ball) and the Cricinfo scorecards; Afghanistan's matches are missing from Cricsheet and come from the scorecards. Checked 22 October 2026.",
+	"groups": [
+		{
+			"name": "Group 1",
+			"official": { "New Zealand": "+2.113", "England": "+0.473", "Australia": "-0.173", "Sri Lanka": "-0.422", "Ireland": "-1.615", "Afghanistan": "-0.571" },
+			"matches": [
+				["New Zealand", "200-20", "Australia", "111-17.1a"],
+				["Ireland", "128-20", "Sri Lanka", "133-15"],
+				["Afghanistan", "112-19.4a", "England", "113-18.1"],
+				["Sri Lanka", "157-20", "Australia", "158-16.3"],
+				["Ireland", "110-14.3", "England", "105-14.3", "DLS, abandoned: Ireland (157 all out) credited with England's par 110 off the 14.3 overs England faced"],
+				["Afghanistan", "0-0", "New Zealand", "0-0", "no result", "n"],
+				["Australia", "0-0", "England", "0-0", "no result", "n"],
+				["Afghanistan", "0-0", "Ireland", "0-0", "no result", "n"],
+				["New Zealand", "167-20", "Sri Lanka", "102-19.2a"],
+				["Australia", "179-20", "Ireland", "137-18.1a"],
+				["Afghanistan", "144-20", "Sri Lanka", "148-18.3"],
+				["England", "179-20", "New Zealand", "159-20"],
+				["New Zealand", "185-20", "Ireland", "150-20"],
+				["Australia", "168-20", "Afghanistan", "164-20"],
+				["Sri Lanka", "141-20", "England", "144-19.4"]
+			]
+		},
+		{
+			"name": "Group 2",
+			"official": { "India": "+1.319", "Pakistan": "+1.028", "South Africa": "+0.874", "Netherlands": "-0.849", "Bangladesh": "-1.176", "Zimbabwe": "-1.138" },
+			"matches": [
+				["Pakistan", "159-20", "India", "160-20"],
+				["Bangladesh", "144-20", "Netherlands", "135-20a"],
+				["Zimbabwe", "79-9.1", "South Africa", "51-3", "no result after rain", "n"],
+				["South Africa", "205-20", "Bangladesh", "101-16.3a"],
+				["India", "179-20", "Netherlands", "123-20"],
+				["Zimbabwe", "130-20", "Pakistan", "129-20"],
+				["Bangladesh", "150-20", "Zimbabwe", "147-20"],
+				["Netherlands", "91-20", "Pakistan", "95-13.5"],
+				["India", "133-20", "South Africa", "137-19.4"],
+				["Zimbabwe", "117-19.2a", "Netherlands", "120-18"],
+				["India", "150-16", "Bangladesh", "145-16", "DLS finish: India (184 for 6) credited with the target 151 minus 1 off Bangladesh's 16 overs"],
+				["Pakistan", "141-14", "South Africa", "108-14", "DLS finish: Pakistan (185 for 9) credited with the target 142 minus 1 off South Africa's 14 overs"],
+				["Netherlands", "158-20", "South Africa", "145-20"],
+				["Bangladesh", "127-20", "Pakistan", "128-18.1"],
+				["India", "186-20", "Zimbabwe", "115-17.2a"]
+			]
+		}
+	]
+}

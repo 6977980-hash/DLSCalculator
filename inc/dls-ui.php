@@ -436,7 +436,8 @@ function dlscalc_dls_line( $r ) {
 	if ( $r['ended'] ) {
 		return 'Team 2 wins with more than ' . $r['par'] . ' and ties on ' . $r['par'] . '.';
 	}
-	return 'to win in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs';
+	// Plain words for a fan who does not know "par": "to win in 15 overs; 143 ties" (ChatGPT review 4, F108).
+	return 'to win in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs; ' . $r['par'] . ' ties';
 }
 
 /**
@@ -479,7 +480,7 @@ function dlscalc_dls_share_text( $r, $slug ) {
 	$what = 'dls-target-calculator-t20' === $slug ? 'T20 DLS' : 'DLS';
 	return $r['ended']
 		? $what . ' par score: ' . $r['par'] . '. Full working:'
-		: $what . ' target: ' . $r['target'] . ' in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs (par ' . $r['par'] . '). Full working:';
+		: $what . ' target: ' . $r['target'] . ' in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs (' . $r['par'] . ' ties). Full working:';
 }
 
 /**

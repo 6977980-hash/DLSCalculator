@@ -78,7 +78,7 @@ a{color:#13452f;font-weight:600}
 	<div class="res" aria-live="polite" data-o="res"<?php echo $dlscalc_err ? ' hidden' : ''; ?>>
 		<span>Team 2 target</span>
 		<b data-o="target"><?php echo $dlscalc_err ? '' : (int) $r['target']; ?></b>
-		<span data-o="line"><?php echo $dlscalc_err ? '' : esc_html( 'in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs · par to tie ' . $r['par'] ); ?></span>
+		<span data-o="line"><?php echo $dlscalc_err ? '' : esc_html( 'to win in ' . dlscalc_dls_overs( $r['allot'] ) . ' overs; ' . $r['par'] . ' ties' ); ?></span>
 	</div>
 	<div class="ft">
 		<a data-o="full" href="<?php echo esc_url( $dlscalc_full ); ?>" target="_blank" rel="noopener">Stoppages during the chase? Full calculator</a>

@@ -230,6 +230,89 @@ function dlscalc_matches_table() {
 }
 
 /**
+ * The 34 real-match checks (inc/real-matches.json): calculator inputs from each scorecard, the
+ * official figure and our Standard Edition one. dev/tests/real-matches.js fails if "standard" drifts
+ * from the engine, so the list never shows a stale number.
+ *
+ * @return array<int, array>
+ */
+function dlscalc_real_matches() {
+	static $list = null;
+	if ( null === $list ) {
+		$list = json_decode( (string) file_get_contents( DLSCALC_DIR . '/inc/real-matches.json' ), true );
+		$list = is_array( $list ) ? $list : array();
+	}
+	return $list;
+}
+
+/**
+ * The calculator inputs of one real match in words, e.g. "Team 1 281 (50 overs): rain at 38 overs,
+ * 3 down, 7 overs lost. Team 2 given 43 overs."
+ *
+ * @param array $m Real match row.
+ * @return string
+ */
+function dlscalc_real_match_inputs( $m ) {
+	$p    = $m['p'];
+	$stop = function ( $key ) use ( $p, $m ) {
+		$stops = explode( '_', $p[ $key ] );
+		$parts = array();
+		foreach ( $stops as $i => $one ) {
+			list( $at, $down, $lost ) = explode( '-', $one );
+			// For a par row, the last Team 2 stoppage is the one play never came back from.
+			$ended   = 'b' === $key && isset( $m['official']['par'] ) && count( $stops ) - 1 === $i;
+			$parts[] = $ended ? 'play ended at ' . $at . ' overs, ' . $down . ' down' : 'rain at ' . $at . ' overs, ' . $down . ' down, ' . $lost . ( '1' === $lost ? ' over lost' : ' overs lost' );
+		}
+		return implode( '; ', $parts );
+	};
+	$text = 'Team 1 ' . $p['r'] . ' (' . $p['n'] . ' overs' . ( '245' === $p['g'] ? '' : ', G50 ' . $p['g'] ) . ')';
+	if ( ! empty( $p['a'] ) ) {
+		$text .= ': ' . $stop( 'a' );
+	}
+	if ( ! empty( $p['c'] ) && $p['c'] !== $p['n'] ) {
+		$text .= '. Team 2 given ' . $p['c'] . ' overs';
+	}
+	if ( ! empty( $p['b'] ) ) {
+		$text .= '. Team 2: ' . $stop( 'b' );
+	}
+	return $text . '.';
+}
+
+/**
+ * Full list of the real-match checks, folded so the summary stays readable.
+ */
+function dlscalc_real_matches_list() {
+	$list = dlscalc_real_matches();
+	?>
+	<details class="real-list">
+		<summary>See all <?php echo count( $list ); ?> checks: inputs, official figure, our figure and scorecard</summary>
+		<div class="table-wrap">
+			<table class="data">
+				<caption>Every real-match check, entered from the official scorecards. Checked 19 October 2026.</caption>
+				<thead><tr><th scope="col">Match</th><th scope="col">Inputs we entered</th><th scope="col">Official</th><th scope="col">Ours</th><th scope="col">Difference</th><th scope="col">Check it</th></tr></thead>
+				<tbody>
+					<?php
+					foreach ( $list as $m ) :
+						$key  = isset( $m['official']['target'] ) ? 'target' : 'par';
+						$diff = $m['standard'][ $key ] - $m['official'][ $key ];
+						?>
+						<tr>
+							<th scope="row"><?php echo esc_html( $m['match'] ); ?><br><small><?php echo esc_html( wp_date( 'j M Y', strtotime( $m['date'] . ' 12:00 UTC' ) ) . ' · ' . ( 't20' === $m['p']['f'] ? 'T20' : 'ODI' ) ); ?></small></th>
+							<td><?php echo esc_html( dlscalc_real_match_inputs( $m ) ); ?></td>
+							<td><?php echo esc_html( ( 'target' === $key ? 'Target ' : 'Par ' ) . $m['official'][ $key ] ); ?></td>
+							<td><?php echo (int) $m['standard'][ $key ]; ?></td>
+							<td><?php echo esc_html( 0 === $diff ? 'Same' : abs( $diff ) . ( $diff > 0 ? ' higher' : ' lower' ) ); ?></td>
+							<td><a href="<?php echo esc_url( dlscalc_dls_permalink( 'dls-calculator', $m['p'] ) ); ?>">Calculator</a><br><a href="<?php echo esc_url( 'https://www.espncricinfo.com/ci/engine/match/' . (int) $m['ci'] . '.html' ); ?>" rel="noopener" target="_blank">Scorecard</a></td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+	</details>
+	<?php
+}
+
+/**
  * Hub cards: one link per match with its one-line story.
  */
 function dlscalc_match_cards() {

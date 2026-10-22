@@ -3,7 +3,7 @@
 import { createRequire } from 'module';
 import { DLS, fresh, ok, eq, outs, watch } from './lib.mjs';
 
-const realMatches = createRequire(import.meta.url)('../real-matches.json');
+const realMatches = createRequire(import.meta.url)('../../../inc/real-matches.json');
 
 const form = 'form[data-tool]';
 
@@ -43,7 +43,7 @@ export default [
 			const want = DLS.calc({ n: '50', r: '231', g: '245', c: '50', f: 'odi', b: '30-4-10' });
 			let o = await outs(page);
 			eq(o.big, want.target, 'target');
-			eq(o.line, 'to win in ' + DLS.overs(want.allot) + ' overs', 'overs line');
+			eq(o.line, 'to win in ' + DLS.overs(want.allot) + ' overs; ' + want.par + ' ties', 'overs line');
 			const link = page.url();
 			ok(/[?&]b=30-4-10/.test(link) && /[?&]r=231/.test(link), 'address bar carries the inputs: ' + link);
 			// Opening the link again shows the same result, with and without JavaScript.
@@ -289,7 +289,7 @@ export default [
 			await page.fill(`${form} [name=r]`, '231');
 			await addStop(page, 2, '30', '4', '10');
 			const wa = decodeURIComponent((await page.locator('[data-out="wa"]').getAttribute('href')).split('text=')[1]);
-			ok(wa.startsWith('DLS target: 194 in 40 overs (par 193).'), 'WhatsApp text: ' + wa);
+			ok(wa.startsWith('DLS target: 194 in 40 overs (193 ties).'), 'WhatsApp text: ' + wa);
 			ok(wa.includes('/dls-calculator/?n=50&r=231&g=245&c=50&f=odi&b=30-4-10'), 'WhatsApp link: ' + wa);
 			await page.getByRole('button', { name: 'Copy link' }).first().click();
 			await page.waitForTimeout(300);

@@ -55,12 +55,13 @@ get_header();
 						<div class="quick__label">Team 2 target</div>
 						<div class="quick__big" data-out="big"><?php echo (int) $dlscalc_quick['target']; ?></div>
 					</div>
-					<div class="quick__line" data-out="line"><?php echo esc_html( 'in ' . dlscalc_dls_overs( $dlscalc_quick['allot'] ) . ' overs (par ' . $dlscalc_quick['par'] . ')' ); ?></div>
+					<div class="quick__line" data-out="line"><?php echo esc_html( 'to win in ' . dlscalc_dls_overs( $dlscalc_quick['allot'] ) . ' overs; ' . $dlscalc_quick['par'] . ' ties' ); ?></div>
 				</div>
 				<?php // Below the minimum overs for the format (5 in a T20, 20 in an ODI) there is no result (audit F24). ?>
 				<p class="alert alert--soft" data-out="warn"<?php echo $dlscalc_quick['warn'] ? '' : ' hidden'; ?>><?php echo esc_html( $dlscalc_quick['warn'] ); ?></p>
 				<button type="submit" class="btn btn--green">See the full working</button>
 				<p class="quick__more">Rain in the middle of an innings? The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-calculator' ) ); ?>">full DLS calculator</a> handles every stoppage.</p>
+				<p class="quick__more">An independent DLS Standard Edition calculator, not affiliated with the ICC. Official targets in international and big-league matches can differ: <a href="<?php echo esc_url( dlscalc_page_url( 'famous-dls-matches' ) . '#real-matches' ); ?>">see how close we come</a>.</p>
 			</form>
 		</div>
 	</section>
@@ -91,7 +92,7 @@ get_header();
 		<div class="wrap feature-grid">
 			<div>
 				<h3>Standard Edition tables</h3>
-				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition, so official figures can differ. <?php echo esc_html( dlscalc_accuracy_line() ); ?></p>
+				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition, so official figures can differ. <?php echo esc_html( dlscalc_accuracy_line() ); ?> <a href="<?php echo esc_url( dlscalc_page_url( 'famous-dls-matches' ) . '#real-matches' ); ?>">See all 34 checks</a>.</p>
 			</div>
 			<div>
 				<h3>Fast on any phone</h3>

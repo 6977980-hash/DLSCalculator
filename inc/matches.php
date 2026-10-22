@@ -97,7 +97,7 @@ function dlscalc_matches() {
 				'why-famous'    => 'The lesson for every team',
 			),
 			'faqs'     => array(
-				array( 'Why was the 2003 South Africa vs Sri Lanka match a tie?', 'Rain ended the match with South Africa on 229 for 6 after 45 overs. Under Duckworth-Lewis the par score at that point was 229, and a score exactly on par is a tie. South Africa needed 230 to win.' ),
+				array( 'Why was the 2003 South Africa vs Sri Lanka match a tie?', 'Because South Africa\'s 229 for 6 was exactly the Duckworth-Lewis par when rain ended the match after 45 overs, and a score exactly on par is a tie. They needed 230 to win.' ),
 				array( 'What is the difference between a par score and a target?', 'The par score ties the match if play ends at that point. The target is the par score plus one run. South Africa\'s dressing room passed on the par figure as if it were the target.' ),
 				array( 'Would one more run have won it?', 'Yes. 230 for 6 would have been one run above par, and South Africa would have won on Duckworth-Lewis. Mark Boucher blocked the last ball before the rain, thinking the match was already won.' ),
 			),
