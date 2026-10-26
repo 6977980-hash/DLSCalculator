@@ -131,6 +131,17 @@ export default [
 		}
 	},
 	{
+		name: 'analytics: GA4 tag on pages, loaded after the page, never in the widget',
+		run: async ({ base }) => {
+			const html = await (await fetch(fresh(base + '/dls-calculator/'))).text();
+			ok(/gtag\('config',"G-XT5JL42RV1"\)/.test(html), 'GA4 config on /dls-calculator/');
+			ok(!/<script[^>]+src="https:\/\/www\.googletagmanager\.com/.test(html), 'gtag.js is not a blocking script tag');
+			ok(/analytics_storage:'denied'/.test(html), 'EEA/UK consent default denied');
+			const embed = await (await fetch(fresh(base + '/embed/dls/'))).text();
+			ok(!/gtag|googletagmanager/.test(embed), 'widget has no analytics');
+		}
+	},
+	{
 		name: 'security: readme.txt and install.php refused, /favicon.ico answers (audit F95, F98)',
 		run: async ({ base }) => {
 			eq((await head(base + '/wp-content/themes/generatepress/readme.txt')).status, 403, 'parent theme readme.txt');
