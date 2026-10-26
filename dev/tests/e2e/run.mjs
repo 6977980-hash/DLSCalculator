@@ -33,6 +33,8 @@ const tally = { pass: 0, fail: 0, known: 0, fixed: 0 };
 const started = Date.now();
 for (const t of tests) {
 	const ctx = await browser.newContext({ ...(t.desktop ? desktop : phone), ...(t.context || {}) });
+	// Test visits must not count in Google Analytics: gtag.js is answered with an empty script.
+	await ctx.route(/googletagmanager\.com|google-analytics\.com/, (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
 	const t0 = Date.now();
 	let status, note = '';
 	try {

@@ -9,8 +9,9 @@
  * 1. Set DLSCALC_ADSENSE_CLIENT to the publisher ID, e.g. 'ca-pub-1234567890123456'.
  *    That alone turns on AdSense Auto ads and writes the Google line into /ads.txt.
  * 2. Optional: put manual ad unit IDs (data-ad-slot) in dlscalc_ad_units() to fill the fixed slots.
- * 3. Update the Privacy Policy (page-privacy-policy.php), which says the site has no ads or third-party
- *    cookies, and set up a Google-certified consent banner for visitors in the EEA and UK.
+ * 3. Update the Privacy Policy (page-privacy-policy.php), which says the site has no ads or advertising
+ *    cookies (it already covers Google Analytics), and set up a Google-certified consent banner for
+ *    visitors in the EEA and UK.
  *
  * Slots: 'top' is printed where the article starts, under the calculator on tool pages and under
  * the contents box on guides; 'bottom' is printed after the article, before the author box.

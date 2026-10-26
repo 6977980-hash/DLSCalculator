@@ -25,6 +25,8 @@ function dlscalc_content_dates() {
 	$f74 = '2026-10-20 16:00';
 	// ChatGPT review 4, F106-F110 (22 Oct 2026): real-match list, home independence line, NRR real-tournament check, FAQ openers.
 	$f106 = '2026-10-22 10:45';
+	// Google Analytics added (26 Oct 2026): Privacy Policy cookies, analytics and third-party sections.
+	$ga = '2026-10-26 19:30';
 	return array(
 		'home'                       => $f106,
 		'dls-calculator'             => $f106,
@@ -40,7 +42,7 @@ function dlscalc_content_dates() {
 		'vjd-method'                 => $f79,
 		'about'                      => $f74,
 		'contact'                    => '2026-10-19',
-		'privacy-policy'             => $f74,
+		'privacy-policy'             => $ga,
 		'terms'                      => $f74,
 		'famous-dls-matches'         => $f106,
 		'2003-world-cup-south-africa-sri-lanka' => $f106,
