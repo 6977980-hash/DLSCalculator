@@ -29,6 +29,7 @@ function dlscalc_guides() {
 				'resource-table' => 'DLS resource table',
 				'examples'       => 'Worked examples',
 				'minimum-overs'  => 'Minimum overs and abandoned matches',
+				'ipl'            => 'DLS in the IPL',
 				'dl-vs-dls'      => 'D/L vs DLS',
 				'editions'       => 'Standard vs Professional Edition',
 				'criticism'      => 'Is DLS fair?',
@@ -56,10 +57,10 @@ function dlscalc_guides() {
 		),
 		'vjd-method'           => array(
 			'h1'        => 'VJD Method in Cricket: Jayadevan\'s Rain Rule vs DLS',
-			'answer'    => 'The VJD method is a rain rule for limited-overs cricket created by V. Jayadevan, an engineer from Kerala. Like DLS it resets the target when overs are lost, but it models how scoring speeds up through an innings in its own way. India\'s BCCI uses it in domestic cricket, while the ICC uses DLS.',
+			'answer'    => 'VJD stands for V. Jayadevan, the engineer from Kerala who created it. The VJD method is a rain rule for limited-overs cricket. Like DLS it resets the target when overs are lost, but it models how scoring speeds up through an innings in its own way. India\'s BCCI uses it in domestic cricket, while the ICC uses DLS.',
 			'published' => '2026-10-19',
 			'toc'       => array(
-				'what-is-vjd'    => 'What VJD is',
+				'what-is-vjd'    => 'What VJD is and its full form',
 				'how-vjd-works'  => 'How it works',
 				'example'        => 'Worked example',
 				'vjd-vs-dls'     => 'VJD vs DLS',

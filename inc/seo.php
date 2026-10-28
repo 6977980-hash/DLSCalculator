@@ -74,8 +74,8 @@ function dlscalc_seo_pages() {
 			'description' => 'The net run rate formula with a worked two-match example, the all-out rule, DLS matches and no-results, and how a team can improve its NRR.',
 		),
 		'vjd-method'                 => array(
-			'title'       => 'VJD Method in Cricket: Jayadevan System vs DLS Explained',
-			'description' => 'What the VJD method is, who V. Jayadevan is, how his rain rule sets targets, where the BCCI uses it, and how it differs from DLS and the old D/L method.',
+			'title'       => 'VJD Method in Cricket: Full Form, How It Works & vs DLS',
+			'description' => 'VJD full form is V. Jayadevan. What the VJD method in cricket is, how his rain rule sets targets, where the BCCI uses it and how it differs from DLS.',
 		),
 		'about'                      => array(
 			'title'       => 'About DLSCalc and Ch Alee | DLSCalc',

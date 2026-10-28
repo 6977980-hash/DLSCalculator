@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
-<h2 id="what-is-vjd">What is the VJD method in cricket?</h2>
+<h2 id="what-is-vjd">What is the VJD method in cricket, and what is its full form?</h2>
 <p>VJD stands for <strong>V. Jayadevan</strong>, the name of its inventor, and the method is also called the Jayadevan system. It is a rain rule: when overs are lost in a limited-overs match, it sets a revised target for the chasing team, or decides the winner if the match cannot be finished. It does the same job as DLS but uses a different model of how teams score.</p>
 <p>Jayadevan is a civil engineer from Thrissur in Kerala. He began working on a better rain rule in the early 1990s, after the rules then in use produced some notoriously unfair targets, and he published the full method in the Indian journal <em>Current Science</em> in 2002. He later taught as a visiting professor of civil engineering in Thrissur.</p>
 

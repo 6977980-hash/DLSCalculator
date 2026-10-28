@@ -27,6 +27,8 @@ function dlscalc_content_dates() {
 	$f106 = '2026-10-22 10:45';
 	// Google Analytics added (26 Oct 2026): Privacy Policy cookies, analytics and third-party sections.
 	$ga = '2026-10-26 19:30';
+	// Search Console follow-up (28 Oct 2026): VJD full form up top, IPL section on the DLS method guide.
+	$gsc = '2026-10-28 19:30';
 	return array(
 		'home'                       => $f106,
 		'dls-calculator'             => $f106,
@@ -37,9 +39,9 @@ function dlscalc_content_dates() {
 		'strike-rate-calculator'     => '2026-10-19 17:49',
 		'bowling-average-calculator' => $f79,
 		'live-dls-par-score'         => $f74,
-		'dls-method'                 => $f79,
+		'dls-method'                 => $gsc,
 		'how-to-calculate-nrr'       => $f79,
-		'vjd-method'                 => $f79,
+		'vjd-method'                 => $gsc,
 		'about'                      => $f74,
 		'contact'                    => '2026-10-19',
 		'privacy-policy'             => $ga,
