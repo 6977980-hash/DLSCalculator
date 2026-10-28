@@ -28,7 +28,7 @@ function dlscalc_content_dates() {
 	// Google Analytics added (26 Oct 2026): Privacy Policy cookies, analytics and third-party sections.
 	$ga = '2026-10-26 19:30';
 	// Search Console follow-up (28 Oct 2026): VJD full form up top, IPL section on the DLS method guide.
-	$gsc = '2026-10-28 19:30';
+	$gsc = '2026-10-28 19:00';
 	return array(
 		'home'                       => $f106,
 		'dls-calculator'             => $f106,
