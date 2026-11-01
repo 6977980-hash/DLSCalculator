@@ -72,3 +72,14 @@ Data 20-26 Oct (`/mnt/project-files/analytics/search-console-2026-10-28.md`).
 - **"dls calculator" goes to Home, not `/dls-calculator/`.** For that query Home had 239 of 242 impressions (position 6.9); `/dls-calculator/` had 3 (position 31). The domain is the keyword (dlscalculator.com) and Home has the DLS quick box, so Google treats Home as the answer. Decision (user OK, 28 Oct): **leave it.** Do not strip "DLS calculator" from Home's description, schema or links to push Google to `/dls-calculator/`; that could drop Home without lifting the tool page. Home still keeps the keyword out of its title and H1 (rule 1). `/dls-calculator/` stays the full tool and owner of its long-tail terms (duckworth lewis calculator, odi, revised target, multiple stoppages). Recheck in the next export.
 - `/vjd-method/` title is now "VJD Method in Cricket: Full Form, How It Works & vs DLS" ("vjd" + "vjd full form" had ~60 impressions, 0 clicks, position ~10).
 - `/dls-method/` got the H2 "How is the DLS method used in the IPL?" (~20 IPL question variants at position 43-79). Rain targets for IPL matches stay with `/dls-target-calculator-t20/`; the IPL 2023 final numbers stay on its match page.
+
+## Search Console updates U1-U6, 1 November 2026
+
+From the live Search Console check (`/mnt/project-files/analytics/gsc-new-searches-2026-11-01.md`), user approved all six:
+
+- U1 `/live-dls-par-score/` owns **dls live tracker**: title "Live DLS Par Score Tracker: Who Is Ahead on DLS?", FAQ "Is this a live DLS tracker or calculator?".
+- U2 `/dls-par-score-table/` description now opens "Free DLS par score calculator" (dls par score calculator: 29 impressions, pos 7, 0 clicks).
+- U3 `/dls-method/` H3 "DLS table and chart for T20 matches" owns **dls chart for t20 / dls table t20** (resource table). The par score chart stays with `/dls-par-score-table/` (one-line link).
+- U4 `/how-to-calculate-nrr/` H2 "How is NRR calculated in the IPL and the World Cup?" (`#ipl-world-cup`) owns **nrr in ipl, how nrr is calculated in world cup**. Qualification scenarios stay with `/net-run-rate-calculator/`.
+- U5 `/dls-calculator/` FAQ "Is there a DLS calculator app?" (dls calculator app).
+- U6 `/live-dls-par-score/` "today's match" paragraph (dls par score today match).

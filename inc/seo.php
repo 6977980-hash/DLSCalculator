@@ -43,10 +43,10 @@ function dlscalc_seo_pages() {
 		),
 		'dls-par-score-table'        => array(
 			'title'       => 'DLS Par Score Calculator & Table (5 to 50 Overs) | DLSCalc',
-			'description' => 'DLS par score for every over and wicket of the chase. Pick 5 to 50 overs, enter Team 1\'s score and print the par table for the scorers. ICC Standard Edition.',
+			'description' => 'Free DLS par score calculator: the par for every over and wicket of the chase. Pick 5 to 50 overs, enter Team 1\'s score and print the table for scorers.',
 		),
 		'live-dls-par-score'         => array(
-			'title'       => 'Live DLS Par Score: Who Is Ahead on DLS Right Now? | DLSCalc',
+			'title'       => 'Live DLS Par Score Tracker: Who Is Ahead on DLS? | DLSCalc',
 			'description' => 'Enter the chasing score over by over and see the live DLS par score, so you know who is ahead if rain stops play. Free live DLS calculator for scorers.',
 		),
 		'net-run-rate-calculator'    => array(

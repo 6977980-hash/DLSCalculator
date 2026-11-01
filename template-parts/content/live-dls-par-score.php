@@ -20,6 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<li>Read the "Who is ahead" column. Green means Team 2 is ahead of par, red means Team 1 is ahead.</li>
 	<li>If rain arrives in the middle of an over, change the overs to the exact ball, like 12.3, and the par is worked out for that point.</li>
 </ol>
+<p>Following today's match on TV or online instead? Enter the overs and Team 1's total once, then type in the chasing score after each over to see the DLS par as it happens. Big matches use the ICC's Professional Edition, so the par on screen can differ by a few runs.</p>
 <p>The tracker keeps the match on your phone, so a reload or a dropped signal loses nothing. Share the link with the other dressing room or the umpires and they see the same numbers.</p>
 
 <h2 id="t20-example">How does the par move in a T20 chase?</h2>
