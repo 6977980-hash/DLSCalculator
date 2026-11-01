@@ -49,6 +49,7 @@ function dlscalc_guides() {
 				'example'       => 'Two-match example',
 				'special-cases' => 'All out, DLS and no result',
 				'tournament'    => 'NRR in a points table',
+				'ipl-world-cup' => 'NRR in the IPL and World Cup',
 				'improve'       => 'How to improve NRR',
 				'faq'           => 'FAQ',
 			),

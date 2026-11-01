@@ -29,18 +29,20 @@ function dlscalc_content_dates() {
 	$ga = '2026-10-26 19:30';
 	// Search Console follow-up (28 Oct 2026): VJD full form up top, IPL section on the DLS method guide.
 	$gsc = '2026-10-28 19:00';
+	// Search Console updates U1-U6 (1 Nov 2026): tracker title, par table description, T20 chart, IPL/World Cup NRR, app FAQ, today's match.
+	$u16 = '2026-11-01 18:40';
 	return array(
 		'home'                       => $f106,
-		'dls-calculator'             => $f106,
+		'dls-calculator'             => $u16,
 		'dls-target-calculator-t20'  => $f74,
-		'dls-par-score-table'        => $f74,
+		'dls-par-score-table'        => $u16,
 		'net-run-rate-calculator'    => $f106,
 		'run-rate-calculator'        => $f79,
 		'strike-rate-calculator'     => '2026-10-19 17:49',
 		'bowling-average-calculator' => $f79,
-		'live-dls-par-score'         => $f74,
-		'dls-method'                 => $gsc,
-		'how-to-calculate-nrr'       => $f79,
+		'live-dls-par-score'         => $u16,
+		'dls-method'                 => $u16,
+		'how-to-calculate-nrr'       => $u16,
 		'vjd-method'                 => $gsc,
 		'about'                      => $f74,
 		'contact'                    => '2026-10-19',
@@ -201,6 +203,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'How do penalty runs change the DLS target?', 'Only penalty runs given to Team 1 while Team 2 is batting change it: the target and every par score go up by that many runs, with no new calculation (ICC DLS rules, section 6). Enter them in the penalty runs box. Penalty runs Team 1 earned while batting are already in its score, and penalty runs to Team 2 at any time go on Team 2\'s score without changing the target.' ),
 			array( 'What if rain ends Team 1\'s innings early?', 'Add a Team 1 stoppage at the overs bowled when play stopped, with the wickets down, and enter every remaining over as overs lost. The calculator then treats Team 1\'s innings as finished and usually sets Team 2 a target above Team 1\'s score.' ),
 			array( 'Can I save or share a result?', 'Yes. The page address updates with your inputs, so the link reproduces the same result. Use the WhatsApp button, copy the link, or print the page with the par table for the scorers.' ),
+			array( 'Is there a DLS calculator app?', 'You do not need to install one. Open DLSCalc once with a connection and your phone keeps the calculators, so they work offline at the ground. On most phones you can also add DLSCalc to the home screen from the browser menu, and it opens like an app.' ),
 		),
 		'dls-target-calculator-t20'  => array(
 			array( 'What is the minimum for a result in a T20?', 'Team 2 must be able to face at least 5 overs for a result in a 20-over match. If rain cuts the chase below 5 overs, there is no result unless Team 2 has already passed the target or been bowled out. Knockout matches can ask for more: at the ICC Men\'s T20 World Cup, the semi-finals and the final need at least 10 overs a side.' ),
@@ -260,7 +263,7 @@ function dlscalc_faqs( $slug ) {
 			array( 'Is there a minimum number of overs for a result?', 'Yes. Team 2 must have faced at least 20 overs in an ODI, or 5 overs in a T20, for DLS to decide the result, even if the match started with fewer overs, so pick the format as well as the overs. Before that point the tracker warns that a stoppage would mean no result. At the ICC Men\'s T20 World Cup, the semi-finals and the final need at least 10 overs a side.' ),
 			array( 'Will I lose the score if I close the page?', 'No. The tracker keeps the match on this device, so a reload or a closed tab picks up where you left off. Use "Start a new match" to clear it, or share the link so another scorer can follow the same match.' ),
 			array( 'Does it work with no signal at the ground?', 'Yes. After you open DLSCalc once with a connection, your phone keeps the calculators, the par table and this tracker, so they open and work offline. On most phones you can also add DLSCalc to the home screen from the browser menu, and it opens like an app.' ),
-			array( 'Is this a live DLS calculator?', 'Yes. It is a live DLS calculator for the chase: enter Team 1\'s score once, then add Team 2\'s score and wickets as the overs go by, and it shows the par and who is ahead at every point. For the revised target after a stoppage, use the <a href="' . $calc . '">DLS calculator</a>.' ),
+			array( 'Is this a live DLS tracker or calculator?', 'Both. It is a live DLS tracker and calculator for the chase: enter Team 1\'s score once, then add Team 2\'s score and wickets as the overs go by, and it shows the par and who is ahead at every point. For the revised target after a stoppage, use the <a href="' . $calc . '">DLS calculator</a>.' ),
 			array( 'Is this the same par that appears on TV?', 'International matches use the DLS Professional Edition, which runs on ICC software and is not published. This tracker uses the published Standard Edition, so the TV par can differ. ' . dlscalc_accuracy_line() ),
 		),
 		'dls-method'                 => array(

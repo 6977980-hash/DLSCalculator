@@ -73,8 +73,8 @@ $dlscalc_head .= '</tr></thead>';
 	</tbody>
 </table>
 </div>
-<h3 id="t20-table">DLS table for T20 matches</h3>
-<p>A T20 uses the bottom of the same table. The innings starts at 20 overs left, worth 56.6%, so a T20 team losing four overs at the start of its chase drops to 47.6% (16 overs left, no wickets down) and its target is scaled by that change.</p>
+<h3 id="t20-table">DLS table and chart for T20 matches</h3>
+<p>This is what people mean by the DLS chart for T20: there is no separate T20 table, because a T20 uses the bottom of the same table. The innings starts at 20 overs left, worth 56.6%, so a T20 team losing four overs at the start of its chase drops to 47.6% (16 overs left, no wickets down) and its target is scaled by that change.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="DLS resource table, 20 overs">
 <table class="data data--num">
 	<caption>DLS resources remaining (%) for a 20-over innings</caption>
@@ -88,6 +88,7 @@ $dlscalc_head .= '</tr></thead>';
 	</tbody>
 </table>
 </div>
+<p>Looking for the par score chart instead, the runs Team 2 needs after each over? The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-par-score-table' ) ); ?>">DLS par score table</a> makes one for any T20 score.</p>
 <h3 id="resource-lookup">Look up the resources for any ball</h3>
 <p>Need a value part-way through an over, like 32.4 overs left? Enter the overs left and the wickets lost to read the full ball-by-ball table.</p>
 <?php dlscalc_resource_lookup_html(); ?>
