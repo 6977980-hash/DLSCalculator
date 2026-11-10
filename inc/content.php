@@ -31,24 +31,26 @@ function dlscalc_content_dates() {
 	$gsc = '2026-10-28 19:00';
 	// Search Console updates U1-U6 (1 Nov 2026): tracker title, par table description, T20 chart, IPL/World Cup NRR, app FAQ, today's match.
 	$u16 = '2026-11-01 18:40';
+	// Search Console audit 10 Nov 2026: par table live-tracker line and plain-words box, 7 Nov 2026 ODI added to the real-match checks.
+	$g10 = '2026-11-10 19:30';
 	return array(
-		'home'                       => $f106,
-		'dls-calculator'             => $u16,
+		'home'                       => $g10,
+		'dls-calculator'             => $g10,
 		'dls-target-calculator-t20'  => $f74,
-		'dls-par-score-table'        => $u16,
+		'dls-par-score-table'        => $g10,
 		'net-run-rate-calculator'    => $f106,
 		'run-rate-calculator'        => $f79,
 		'strike-rate-calculator'     => '2026-10-19 17:49',
 		'bowling-average-calculator' => $f79,
 		'live-dls-par-score'         => $u16,
-		'dls-method'                 => $u16,
+		'dls-method'                 => $g10,
 		'how-to-calculate-nrr'       => $u16,
 		'vjd-method'                 => $gsc,
 		'about'                      => $f74,
 		'contact'                    => '2026-10-19',
 		'privacy-policy'             => $ga,
 		'terms'                      => $f74,
-		'famous-dls-matches'         => $f106,
+		'famous-dls-matches'         => $g10,
 		'2003-world-cup-south-africa-sri-lanka' => $f106,
 	) + array_fill_keys( array_keys( dlscalc_matches() ), $f79 );
 }
@@ -78,7 +80,7 @@ function dlscalc_content_time( $slug, $post = null ) {
  * @return string Plain text, one sentence.
  */
 function dlscalc_accuracy_line() {
-	return 'In 34 checks from 32 recent rain-hit matches, every T20 target and par came within 3 runs of this calculator, while ODIs differed by up to 23 runs after a big first innings.';
+	return 'In 35 checks from 33 recent rain-hit matches, every T20 target and par came within 3 runs of this calculator, while ODIs differed by up to 23 runs after a big first innings.';
 }
 
 /**

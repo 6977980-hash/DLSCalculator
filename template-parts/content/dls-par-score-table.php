@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 ?>
+<p class="answer"><strong>In simple words:</strong> par is the score the chasing team needs right now to be level. If rain stops the match for good, the chasing team wins when it is above par, loses when it is below, and the match is tied when it is exactly on par. Losing wickets pushes the par up, because DLS expects a team with fewer wickets left to score less from the overs that remain. The <a href="<?php echo esc_url( dlscalc_page_url( 'dls-method' ) ); ?>">DLS method guide</a> explains why.</p>
 <h2 id="what-is-par">What is a DLS par score?</h2>
 <p>The DLS par score is the score Team 2 needs at a given over and wicket count to be exactly level with Team 1 if the match ends there. Above par, Team 2 is ahead and would win if rain stopped play for good. Below par, Team 1 is ahead. On par exactly, the match is tied.</p>
 <p>Par is not the same as the run rate. A team chasing 160 in 20 overs needs 8 an over, but after 10 overs its par with no wickets down is only 69, not 80. That is because a team with all its wickets in hand still has most of its batting to come, so DLS expects it to score faster in the second half of the chase.</p>
