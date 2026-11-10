@@ -20,19 +20,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 <?php dlscalc_matches_table(); ?>
 <p>Of the eight matches where a DLS or D/L figure was worked out, our calculator gives the same number in three (2003, England vs Ireland and the IPL 2023 final) and is within 3 runs in three more. The two big gaps, 2015 and 2019, both have a high or nearly complete first innings that was cut short. The 1992 row is different: the rule used then was not DLS at all, and the gap shows how unfair it was.</p>
 
-<h2 id="real-matches">How close is it across 32 recent rain-hit matches?</h2>
-<p>To test the calculator beyond the famous games, we took 32 rain-hit matches from 2015 to 2025, from T20 and ODI World Cups, the Champions Trophy, the Asia Cup, bilateral series and the IPL, BBL and PSL, and entered the numbers from each scorecard. Two of them had both a revised target and a final par, so there are 34 figures to compare with the official ones.</p>
+<h2 id="real-matches">How close is it across 33 recent rain-hit matches?</h2>
+<p>To test the calculator beyond the famous games, we took 33 rain-hit matches from 2015 to 2026, from T20 and ODI World Cups, the Champions Trophy, the Asia Cup, bilateral series and the IPL, BBL and PSL, and entered the numbers from each scorecard. Two of them had both a revised target and a final par, so there are 35 figures to compare with the official ones.</p>
 <div class="table-wrap">
 	<table class="data data--num">
 		<caption>Official figure (Professional Edition) against our Standard Edition calculator</caption>
 		<thead><tr><th scope="col">Format</th><th scope="col">Figures checked</th><th scope="col">Exactly the same</th><th scope="col">Within 3 runs</th><th scope="col">Largest gap</th></tr></thead>
 		<tbody>
 			<tr><th scope="row">T20</th><td>17</td><td>5</td><td>17</td><td>3 runs</td></tr>
-			<tr><th scope="row">ODI</th><td>17</td><td>1</td><td>8</td><td>23 runs</td></tr>
+			<tr><th scope="row">ODI</th><td>18</td><td>1</td><td>8</td><td>23 runs</td></tr>
 		</tbody>
 	</table>
 </div>
-<p>In T20 cricket the two editions are practically the same: no figure was more than 3 runs apart. In ODIs, 10 of the 17 were within 5 runs, but six were 9 runs or more apart, nearly all after a first innings of 300 or more or rain cutting a long stretch of either innings:</p>
+<p>In T20 cricket the two editions are practically the same: no figure was more than 3 runs apart. In ODIs, 11 of the 18 were within 5 runs, but six were 9 runs or more apart, nearly all after a first innings of 300 or more or rain cutting a long stretch of either innings:</p>
 <div class="table-wrap">
 	<table class="data">
 		<caption>ODI figures 9 runs or more from the official one</caption>

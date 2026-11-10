@@ -406,7 +406,7 @@ export default [
 		}
 	},
 	{
-		name: 'real matches: the live calculator gives our Standard result for 34 rain-hit matches',
+		name: 'real matches: the live calculator gives our Standard result for 35 rain-hit matches',
 		run: async ({ base }) => {
 			const bad = [];
 			for (const m of realMatches) {

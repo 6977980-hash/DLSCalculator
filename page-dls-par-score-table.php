@@ -21,6 +21,7 @@ dlscalc_tool_page_open(
 );
 dlscalc_par_sheet_head();
 ?>
+<p class="hint noprint">Following a rain-hit match right now? Type in the chasing score after each over in the <a href="<?php echo esc_url( dlscalc_page_url( 'live-dls-par-score' ) ); ?>">live DLS par score tracker</a> to see who is ahead on DLS.</p>
 <div class="tool">
 	<form class="panel tool__form" method="get" action="<?php echo esc_url( dlscalc_page_url( $dlscalc_slug ) . '#result' ); ?>" data-tool="parTable" novalidate<?php echo dlscalc_dls_has_params() ? '' : ' data-plain'; // Page without link inputs: the copy saved for offline use (audit F46). ?>>
 		<div class="tool__group" role="group" aria-labelledby="g-overs">

@@ -92,7 +92,7 @@ get_header();
 		<div class="wrap feature-grid">
 			<div>
 				<h3>Standard Edition tables</h3>
-				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition, so official figures can differ. <?php echo esc_html( dlscalc_accuracy_line() ); ?> <a href="<?php echo esc_url( dlscalc_page_url( 'famous-dls-matches' ) . '#real-matches' ); ?>">See all 34 checks</a>.</p>
+				<p>Targets use the published DLS Standard Edition resource table. International matches use the Professional Edition, so official figures can differ. <?php echo esc_html( dlscalc_accuracy_line() ); ?> <a href="<?php echo esc_url( dlscalc_page_url( 'famous-dls-matches' ) . '#real-matches' ); ?>">See all 35 checks</a>.</p>
 			</div>
 			<div>
 				<h3>Fast on any phone</h3>
